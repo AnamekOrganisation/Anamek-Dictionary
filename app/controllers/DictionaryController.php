@@ -1,0 +1,201 @@
+<?php
+
+use App\Core\Cache;
+
+class DictionaryController {
+    private $pdo;
+
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
+    }
+
+
+    public static function getCommonData($pdo = null) {
+        if ($pdo === null) {
+            $db = Database::getInstance();
+            $pdo = $db->getConnection();
+        }
+
+        $wordModel = new Word($pdo);
+        $cache = new Cache();
+
+        // Get counts (cache these for 1 hour)
+        $cacheKeyCounts = 'site_counts';
+        $counts = $cache->get($cacheKeyCounts, 3600);
+        if ($counts === false) {
+             $counts = [
+                'words' => $pdo->query("SELECT COUNT(*) FROM words")->fetchColumn(),
+                'proverbs' => $pdo->query("SELECT COUNT(*) FROM proverbs")->fetchColumn()
+            ];
+            $cache->set($cacheKeyCounts, $counts);
+        }
+
+        // Get Word of the Day
+        $cacheKeyWord = 'daily_word_' . date('Y-m-d');
+        $wordOfTheDay = $cache->get($cacheKeyWord, 86400);
+        if ($wordOfTheDay === false) {
+            $wordOfTheDay = $wordModel->getRandomWithDefinition();
+            if ($wordOfTheDay) {
+                $cache->set($cacheKeyWord, $wordOfTheDay);
+            }
+        }
+
+        // Get newest words
+        $recentWords = $wordModel->getRecentWords(6);
+        
+        // Get trending words
+        $trendingWords = $wordModel->getRecentSearches(6);
+
+        // Ad Settings
+        require_once ROOT_PATH . '/app/models/Setting.php';
+        $settingModel = new \App\Models\Setting($pdo);
+        $adSlotHome = $settingModel->get('google_ads_slot_home', '0000000000');
+
+        return [
+            'wordCount' => $counts['words'],
+            'proverbCount' => $counts['proverbs'],
+            'wordOfTheDay' => $wordOfTheDay,
+            'recentWords' => $recentWords,
+            'trendingWords' => $trendingWords,
+            'adSlotHome' => $adSlotHome
+        ];
+    }
+
+    public function home() {
+        if (isset($_GET['clear_cache'])) {
+            array_map('unlink', glob(ROOT_PATH . '/cache/*.cache'));
+            header('Location: ' . BASE_URL . '/');
+            exit;
+        }
+
+        $commonData = self::getCommonData($this->pdo);
+        extract($commonData);
+
+        $proverbModel = new Proverb($this->pdo);
+        $cache = new Cache();
+
+        // Cache Proverb of the Day for 24 hours
+        $cacheKeyProverb = 'daily_proverb_' . date('Y-m-d');
+        $proverbOfTheDay = $cache->get($cacheKeyProverb, 86400);
+        if ($proverbOfTheDay === false) {
+            $proverbOfTheDay = $proverbModel->getRandom();
+            if ($proverbOfTheDay) {
+                $cache->set($cacheKeyProverb, $proverbOfTheDay);
+            }
+        }
+
+        $preLoadedWord = $wordOfTheDay;
+        $isHomepage = true;
+        
+        include ROOT_PATH . '/app/views/home.php';
+    }
+
+    public function showWord($params) {
+        $id = $params['id'] ?? 0;
+        
+        $wordModel = new Word($this->pdo);
+        $word = $wordModel->find($id);
+
+        $commonData = self::getCommonData($this->pdo);
+        extract($commonData);
+        $featuredWord = $wordOfTheDay; // For sidebar compatibility
+
+        if (!$word) {
+            $page_title = __('Word not found');
+            $variants = [];
+            $word = null;
+            
+            include ROOT_PATH . '/app/views/word-page.php';
+            return;
+        }
+
+        $page_title = $word['word_lat'] . " (" . $word['word_tfng'] . ") - Amawal";
+        
+        $params_id = $params['id'] ?? '';
+        // If the URL contains a specific ID in Slug-ID format (e.g. tarrist-15976), show ONLY that word.
+        if (preg_match('/-(\d+)$/', $params_id)) {
+            $variants = [$word];
+        } else {
+            // If the URL is just a slug (e.g. 'tarrist' or 'pays'), show all variants.
+            // Use the original search term to find all matches (including homonyms or french matches)
+            $searchSlug = urldecode($params_id);
+            $variants = $wordModel->findAllByText($searchSlug);
+            
+            if (empty($variants)) {
+                $variants = [$word]; // Fallback
+            }
+        }
+
+        include ROOT_PATH . '/app/views/word-page.php';
+    }
+
+    public function search() {
+        $query = isset($_GET['q']) ? trim($_GET['q']) : '';
+        
+        if (empty($query)) {
+            header('Location: ' . BASE_URL);
+            exit;
+        }
+
+        // Redirect to the word page logic
+        header('Location: ' . BASE_URL . '/word/' . urlencode($query));
+        exit;
+    }
+
+    public function proverbs() {
+        if (isset($_GET['action']) && $_GET['action'] === 'index') {
+            header('Location: ' . BASE_URL . '/proverbs');
+            exit;
+        }
+
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 12;
+        $query = isset($_GET['q']) ? trim($_GET['q']) : '';
+
+        $proverbModel = new Proverb($this->pdo);
+
+        if (!empty($query)) {
+            $totalProverbs = $proverbModel->countSearch($query);
+            $proverbs = $proverbModel->search($query, $page, $perPage);
+            
+            // Record in analytics (Accurate & Optimized)
+            require_once ROOT_PATH . '/app/models/Analytics.php';
+            $analytics = new Analytics($this->pdo);
+            $analytics->recordSearch("[Proverb] " . $query, $totalProverbs, 'multi');
+        } else {
+            $totalProverbs = $proverbModel->countAll();
+            $proverbs = $proverbModel->getPaginated($page, $perPage);
+        }
+
+        $totalPages = ceil($totalProverbs / $perPage);
+
+        include ROOT_PATH . '/app/views/proverbs.php';
+    }
+
+    public function showProverb($params) {
+        $id = $params['id'] ?? 0;
+        $proverbModel = new Proverb($this->pdo);
+        $proverb = $proverbModel->find($id);
+
+        $commonData = self::getCommonData($this->pdo);
+        extract($commonData);
+        $featuredWord = $wordOfTheDay;
+
+        if (!$proverb) {
+            $page_title = __('Proverb not found');
+            include ROOT_PATH . '/app/views/home.php';
+            return;
+        }
+
+        $page_title = __('Proverb') . " #" . $proverb['id'] . " - Amawal";
+        include ROOT_PATH . '/app/views/proverb-page.php';
+    }
+
+    public function contact() {
+        include ROOT_PATH . '/app/views/contact.php';
+    }
+    
+    public function about() {
+        include ROOT_PATH . '/app/views/about.php';
+    }
+}

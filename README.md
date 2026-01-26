@@ -1,48 +1,113 @@
 # Anamek Dictionary
 
-**Open-source collaborative Amazigh–French dictionary**
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![Contributions Welcome](https://img.shields.io/badge/Contributions-welcome-brightgreen.svg)](#-contributing)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-blue.svg)](https://github.com/AnamekOrganisation/Anamek-Dictionary/pulls)
+
+**An open-source, collaborative Amazigh–French dictionary project.**  
+*A living dictionary built by the community, for the community.*
+
+---
 
 ## 📖 About the Project
 
-Anamek-Dictionary is an open-source and collaborative Amazigh–French dictionary project.
-Its main goal is to document the Amazigh language and make it accessible through a free, open, and community-driven platform.
+**Anamek Dictionary** is an open-source and collaborative Amazigh–French dictionary.
+Its main objective is to document the Amazigh language and make it accessible through a free, open, and community-driven platform.
 
-The project is built on the belief that languages grow and survive through shared knowledge, collective contribution, and open access.
-Rather than being a closed or static dictionary, Anamek-Dictionary evolves continuously thanks to its contributors.
+Languages grow, survive, and evolve through shared knowledge.
+Rather than being a closed or static dictionary, **Anamek Dictionary** is a living project that evolves continuously thanks to its contributors: native speakers, learners, developers, and researchers.
+
+---
 
 ## 🎯 Philosophy
 
 - **Collaboration over centralization**  
-  The dictionary is enriched by its community. Everyone can contribute to improving the codebase and the linguistic data.
+  Language belongs to its speakers. The dictionary is enriched collectively by its community.
 
 - **Open source as a principle**  
-  The source code is openly available to ensure transparency, sustainability, and long-term development.
+  Open access ensures transparency, sustainability, and long-term development.
 
 - **Language documentation**  
-  The project focuses on documenting Amazigh vocabulary, meanings, and usage in a structured and searchable way.
+  Amazigh vocabulary, meanings, and usage are documented in a structured, searchable, and extensible way.
 
 - **Accessibility and learning**  
-  Anamek-Dictionary aims to make Amazigh language resources accessible to learners, researchers, and developers.
+  Designed to serve learners, linguists, researchers, and developers alike.
+
+---
 
 ## 🚀 Goals
 
-- Build a reliable Amazigh–French dictionary platform
-- Encourage community contributions (code and features)
-- Improve the technical quality, performance, and scalability of the project
-- Provide a solid base for future tools (APIs, mobile apps, linguistic research)
+- Build a reliable and extensible Amazigh–French dictionary platform  
+- Encourage linguistic and technical contributions  
+- Improve performance, security, and scalability  
+- Provide a solid foundation for future tools (APIs, mobile apps, linguistic research)
+
+---
+
+## 🚀 Quick Start (Automated Installation)
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/AnamekOrganisation/Anamek-Dictionary.git
+   cd Anamek-Dictionary
+
+2. **Install dependencies**
+   ```bash
+   composer install
+
+3. **Run the installer**
+   
+Open the project URL in your browser and follow the guided installation steps:
+- System requirement checks
+- Database configuration and schema creation
+- Super-admin account setup
+- After installation, the installer file is disabled or removed for security reasons.
+
+## 🧰 Tech Stack
+
+- **Backend:** PHP 7.4+  
+- **Frontend:** HTML5, CSS3, Vanilla JavaScript  
+- **Database:** MySQL 5.7+ / MariaDB  
+- **Dependency Management:** Composer  
+- **Architecture:** MVC (Model–View–Controller)  
+- **Internationalization:** Multi-language ready (i18n)  
+
+---
+
+## 📂 Project Structure
+
+```text
+├── app/         # Core application logic (Controllers, Models, Views)
+├── config/      # Configuration and database setup
+├── public/      # Public assets (CSS, JS, images)
+├── locale/      # Translation and localization files
+├── api/         # API endpoints
+└── install.php  # Guided installer (disabled after setup)
+```
 
 ## 🤝 Contributing
 
-Contributions are welcome and encouraged!
+
+Contributions are welcome and encouraged.
 
 You can contribute by:
+- Adding or improving dictionary entries
 - Improving the codebase
-- Adding new features
 - Fixing bugs
 - Enhancing performance or security
-- Improving documentation
+- Improving documentation or translations
 
-Feel free to fork the repository, open issues, or submit pull requests.
+### Contribution workflow
+
+1. Fork the project
+2. Create a feature branch
+3. Commit your changes
+4. Push to your branch
+5. Open a Pull Request
+
+Every contribution, small or large, helps preserve and grow the Amazigh language.
+
+---
 
 ## 🛠️ Planned Features & Roadmap
 
@@ -55,10 +120,12 @@ Contributors are welcome to participate in their design, implementation, and imp
 - [ ] Integration with language learning tools (quizzes, flashcards)
 > 💡 Want to contribute? Pick any feature from the checklist, open an issue or a pull request, and your contribution will be added to the roadmap.
 
+
+
 ## 📜 License
 
 This project is open source.
-Please check the `LICENSE` file for more information.
+Please check the Read the [LICENSE](LICENSE) file for more information.
 
 ---
 

@@ -1,0 +1,23 @@
+# Sensitive files
+.env
+install.lock
+
+# Dependencies
+vendor/
+composer.phar
+
+# Caching & Logs
+cache/*.cache
+logs/*.log
+
+# IDEs and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# xml files
+*.xml
+
+#htaccess files
+.htaccess

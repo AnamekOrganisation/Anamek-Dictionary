@@ -1,0 +1,441 @@
+/* Premium Academic Dictionary Styles for Amawal */
+:root {
+    --lex-primary: #1a2a3a;
+    --lex-secondary: #4a5a6a;
+    --lex-accent: #c4a006;
+    --lex-bg: #fdfdfb;
+    --lex-sidebar-bg: #f8f9fa;
+    --lex-text: #2c3e50;
+    --lex-border: #e1e4e8;
+    --lex-font-serif: 'Source Serif Pro', serif;
+    --lex-font-sans: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--lex-bg);
+    color: var(--lex-text);
+    font-family: var(--lex-font-sans);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Header */
+.site-header {
+    background: #fff;
+    border-bottom: 1px solid var(--lex-border);
+    padding: 2rem 0;
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.logo-wrapper {
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo-text {
+    font-family: var(--lex-font-serif);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--lex-primary);
+    margin: 0;
+}
+
+.logo-subtitle {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--lex-secondary);
+    display: block;
+}
+
+/* Language Nav */
+.language-selector {
+    position: relative;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--lex-primary);
+    display: flex;
+    align-items: center;
+}
+
+.language-selector::after {
+    content: '▾';
+    margin-left: 8px;
+}
+
+/* Search Section */
+.search-section {
+    max-width: 800px;
+}
+
+.search-input-group {
+    display: flex;
+    background: #fff;
+    border: 2px solid var(--lex-primary);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.search-input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border: none;
+    font-size: 1.1rem;
+    outline: none;
+}
+
+.search-button {
+    background: var(--lex-primary);
+    color: #fff;
+    border: none;
+    padding: 0 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.search-button:hover {
+    background: var(--lex-secondary);
+}
+
+.search-hint {
+    font-size: 0.9rem;
+    color: var(--lex-secondary);
+    margin-top: 0.5rem;
+}
+
+/* Suggestions Dropdown (adapted from home.js) */
+.suggestions-box {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid var(--lex-border);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+}
+
+.suggestion-item {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--lex-border);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    transition: background 0.2s;
+}
+
+.suggestion-item:hover {
+    background: var(--lex-sidebar-bg);
+}
+
+/* Main Content */
+.main-content {
+    padding: 4rem 0;
+}
+
+.content-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 4rem;
+}
+
+/* Word Entry */
+.word-entry {
+    margin-bottom: 5rem;
+    padding-bottom: 5rem;
+    border-bottom: 1px solid var(--lex-border);
+}
+
+.word-entry:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.word-title-group {
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.entry-index {
+    font-family: var(--lex-font-serif);
+    font-size: 2.5rem;
+    color: var(--lex-secondary);
+    font-weight: 300;
+    opacity: 0.5;
+}
+
+.word-title {
+    font-family: var(--lex-font-serif);
+    font-size: 4rem;
+    color: var(--lex-primary);
+    margin: 0;
+}
+
+.word-meta {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+    align-items: center;
+}
+
+.phonetic {
+    color: var(--lex-secondary);
+    font-family: var(--lex-font-sans);
+    background: var(--lex-sidebar-bg);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.part-of-speech {
+    color: var(--lex-accent);
+    font-weight: 600;
+    text-transform: lowercase;
+}
+
+/* Definitions */
+.definitions {
+    padding-left: 1.5rem;
+    margin: 0;
+}
+
+.definition-item {
+    margin-bottom: 2.5rem;
+    list-style-type: decimal;
+    color: var(--lex-secondary);
+}
+
+.definition-text {
+    font-size: 1.25rem;
+    color: var(--lex-primary);
+    margin: 0 0 0.75rem 0;
+}
+
+.example {
+    font-size: 1.1rem;
+    color: var(--lex-secondary);
+    font-style: italic;
+    border-left: 3px solid var(--lex-accent);
+    padding-left: 1.5rem;
+    margin: 1rem 0;
+}
+
+/* Origin */
+.word-origin {
+    margin-top: 4rem;
+    padding: 2rem;
+    background: var(--lex-sidebar-bg);
+    border-radius: 8px;
+}
+
+.morphology-grid {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 10px;
+}
+
+.lex-link {
+    color: var(--lex-accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-bottom: 1px dotted transparent;
+}
+
+.lex-link:hover {
+    color: var(--lex-primary);
+    border-bottom-color: var(--lex-primary);
+}
+
+.permalink-badge {
+    text-decoration: none;
+    color: #3498db;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border: 1px solid var(--lex-border);
+    border-radius: 6px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-left: auto;
+    background: white;
+}
+
+.permalink-badge:hover {
+    background: var(--lex-sidebar-bg);
+    border-color: var(--lex-primary);
+    color: var(--lex-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.origin-title {
+    font-family: var(--lex-font-serif);
+    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--lex-primary);
+}
+
+/* Sidebar */
+.sidebar-section {
+    margin-bottom: 3rem;
+}
+
+.sidebar-title {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--lex-secondary);
+    border-bottom: 2px solid var(--lex-primary);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.category-list,
+.related-words {
+    list-style: none;
+    padding: 0;
+}
+
+.category-item,
+.related-word {
+    margin-bottom: 0.8rem;
+}
+
+.category-link,
+.related-link {
+    color: var(--lex-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+    display: block;
+}
+
+.category-link:hover,
+.related-link:hover {
+    color: var(--lex-accent);
+}
+
+.featured-word-card {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--lex-border);
+    border-top: 4px solid var(--lex-accent);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.featured-title {
+    margin: 0 0 0.5rem 0;
+    font-family: var(--lex-font-serif);
+    color: var(--lex-primary);
+    font-size: 1.5rem;
+}
+
+.featured-definition {
+    font-size: 0.95rem;
+    color: var(--lex-secondary);
+    margin-bottom: 1rem;
+}
+
+.view-btn {
+    display: inline-block;
+    color: var(--lex-accent);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Footer */
+.site-footer {
+    background: var(--lex-primary);
+    color: #fff;
+    padding: 4rem 0 2rem;
+    margin-top: 4rem;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer-logo {
+    font-family: var(--lex-font-serif);
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+}
+
+.footer-nav {
+    display: flex;
+    gap: 2.5rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.footer-link {
+    color: #cbd5e0;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.footer-link:hover {
+    color: #fff;
+}
+
+.footer-copyright {
+    font-size: 0.9rem;
+    color: #a0aec0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 2rem;
+}
+
+/* Responsiveness */
+@media (max-width: 992px) {
+    .content-container {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .sidebar {
+        order: 2;
+    }
+}
+
+@media (max-width: 600px) {
+    .word-title {
+        font-size: 3rem;
+    }
+
+    .header-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+}

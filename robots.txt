@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+
+# منع الصفحات الإدارية والداخلية
+Disallow: /admin
+Disallow: /login
+Disallow: /dashboard
+Disallow: /edit-word
+Disallow: /add-word
+Disallow: /users
+Disallow: /api
+
+# منع المعلمات غير المهمة
+Disallow: /*?*
+
+# السماح بالموارد الضرورية
+Allow: /public/css/
+Allow: /public/js/
+Allow: /public/img/
+
+# Sitemap
+Sitemap: https://anamek.com/sitemap-pages.xml

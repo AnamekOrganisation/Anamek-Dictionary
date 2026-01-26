@@ -1,0 +1,116 @@
+/* Amawal Admin Modern Styles */
+:root {
+    --admin-sidebar-w: 260px;
+    --admin-primary: #181d4b;
+    --admin-accent: #f99417;
+    --admin-bg: #f8f9fa;
+    --label-color: #344767;
+}
+
+body.admin-body {
+    background-color: var(--admin-bg) !important;
+    padding-top: 0 !important;
+    font-family: 'Inter', sans-serif;
+}
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1000;
+}
+
+/* Sidebar Restoration - High Contrast but Original Shape */
+.admin-sidebar {
+    width: var(--admin-sidebar-w);
+    background: var(--admin-primary);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 1001;
+    transition: all 0.3s ease;
+}
+
+.admin-main {
+    flex: 1;
+    margin-left: var(--admin-sidebar-w);
+    transition: all 0.3s ease;
+    background: var(--admin-bg);
+    min-height: 100vh;
+}
+
+/* Sidebar Navigation - High Contrast */
+.sidebar-nav .nav-link {
+    color: rgba(255,255,255,0.7) !important;
+    padding: 12px 16px;
+    display: block;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.sidebar-nav .nav-link:hover, 
+.sidebar-nav .nav-link.active {
+    background: rgba(255,255,255,0.1) !important;
+    color: white !important;
+}
+
+.sidebar-nav .nav-link.active {
+    background: var(--admin-accent) !important;
+}
+
+.sidebar-header h5 {
+    color: white !important;
+}
+
+/* Premium Card & Form Styles */
+.premium-card {
+    background: #ffffff;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.form-label-custom {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--label-color);
+    margin-bottom: 0.5rem;
+}
+
+.form-control-custom {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #d2d6da;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.form-control-custom:focus {
+    border-color: var(--admin-accent);
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(249, 148, 23, 0.1);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+/* Social Inputs (Saving States) */
+.social-input { transition: border-color 0.3s, box-shadow 0.3s; }
+.social-input.saving { background-color: #f5f5f5; }
+.social-input.success { border-color: #4CAF50; }
+.social-input.error { border-color: #f44336; }
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .admin-sidebar { margin-left: calc(-1 * var(--admin-sidebar-w)); }
+    .admin-main { margin-left: 0; }
+}
