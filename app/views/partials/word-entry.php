@@ -28,13 +28,13 @@ if (!function_exists('getWordLink')) {
             <?php if ($variantCount > 1): ?>
             <span class="entry-index"><?= $index + 1 ?></span>
             <?php endif; ?>
-            <h1 class="word-title" data-tfng="<?= htmlspecialchars($v['word_tfng']) ?>" data-lat="<?= htmlspecialchars($v['word_lat']) ?>"><?= htmlspecialchars($v['word_tfng']) ?></h1>
+            <h1 class="word-title" data-tfng="<?= e($v['word_tfng']) ?>" data-lat="<?= e($v['word_lat']) ?>"><?= e($v['word_tfng']) ?></h1>
         </div>
         <!-- end of word title -->
 
         <div class="word-meta">
             <?php if (!empty($v['part_of_speech'])): ?>
-            <span class="part-of-speech"><?= __(htmlspecialchars($v['part_of_speech'])) ?></span>
+            <span class="part-of-speech"><?= __(e($v['part_of_speech'])) ?></span>
             <?php endif; ?>
 
             <?php 
@@ -51,9 +51,9 @@ if (!function_exists('getWordLink')) {
     <section class="definition-list">
         <ol class="definitions">
             <li class="definition-item">
-                <p class="french-text"><?= htmlspecialchars($v['translation_fr']) ?></p>
+                <p class="french-text"><?= e($v['translation_fr']) ?></p>
                 <?php if (!empty($v['definition_tfng'])): ?>
-                <p class="definition-text" data-lat="<?= htmlspecialchars($v['definition_lat']) ?>" data-tfng="<?= htmlspecialchars($v['definition_tfng']) ?>"><?= htmlspecialchars($v['definition_tfng']) ?></p>
+                <p class="definition-text" data-lat="<?= e($v['definition_lat']) ?>" data-tfng="<?= e($v['definition_tfng']) ?>"><?= e($v['definition_tfng']) ?></p>
                 <?php endif; ?>
             </li>
         </ol>
@@ -66,16 +66,16 @@ if (!function_exists('getWordLink')) {
         <div class="examples-container">
             <?php if (!empty($v['example_tfng']) || !empty($v['example_lat'])): ?>
                 <div class="example">
-                    "<?= htmlspecialchars($v['example_tfng'] ?? $v['example_lat']) ?>"
+                    "<?= e($v['example_tfng'] ?? $v['example_lat']) ?>"
                         </div>
                         <?php endif; ?>
 
                         <?php if (!empty($v['examples'])): ?>
                             <?php foreach ($v['examples'] as $example): ?>
                             <div class="example">
-                                "<?= htmlspecialchars($example['example_tfng'] ?? $example['example_lat']) ?>"
+                                "<?= e($example['example_tfng'] ?? $example['example_lat']) ?>"
                                 <?php if (!empty($example['example_fr'])): ?>
-                                <br><span style="font-size: 0.9em; opacity: 0.8;">– <?= htmlspecialchars($example['example_fr']) ?></span>
+                                <br><span style="font-size: 0.9em; opacity: 0.8;">– <?= e($example['example_fr']) ?></span>
                                 <?php endif; ?>
                             </div>
                             <?php endforeach; ?>
@@ -90,7 +90,7 @@ if (!function_exists('getWordLink')) {
     <section class="word-origin">
         <h2 class="origin-title"><?= __('Origine') ?></h2>
         <p class="origin-text">
-            <?= htmlspecialchars($v['etymology']['notes_fr'] ?? $v['etymology']['origin_language'] ?? 'N/A') ?>
+            <?= e($v['etymology']['notes_fr'] ?? $v['etymology']['origin_language'] ?? 'N/A') ?>
         </p>
     </section>
     <?php endif; ?>
@@ -111,10 +111,10 @@ if (!function_exists('getWordLink')) {
             <div class="text-secondary small"><?= __('Racine') ?></div> 
             <div>
                 <?php if(!empty($v['root_tfng'])): ?>
-                    <a href="<?= getWordLink($v['root_lat']) ?>" class="lex-link fw-bold"><?= htmlspecialchars($v['root_tfng']) ?></a> 
+                    <a href="<?= getWordLink($v['root_lat']) ?>" class="lex-link fw-bold"><?= e($v['root_tfng']) ?></a> 
                 <?php endif; ?>
                 <?php if(!empty($v['root_lat'])): ?>
-                    <span class="text-muted ms-1">(<?= htmlspecialchars($v['root_lat']) ?>)</span>
+                    <span class="text-muted ms-1">(<?= e($v['root_lat']) ?>)</span>
                 <?php endif; ?>
             </div>
             <?php endif; ?>
@@ -122,24 +122,24 @@ if (!function_exists('getWordLink')) {
             <?php if (!empty($v['plural_tfng'])): ?>
             <div class="text-secondary small"><?= __('Pluriel') ?></div> 
             <div>
-                <a href="<?= getWordLink($v['plural_lat']) ?>" class="lex-link fw-bold"><?= htmlspecialchars($v['plural_tfng']) ?></a> 
-                <span class="text-muted ms-1">(<?= htmlspecialchars($v['plural_lat']) ?>)</span>
+                <a href="<?= getWordLink($v['plural_lat']) ?>" class="lex-link fw-bold"><?= e($v['plural_tfng']) ?></a> 
+                <span class="text-muted ms-1">(<?= e($v['plural_lat']) ?>)</span>
             </div>
             <?php endif; ?>
 
             <?php if (!empty($v['feminine_tfng'])): ?>
             <div class="text-secondary small"><?= __('Féminin') ?></div> 
             <div>
-                <a href="<?= getWordLink($v['feminine_lat']) ?>" class="lex-link fw-bold"><?= htmlspecialchars($v['feminine_tfng']) ?></a> 
-                <span class="text-muted ms-1">(<?= htmlspecialchars($v['feminine_lat']) ?>)</span>
+                <a href="<?= getWordLink($v['feminine_lat']) ?>" class="lex-link fw-bold"><?= e($v['feminine_tfng']) ?></a> 
+                <span class="text-muted ms-1">(<?= e($v['feminine_lat']) ?>)</span>
             </div>
             <?php endif; ?>
 
             <?php if (!empty($v['annexed_tfng'])): ?>
             <div class="text-secondary small"><?= __('État d\'annexion') ?></div> 
             <div>
-                <a href="<?= getWordLink($v['annexed_lat']) ?>" class="lex-link fw-bold"><?= htmlspecialchars($v['annexed_tfng']) ?></a> 
-                <span class="text-muted ms-1">(<?= htmlspecialchars($v['annexed_lat']) ?>)</span>
+                <a href="<?= getWordLink($v['annexed_lat']) ?>" class="lex-link fw-bold"><?= e($v['annexed_tfng']) ?></a> 
+                <span class="text-muted ms-1">(<?= e($v['annexed_lat']) ?>)</span>
             </div>
             <?php endif; ?>
         </div>
@@ -154,7 +154,7 @@ if (!function_exists('getWordLink')) {
                 <div class="relation-group">
                     <span class="text-success small fw-bold me-2"><i class="fas fa-equals me-1"></i><?= __('Synonymes') ?></span>
                     <?php foreach ($v['synonyms'] as $i => $syn): ?>
-                        <a href="<?= getWordLink($syn['synonym_lat'] ?? '') ?>" class="lex-link"><?= htmlspecialchars($syn['synonym_tfng'] ?? $syn['synonym_lat'] ?? '') ?></a><?= $i < count($v['synonyms']) - 1 ? ', ' : '' ?>
+                        <a href="<?= getWordLink($syn['synonym_lat'] ?? '') ?>" class="lex-link"><?= e($syn['synonym_tfng'] ?? $syn['synonym_lat'] ?? '') ?></a><?= $i < count($v['synonyms']) - 1 ? ', ' : '' ?>
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>
@@ -163,7 +163,7 @@ if (!function_exists('getWordLink')) {
                 <div class="relation-group">
                     <span class="text-danger small fw-bold me-2"><i class="fas fa-not-equal me-1"></i><?= __('Antonymes') ?></span>
                     <?php foreach ($v['antonyms'] as $i => $ant): ?>
-                        <a href="<?= getWordLink($ant['antonym_lat'] ?? '') ?>" class="lex-link"><?= htmlspecialchars($ant['antonym_tfng'] ?? $ant['antonym_lat'] ?? '') ?></a><?= $i < count($v['antonyms']) - 1 ? ', ' : '' ?>
+                        <a href="<?= getWordLink($ant['antonym_lat'] ?? '') ?>" class="lex-link"><?= e($ant['antonym_tfng'] ?? $ant['antonym_lat'] ?? '') ?></a><?= $i < count($v['antonyms']) - 1 ? ', ' : '' ?>
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>

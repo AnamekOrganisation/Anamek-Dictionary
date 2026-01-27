@@ -17,20 +17,20 @@ setupLocale($currentLang);
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Title -->
-  <title><?= htmlspecialchars($page_title ?? 'Anamek – Dictionnaire Amazigh Français') ?></title>
+  <title><?= e($page_title ?? 'Anamek – Dictionnaire Amazigh Français') ?></title>
 
   <!-- Description -->
-  <meta name="description" content="<?= htmlspecialchars(
+  <meta name="description" content="<?= e(
     $page_description ?? 'Anamek est un dictionnaire collaboratif amazigh–français dédié à la langue et à la culture amazighes.'
   ) ?>">
 
   <!-- Keywords (secondary SEO) -->
-  <meta name="keywords" content="<?= htmlspecialchars(
+  <meta name="keywords" content="<?= e(
     $page_keywords ?? 'قاموس أمازيغي فرنسي, معجم أمازيغي, ترجمة أمازيغية, Tamazight, Amazigh Dictionary, Dictionnaire Amazigh Français, Berber language'
   ) ?>">
 
   <!-- Author -->
-  <meta name="author" content="<?= htmlspecialchars($author ?? 'Anamek') ?>">
+  <meta name="author" content="<?= e($author ?? 'Anamek') ?>">
 
   <!-- Canonical -->
   <link rel="canonical" href="<?= $canonical_url ?? (
@@ -44,8 +44,8 @@ setupLocale($currentLang);
   <link rel="apple-touch-icon" sizes="180x180" href="<?= BASE_URL ?>/public/favicon/apple-touch-icon.png">
 
   <!-- Open Graph -->
-  <meta property="og:title" content="<?= htmlspecialchars($og_title ?? $page_title ?? 'Anamek') ?>">
-  <meta property="og:description" content="<?= htmlspecialchars($og_description ?? $page_description) ?>">
+  <meta property="og:title" content="<?= e($og_title ?? $page_title ?? 'Anamek') ?>">
+  <meta property="og:description" content="<?= e($og_description ?? $page_description) ?>">
   <meta property="og:image" content="<?= $og_image ?? BASE_URL . '/public/img/og-default.jpg' ?>">
   <meta property="og:url" content="<?= $og_url ?? (
     (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
@@ -55,8 +55,8 @@ setupLocale($currentLang);
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="<?= htmlspecialchars($twitter_title ?? $page_title) ?>">
-  <meta name="twitter:description" content="<?= htmlspecialchars($twitter_description ?? $page_description) ?>">
+  <meta name="twitter:title" content="<?= e($twitter_title ?? $page_title) ?>">
+  <meta name="twitter:description" content="<?= e($twitter_description ?? $page_description) ?>">
   <meta name="twitter:image" content="<?= $twitter_image ?? $og_image ?>">
 
   <!-- Styles -->
@@ -106,7 +106,7 @@ setupLocale($currentLang);
 
 <?php if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in']): ?>
     <div class="mini-header">
-        <span><?= isset($_SESSION['admin_name']) ? htmlspecialchars($_SESSION['admin_name']) : 'Admin' ?></span>
+        <span><?= isset($_SESSION['admin_name']) ? e($_SESSION['admin_name']) : 'Admin' ?></span>
         <a href="<?= BASE_URL ?>/dashboard">Tableau de bord</a>
         <a href="<?= BASE_URL ?>/logout">Déconnexion</a>
     </div>
@@ -185,7 +185,7 @@ setupLocale($currentLang);
                     <div class="account-dropdown" id="accountDropdown">
                         <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin'): ?>
                             <div class="dropdown-header">
-                                <strong><?= htmlspecialchars($_SESSION['username'] ?? 'Admin') ?></strong>
+                                <strong><?= e($_SESSION['username'] ?? 'Admin') ?></strong>
                             </div>
                             <hr>
                             <a href="<?= BASE_URL ?>/dashboard"><?= __('Tableau de bord') ?></a>
@@ -195,7 +195,7 @@ setupLocale($currentLang);
                             <a href="<?= BASE_URL ?>/logout" class="text-danger"><?= __('Déconnexion') ?></a>
                         <?php elseif (isset($_SESSION['user_id'])): ?>
                             <div class="dropdown-header">
-                                <strong><?= htmlspecialchars($_SESSION['username'] ?? 'User') ?></strong>
+                                <strong><?= e($_SESSION['username'] ?? 'User') ?></strong>
                             </div>
                             <hr>
                             <a href="<?= BASE_URL ?>/user/dashboard"><?= __('Tableau de bord') ?></a>
@@ -256,7 +256,7 @@ $searchPlaceholder = $isProverbs ? __('Search a proverb...') : __('Search a word
                                        name="q" 
                                        class="search-bar" 
                                        placeholder="<?= __('Search a proverb...') ?>" 
-                                       value="<?= htmlspecialchars($_GET['q'] ?? '') ?>"
+                                       value="<?= e($_GET['q'] ?? '') ?>"
                                        autocomplete="off"
                                        style="padding-left: 20px;">
                                 

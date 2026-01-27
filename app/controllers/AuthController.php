@@ -40,7 +40,7 @@ class AuthController {
         }
 
         // CSRF check
-        if (!$this->verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        if (!verify_csrf($_POST['csrf_token'] ?? '')) {
             $_SESSION['errors'] = ['Invalid security token'];
             header('Location: ' . BASE_URL . '/register');
             exit;
@@ -109,7 +109,7 @@ class AuthController {
         }
 
         // CSRF check
-        if (!$this->verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        if (!verify_csrf($_POST['csrf_token'] ?? '')) {
             $_SESSION['errors'] = ['Invalid security token'];
             header('Location: ' . BASE_URL . '/login');
             exit;
@@ -199,7 +199,7 @@ class AuthController {
         }
 
         // CSRF check
-        if (!$this->verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        if (!verify_csrf($_POST['csrf_token'] ?? '')) {
             $_SESSION['errors'] = ['Invalid security token'];
             header('Location: ' . BASE_URL . '/forgot-password');
             exit;
@@ -256,7 +256,7 @@ class AuthController {
         }
 
         // CSRF check
-        if (!$this->verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        if (!verify_csrf($_POST['csrf_token'] ?? '')) {
             $_SESSION['errors'] = ['Invalid security token'];
             header('Location: ' . BASE_URL . '/login');
             exit;
@@ -335,9 +335,10 @@ class AuthController {
 
     /**
      * Verify CSRF token
+     * @deprecated Use verify_csrf() helper instead
      */
     private function verifyCsrfToken($token) {
-        return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+        return verify_csrf($token);
     }
 
     /**

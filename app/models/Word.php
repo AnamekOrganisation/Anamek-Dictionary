@@ -171,8 +171,10 @@ class Word {
                 FROM words w
                 LEFT JOIN recent_searches rs ON w.id = rs.word_id 
                 WHERE rs.last_searched IS NOT NULL
-                ORDER BY rs.last_searched DESC LIMIT " . intval($limit);
-        $stmt = $this->pdo->query($sql);
+                ORDER BY rs.last_searched DESC LIMIT :limit";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

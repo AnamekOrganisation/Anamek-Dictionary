@@ -9,7 +9,7 @@ class AdminSettingsController {
     }
 
     private function verifyCsrf() {
-        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        if (!verify_csrf($_POST['csrf_token'] ?? '')) {
             die('CSRF validation failed.');
         }
     }

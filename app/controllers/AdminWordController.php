@@ -11,7 +11,7 @@ class AdminWordController {
     }
 
     private function verifyCsrf() {
-        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        if (!verify_csrf($_POST['csrf_token'] ?? '')) {
             die('CSRF validation failed.');
         }
     }
@@ -48,23 +48,20 @@ class AdminWordController {
             $params[':q'] = "%$search%";
         }
         
-        $sql .= " ORDER BY created_at DESC LIMIT $limit OFFSET $offset";
+        $sql .= " ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
         
-        if (!empty($params)) {
-            $stmt = $this->pdo->prepare($countSql);
-            $stmt->execute($params);
-        } else {
-            $stmt = $this->pdo->query($countSql);
-        }
+        $stmt = $this->pdo->prepare($countSql);
+        $stmt->execute($params);
         $total_words = $stmt->fetchColumn();
         $total_pages = ceil($total_words / $limit);
         
-        if (!empty($params)) {
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute($params);
-        } else {
-            $stmt = $this->pdo->query($sql);
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
         }
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+        $stmt->execute();
         $words = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         $current_page_num = $page;

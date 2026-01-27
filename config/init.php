@@ -1,9 +1,26 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
+    // Secure session cookie settings
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'domain' => '',
+        'secure' => isset($_SERVER['HTTPS']),
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
     session_start();
 }
+
+// Generate CSRF token if not exists
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Regenerate session ID periodically or on login to prevent fixation
+if (!isset($_SESSION['last_regeneration']) || time() - $_SESSION['last_regeneration'] > 1800) {
+    session_regenerate_id(true);
+    $_SESSION['last_regeneration'] = time();
 }
 
 define('ROOT_PATH', dirname(__FILE__, 2));
@@ -30,6 +47,7 @@ require_once ROOT_PATH . '/app/models/Contribution.php';
 require_once ROOT_PATH . '/app/models/Notification.php';
 require_once ROOT_PATH . '/app/models/Analytics.php';
 
+require_once ROOT_PATH . '/app/helpers/security.php';
 require_once ROOT_PATH . '/app/helpers/Email.php';
 require_once ROOT_PATH . '/app/helpers/i18n.php';
 
