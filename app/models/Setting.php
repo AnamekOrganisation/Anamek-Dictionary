@@ -27,4 +27,11 @@ class Setting {
         $stmt = $this->pdo->prepare("UPDATE site_settings SET setting_value = ? WHERE setting_key = ?");
         return $stmt->execute([$value, $key]);
     }
+
+    public function set($key, $value) {
+        $sql = "INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?) 
+                ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([$key, $value]);
+    }
 }

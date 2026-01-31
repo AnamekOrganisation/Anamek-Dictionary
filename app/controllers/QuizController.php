@@ -4,13 +4,12 @@
  * Quiz Controller
  * Manages user interactions with the quiz system
  */
-class QuizController {
-    private $pdo;
+class QuizController extends BaseController {
     private $quizModel;
     private $quizService;
 
     public function __construct($pdo) {
-        $this->pdo = $pdo;
+        parent::__construct($pdo);
         require_once ROOT_PATH . '/app/models/Quiz.php';
         $this->quizModel = new Quiz($pdo);
         $this->quizService = new \App\Services\QuizService($pdo);
@@ -36,8 +35,7 @@ class QuizController {
     public function show($id) {
         $quiz = $this->quizModel->find($id);
         if (!$quiz) {
-            header('Location: ' . BASE_URL . '/quizzes');
-            exit;
+            $this->redirectWithError('/quizzes', 'Quiz introuvable.');
         }
         
         $questionsCount = count($this->quizModel->getQuestions($id));
@@ -53,15 +51,12 @@ class QuizController {
     public function play($id) {
         $quiz = $this->quizModel->find($id);
         if (!$quiz) {
-            header('Location: ' . BASE_URL . '/quizzes');
-            exit;
+            $this->redirectWithError('/quizzes', 'Quiz introuvable.');
         }
         
         $questions = $this->quizModel->getQuestions($id);
         if (empty($questions)) {
-            $_SESSION['error'] = "Ce quiz n'a pas encore de questions.";
-            header('Location: ' . BASE_URL . '/quiz/' . $id);
-            exit;
+            $this->redirectWithError('/quiz/' . $id, "Ce quiz n'a pas encore de questions.");
         }
         
         $page_title = "Jouer : " . $quiz['title_fr'];
@@ -73,9 +68,7 @@ class QuizController {
      */
     public function submit($id) {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Content-Type: application/json');
-            echo json_encode(['success' => false, 'message' => 'Invalid request method']);
-            exit;
+            $this->jsonResponse(['success' => false, 'message' => 'Invalid request method'], 405);
         }
 
         $userAnswers = $_POST['answers'] ?? [];
@@ -90,13 +83,10 @@ class QuizController {
                 $result['results_url'] = BASE_URL . '/quiz/results/' . $result['result_id'];
             }
 
-            header('Content-Type: application/json');
-            echo json_encode($result);
+            $this->jsonResponse($result);
         } catch (Exception $e) {
-            header('Content-Type: application/json');
-            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+            $this->jsonResponse(['success' => false, 'message' => $e->getMessage()], 500);
         }
-        exit;
     }
 
     /**
@@ -105,14 +95,12 @@ class QuizController {
     public function results($id) {
         $result = $this->quizModel->getResult($id);
         if (!$result) {
-            header('Location: ' . BASE_URL . '/quizzes');
-            exit;
+            $this->redirectWithError('/quizzes', 'Résultat introuvable.');
         }
 
         // Only allow user to see their own results (or admins)
         if ($_SESSION['user_id'] != $result['user_id'] && $_SESSION['user_type'] != 'admin') {
-            header('Location: ' . BASE_URL . '/quizzes');
-            exit;
+            $this->redirectWithError('/quizzes', 'Accès non autorisé.');
         }
 
         $quiz = $this->quizModel->find($result['quiz_id']);
@@ -139,20 +127,16 @@ class QuizController {
     public function dailyChallenge() {
         $quizzes = $this->quizModel->getAll();
         if (empty($quizzes)) {
-            header('Location: ' . BASE_URL . '/quizzes');
-            exit;
+            $this->redirectWithError('/quizzes', 'Aucun quiz disponible.');
         }
 
         // Deterministic random selection based on date
-        // Note: srand() affects subsequent rand() calls in the same request
         srand((int)date('Ymd'));
         $index = rand(0, count($quizzes) - 1);
         $dailyQuiz = $quizzes[$index];
-        
-        // Reset seed to avoid affecting other parts of the app if needed
         srand(); 
         
-        header('Location: ' . BASE_URL . '/quiz/' . $dailyQuiz['id'] . '?daily=1');
+        header('Location: ' . BASE_URL . '/quiz/' . $dailyQuiz['id'] . '?daily=1'); // Keep header for complex URLs if needed, but could use redirectWith
         exit;
     }
 }

@@ -2,21 +2,19 @@
 
 use App\Core\Cache;
 
-class DictionaryController {
-    private $pdo;
-
+class DictionaryController extends BaseController {
     public function __construct($pdo) {
-        $this->pdo = $pdo;
+        parent::__construct($pdo);
     }
 
 
-    public static function getCommonData($pdo = null) {
+    public static function getSharedData($pdo = null) {
         if ($pdo === null) {
             $db = Database::getInstance();
             $pdo = $db->getConnection();
         }
 
-        $wordModel = new Word($pdo);
+        $wordRepo = new \App\Repositories\WordRepository($pdo);
         $cache = new Cache();
 
         // Get counts (cache these for 1 hour)
@@ -24,7 +22,7 @@ class DictionaryController {
         $counts = $cache->get($cacheKeyCounts, 3600);
         if ($counts === false) {
              $counts = [
-                'words' => $pdo->query("SELECT COUNT(*) FROM words")->fetchColumn(),
+                'words' => $wordRepo->countAll(),
                 'proverbs' => $pdo->query("SELECT COUNT(*) FROM proverbs")->fetchColumn()
             ];
             $cache->set($cacheKeyCounts, $counts);
@@ -34,17 +32,19 @@ class DictionaryController {
         $cacheKeyWord = 'daily_word_' . date('Y-m-d');
         $wordOfTheDay = $cache->get($cacheKeyWord, 86400);
         if ($wordOfTheDay === false) {
-            $wordOfTheDay = $wordModel->getRandomWithDefinition();
+            $wordOfTheDay = $wordRepo->getRandomWithDefinition();
             if ($wordOfTheDay) {
+                // Pre-hydrate for the widget
+                $wordRepo->hydrateRelations($wordOfTheDay);
                 $cache->set($cacheKeyWord, $wordOfTheDay);
             }
         }
 
         // Get newest words
-        $recentWords = $wordModel->getRecentWords(6);
+        $recentWords = $wordRepo->getRecentWords(6);
         
         // Get trending words
-        $trendingWords = $wordModel->getRecentSearches(6);
+        $trendingWords = $wordRepo->getRecentSearches(6);
 
         // Ad Settings
         require_once ROOT_PATH . '/app/models/Setting.php';
@@ -68,7 +68,7 @@ class DictionaryController {
             exit;
         }
 
-        $commonData = self::getCommonData($this->pdo);
+        $commonData = self::getSharedData($this->pdo);
         extract($commonData);
 
         $proverbModel = new Proverb($this->pdo);
@@ -93,10 +93,10 @@ class DictionaryController {
     public function showWord($params) {
         $id = $params['id'] ?? 0;
         
-        $wordModel = new Word($this->pdo);
-        $word = $wordModel->find($id);
+        $wordRepo = new \App\Repositories\WordRepository($this->pdo);
+        $word = $wordRepo->find($id);
 
-        $commonData = self::getCommonData($this->pdo);
+        $commonData = self::getSharedData($this->pdo);
         extract($commonData);
         $featuredWord = $wordOfTheDay; // For sidebar compatibility
 
@@ -119,12 +119,16 @@ class DictionaryController {
             // If the URL is just a slug (e.g. 'tarrist' or 'pays'), show all variants.
             // Use the original search term to find all matches (including homonyms or french matches)
             $searchSlug = urldecode($params_id);
-            $variants = $wordModel->findAllByText($searchSlug);
+            $variants = $wordRepo->findAllByText($searchSlug);
             
             if (empty($variants)) {
                 $variants = [$word]; // Fallback
             }
         }
+
+        // Analytics (non-blocking)
+        $wordModel = new Word($this->pdo);
+        $wordModel->incrementSearchCount($word['id']);
 
         include ROOT_PATH . '/app/views/word-page.php';
     }
@@ -177,7 +181,7 @@ class DictionaryController {
         $proverbModel = new Proverb($this->pdo);
         $proverb = $proverbModel->find($id);
 
-        $commonData = self::getCommonData($this->pdo);
+        $commonData = self::getSharedData($this->pdo);
         extract($commonData);
         $featuredWord = $wordOfTheDay;
 

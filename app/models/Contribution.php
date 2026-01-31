@@ -169,7 +169,12 @@ class Contribution {
             );
 
             // Now apply the change to the target tables
-            $this->applyApprovedContribution($contribution);
+            $applyResult = $this->applyApprovedContribution($contribution);
+            
+            if (!$applyResult['success']) {
+                $errorMsg = !empty($applyResult['errors']) ? implode(', ', $applyResult['errors']) : "Unknown error in service layer";
+                throw new Exception("Échec de l'application des modifications : " . $errorMsg);
+            }
 
             $this->pdo->commit();
             return true;
@@ -225,6 +230,7 @@ class Contribution {
     /**
      * Apply the approved changes to the real database tables
      * @param array $contribution
+     * @return array ['success' => bool, 'errors' => array]
      */
     private function applyApprovedContribution($contribution) {
         $type = $contribution['contribution_type'];
@@ -240,26 +246,29 @@ class Contribution {
         switch ($type) {
             case 'word':
                 if ($action === 'create') {
-                    $wordService->createWord($data);
+                    return $wordService->createWord($data);
                 } elseif ($action === 'update') {
-                    $wordService->updateWord($contribution['target_id'], $data);
+                    return $wordService->updateWord($contribution['target_id'], $data);
                 }
                 break;
             case 'example':
                 if ($action === 'create') {
-                    // WordService handles examples if data is formatted correctly, 
-                    // or we can add a specific method to WordService if needed.
-                    // For now, let's assume WordService::updateWord can handle related data.
-                    // If it's a standalone example contribution:
-                    $wordService->updateWord($data['word_id'], ['examples_tfng' => [$data['example_tfng']], 'examples_lat' => [$data['example_lat']], 'examples_fr' => [$data['translation_fr']]]);
+                    // WordService handles examples if data is formatted correctly
+                    return $wordService->updateWord($data['word_id'], [
+                        'examples_tfng' => [$data['example_tfng']], 
+                        'examples_lat' => [$data['example_lat']], 
+                        'examples_fr' => [$data['translation_fr']]
+                    ]);
                 }
                 break;
             case 'proverb':
                 if ($action === 'create') {
-                    $proverbService->createProverb($data);
+                    return $proverbService->createProverb($data);
                 }
                 break;
         }
+        
+        return ['success' => true]; // Fallback for unhandled types (unlikely)
     }
 
     /**

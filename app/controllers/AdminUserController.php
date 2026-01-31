@@ -1,11 +1,8 @@
 <?php
 
-class AdminUserController {
-    private $pdo;
-
-    public function __construct() {
-        $this->pdo = Database::getInstance()->getConnection();
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+class AdminUserController extends BaseController {
+    public function __construct($pdo) {
+        parent::__construct($pdo);
     }
 
     public function users() {

@@ -123,71 +123,58 @@ $router->post('/user/profile', function() use ($userController) {
     $userController->updateProfile();
 }, $userPostAuth);
 $router->get('/user/contributions', function() use ($pdo) {
-    require_once 'app/controllers/ContributionController.php';
     $contributionController = new ContributionController($pdo);
     $contributionController->myContributions();
 }, $userAuth);
 
 // --- Quiz Routes ---
 $router->get('/quizzes', function() use ($pdo) {
-    require_once 'app/controllers/QuizController.php';
     $quizController = new QuizController($pdo);
     $quizController->index();
 });
 $router->get('/quiz/{id}', function($params) use ($pdo) {
-    require_once 'app/controllers/QuizController.php';
     $quizController = new QuizController($pdo);
     $quizController->show($params['id']);
 });
 $router->get('/quiz/play/{id}', function($params) use ($pdo) {
-    require_once 'app/controllers/QuizController.php';
     $quizController = new QuizController($pdo);
     $quizController->play($params['id']);
 });
 $router->get('/quiz/results/{id}', function($params) use ($pdo) {
-    require_once 'app/controllers/QuizController.php';
     $quizController = new QuizController($pdo);
     $quizController->results($params['id']);
 }, $userAuth);
 $router->post('/quiz/submit/{id}', function($params) use ($pdo) {
-    require_once 'app/controllers/QuizController.php';
     $quizController = new QuizController($pdo);
     $quizController->submit($params['id']);
 }); // AJAX submission, might handle its own CSRF or use global
 $router->get('/leaderboard', function() use ($pdo) {
-    require_once 'app/controllers/QuizController.php';
     $quizController = new QuizController($pdo);
     $quizController->leaderboard();
 });
 $router->get('/leaderboard/{id}', function($params) use ($pdo) {
-    require_once 'app/controllers/QuizController.php';
     $quizController = new QuizController($pdo);
     $quizController->leaderboard($params['id']);
 });
 $router->get('/quiz/daily', function() use ($pdo) {
-    require_once 'app/controllers/QuizController.php';
     $quizController = new QuizController($pdo);
     $quizController->dailyChallenge();
 });
 
 // --- Contribution Submission (Protected) ---
 $router->get('/contribute/word', function() use ($pdo) {
-    require_once 'app/controllers/ContributionController.php';
     $contributionController = new ContributionController($pdo);
     $contributionController->showWordForm();
 }, $userAuth);
 $router->post('/contribute/word', function() use ($pdo) {
-    require_once 'app/controllers/ContributionController.php';
     $contributionController = new ContributionController($pdo);
     $contributionController->submitWord();
 }, $userPostAuth);
 $router->get('/contribute/example', function() use ($pdo) {
-    require_once 'app/controllers/ContributionController.php';
     $contributionController = new ContributionController($pdo);
     $contributionController->showExampleForm();
 }, $userAuth);
 $router->post('/contribute/example', function() use ($pdo) {
-    require_once 'app/controllers/ContributionController.php';
     $contributionController = new ContributionController($pdo);
     $contributionController->submitExample();
 }, $userPostAuth);

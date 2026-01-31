@@ -57,11 +57,11 @@ try {
     $authController = new AuthController($pdo);
     $userController = new UserController($pdo);
     
-    $adminController = new AdminController();
-    $adminWordController = new AdminWordController();
-    $adminProverbController = new AdminProverbController();
-    $adminUserController = new AdminUserController();
-    $adminSettingsController = new AdminSettingsController();
+    $adminController = new AdminController($pdo);
+    $adminWordController = new AdminWordController($pdo);
+    $adminProverbController = new AdminProverbController($pdo);
+    $adminUserController = new AdminUserController($pdo);
+    $adminSettingsController = new AdminSettingsController($pdo);
 
     /**
      * 4. Dispatch Routes

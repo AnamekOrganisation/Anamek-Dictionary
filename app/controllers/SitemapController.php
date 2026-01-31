@@ -1,10 +1,8 @@
 <?php
 
-class SitemapController {
-    private $pdo;
-
+class SitemapController extends BaseController {
     public function __construct($pdo) {
-        $this->pdo = $pdo;
+        parent::__construct($pdo);
     }
 
     public function index() {

@@ -107,29 +107,32 @@ class WordService {
                 $mustCommit = true;
             }
 
-            $sql = "UPDATE words SET 
-                word_tfng = ?, word_lat = ?, translation_fr = ?, 
-                definition_tfng = ?, definition_lat = ?, 
-                plural_tfng = ?, plural_lat = ?, 
-                feminine_tfng = ?, feminine_lat = ?, 
-                annexed_tfng = ?, annexed_lat = ?, 
-                root_tfng = ?, root_lat = ?, 
-                part_of_speech = ?, 
-                example_tfng = ?, example_lat = ? 
-                WHERE id = ?";
+            $allowedFields = [
+                'word_tfng', 'word_lat', 'translation_fr', 
+                'definition_tfng', 'definition_lat', 
+                'plural_tfng', 'plural_lat', 
+                'feminine_tfng', 'feminine_lat', 
+                'annexed_tfng', 'annexed_lat', 
+                'root_tfng', 'root_lat', 
+                'part_of_speech', 
+                'example_tfng', 'example_lat'
+            ];
 
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([
-                $data['word_tfng'] ?? '', $data['word_lat'] ?? '', $data['translation_fr'] ?? '', 
-                $data['definition_tfng'] ?? '', $data['definition_lat'] ?? '',
-                $data['plural_tfng'] ?? '', $data['plural_lat'] ?? '', 
-                $data['feminine_tfng'] ?? '', $data['feminine_lat'] ?? '',
-                $data['annexed_tfng'] ?? '', $data['annexed_lat'] ?? '', 
-                $data['root_tfng'] ?? '', $data['root_lat'] ?? '',
-                $data['part_of_speech'] ?? '', 
-                $data['example_tfng'] ?? '', $data['example_lat'] ?? '', 
-                $id
-            ]);
+            $updates = [];
+            $params = [];
+            foreach ($allowedFields as $field) {
+                if (array_key_exists($field, $data)) {
+                    $updates[] = "$field = ?";
+                    $params[] = $data[$field];
+                }
+            }
+
+            if (!empty($updates)) {
+                $sql = "UPDATE words SET " . implode(', ', $updates) . " WHERE id = ?";
+                $params[] = $id;
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute($params);
+            }
 
             // Relations
             $this->updateRelations($id, 'synonyms', $data['synonyms_tfng'] ?? [], $data['synonyms_lat'] ?? []);

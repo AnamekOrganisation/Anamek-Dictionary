@@ -4,13 +4,12 @@
  * Contribution Controller
  * Handles user submission of new dictionary content
  */
-class ContributionController {
-    private $pdo;
+class ContributionController extends BaseController {
     private $contributionModel;
     private $notificationModel;
 
     public function __construct($pdo) {
-        $this->pdo = $pdo;
+        parent::__construct($pdo);
         $this->contributionModel = new Contribution($pdo);
         $this->notificationModel = new Notification($pdo);
     }
@@ -34,10 +33,8 @@ class ContributionController {
         $edit_id = $_GET['edit_id'] ?? null;
         $word = null;
         if ($edit_id) {
-            // If user is admin, redirect directly to admin edit page
             if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin') {
-                header('Location: ' . BASE_URL . '/admin/edit-word?id=' . intval($edit_id));
-                exit;
+                $this->redirectWith('/admin/edit-word?id=' . intval($edit_id), '');
             }
             
             $wordModel = new Word($this->pdo);
@@ -53,8 +50,7 @@ class ContributionController {
      */
     public function submitWord() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_URL . '/contribute/word');
-            exit;
+            $this->redirectWithError('/contribute/word', 'Accès non autorisé.');
         }
 
         $data = [
@@ -71,12 +67,11 @@ class ContributionController {
             'annexed_lat' => trim($_POST['annexed_lat'] ?? ''),
             'root_tfng' => trim($_POST['root_tfng'] ?? ''),
             'root_lat' => trim($_POST['root_lat'] ?? ''),
-            'part_of_speech' => $_POST['word_type'] ?? '', // Map word_type to part_of_speech
+            'part_of_speech' => $_POST['word_type'] ?? '',
             'example_tfng' => trim($_POST['example_tfng'] ?? ''),
             'example_lat' => trim($_POST['example_lat'] ?? '')
         ];
 
-        // Handle Synonyms/Antonyms as arrays
         if (!empty($_POST['synonyms_tfng'])) {
             $syns = [];
             foreach ($_POST['synonyms_tfng'] as $i => $tfng) {
@@ -97,7 +92,6 @@ class ContributionController {
             $data['antonyms'] = $ants;
         }
 
-        // Handle Examples as arrays
         if (!empty($_POST['examples_tfng'])) {
             $exs = [];
             foreach ($_POST['examples_tfng'] as $i => $tfng) {
@@ -119,23 +113,17 @@ class ContributionController {
             $contentBefore = $wordModel->find($targetId);
         }
 
-        // Basic validation
         if (empty($data['word_tfng']) || empty($data['word_lat']) || empty($data['translation_fr'])) {
-            $_SESSION['error'] = "Veuillez remplir tous les champs obligatoires.";
-            header('Location: ' . BASE_URL . '/contribute/word');
-            exit;
+            $this->redirectWithError('/contribute/word', "Veuillez remplir tous les champs obligatoires.");
         }
 
         $contribId = $this->contributionModel->create($_SESSION['user_id'], 'word', $data, $action, $targetId, $contentBefore);
 
         if ($contribId) {
-            $_SESSION['success'] = "Votre contribution a été soumise et sera examinée par un modérateur. Merci !";
-            header('Location: ' . BASE_URL . '/user/contributions');
+            $this->redirectWith('/user/contributions', "Votre contribution a été soumise et sera examinée par un modérateur. Merci !");
         } else {
-            $_SESSION['error'] = "Une erreur est survenue lors de la soumission.";
-            header('Location: ' . BASE_URL . '/contribute/word');
+            $this->redirectWithError('/contribute/word', "Une erreur est survenue lors de la soumission.");
         }
-        exit;
     }
 
     /**
@@ -143,17 +131,11 @@ class ContributionController {
      */
     public function showExampleForm() {
         $wordId = $_GET['word_id'] ?? null;
-        if (!$wordId) {
-            header('Location: ' . BASE_URL . '/');
-            exit;
-        }
+        if (!$wordId) $this->redirectWith('/', '');
 
         $wordModel = new Word($this->pdo);
         $word = $wordModel->find($wordId);
-        if (!$word) {
-            header('Location: ' . BASE_URL . '/');
-            exit;
-        }
+        if (!$word) $this->redirectWith('/', '');
 
         $page_title = "Ajouter un exemple - Amawal";
         include ROOT_PATH . '/app/views/contribute/example.php';
@@ -173,20 +155,15 @@ class ContributionController {
         ];
 
         if (empty($data['example_tfng']) || empty($data['example_lat']) || empty($data['translation_fr'])) {
-            $_SESSION['error'] = "Veuillez remplir tous les champs.";
-            header('Location: ' . BASE_URL . '/contribute/example?word_id=' . $data['word_id']);
-            exit;
+            $this->redirectWithError('/contribute/example?word_id=' . $data['word_id'], "Veuillez remplir tous les champs.");
         }
 
         $contribId = $this->contributionModel->create($_SESSION['user_id'], 'example', $data);
 
         if ($contribId) {
-            $_SESSION['success'] = "Exemple soumis avec succès !";
-            header('Location: ' . BASE_URL . '/user/contributions');
+            $this->redirectWith('/user/contributions', "Exemple soumis avec succès !");
         } else {
-            $_SESSION['error'] = "Erreur lors de la soumission.";
-            header('Location: ' . BASE_URL . '/user/contributions');
+            $this->redirectWithError('/user/contributions', "Erreur lors de la soumission.");
         }
-        exit;
     }
 }

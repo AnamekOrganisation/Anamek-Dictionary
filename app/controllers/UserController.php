@@ -4,12 +4,11 @@
  * User Controller
  * Handles user-specific pages like dashboard and profile
  */
-class UserController {
-    private $pdo;
+class UserController extends BaseController {
     private $userModel;
 
     public function __construct($pdo) {
-        $this->pdo = $pdo;
+        parent::__construct($pdo);
         require_once ROOT_PATH . '/app/models/User.php';
         $this->userModel = new User($pdo);
     }
@@ -47,13 +46,10 @@ class UserController {
             ];
 
             if ($this->userModel->updateProfile($_SESSION['user_id'], $data)) {
-                $_SESSION['success'] = "Profil mis à jour avec succès !";
+                $this->redirectWith('/user/profile', "Profil mis à jour avec succès !");
             } else {
-                $_SESSION['error'] = "Erreur lors de la mise à jour du profil.";
+                $this->redirectWithError('/user/profile', "Erreur lors de la mise à jour du profil.");
             }
-
-            header('Location: ' . BASE_URL . '/user/profile');
-            exit;
         }
     }
 }

@@ -1,11 +1,8 @@
 <?php
 
-class AdminSettingsController {
-    private $pdo;
-
-    public function __construct() {
-        $this->pdo = Database::getInstance()->getConnection();
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+class AdminSettingsController extends BaseController {
+    public function __construct($pdo) {
+        parent::__construct($pdo);
     }
 
     public function settings() {
@@ -23,8 +20,7 @@ class AdminSettingsController {
                 $settingModel->set('google_ads_slot_home', $_POST['ad_slot_home'] ?? '');
                 $settingModel->set('google_ads_client', $_POST['ad_client'] ?? '');
             }
-            header('Location: ' . BASE_URL . '/admin/settings');
-            exit;
+            $this->redirectWith('/admin/settings', 'Paramètres mis à jour avec succès !');
         }
 
         $socialLinks = $this->getSocialLinks();

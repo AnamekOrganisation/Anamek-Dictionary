@@ -1,15 +1,11 @@
 <?php
 
-class AdminController {
-    private $pdo;
-
-    public function __construct() {
-        $this->pdo = Database::getInstance()->getConnection();
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+class AdminController extends BaseController {
+    public function __construct($pdo) {
+        parent::__construct($pdo);
     }
 
     public function dashboard() {
-        
         require_once ROOT_PATH . '/app/models/Analytics.php';
         $analyticsModel = new Analytics($this->pdo);
 
@@ -17,20 +13,16 @@ class AdminController {
             $counts = $this->getCounts();
             $socialLinks = $this->getSocialLinks();
             
-            // Analytics Data (Accurate Unique Visitors)
             $dailyVisits = $analyticsModel->getDailyUniqueVisitors(30);
             $popularSearches = $analyticsModel->getPopularSearches(10);
             $activeUsers = $analyticsModel->getTodayUniqueCount();
             
-            // Contributions
             require_once ROOT_PATH . '/app/models/Contribution.php';
             $contributionModel = new Contribution($this->pdo);
             $pendingCount = count($contributionModel->findPending());
             
-            // Recent Activity Feed
             $recentActivity = $this->getRecentActivity();
 
-            // Prepare Chart.js data
             $chartLabels = [];
             $chartData = [];
             foreach ($dailyVisits as $visit) {
@@ -46,6 +38,8 @@ class AdminController {
             $chartLabels = [];
             $chartData = [];
             $activeUsers = 0;
+            $pendingCount = 0;
+            $recentActivity = [];
         }
 
         $page_title = 'Tableau de bord';
@@ -59,8 +53,6 @@ class AdminController {
 
     private function getRecentActivity($limit = 5) {
         $activity = [];
-        
-        // Recent Contributions
         $stmt = $this->pdo->prepare("SELECT 'contribution' as type, contribution_type as item, created_at, status FROM user_contributions ORDER BY created_at DESC LIMIT :limit");
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
@@ -83,15 +75,7 @@ class AdminController {
         }
         return $counts;
     }
-    
-    // Kept some search methods for internal use if needed, but they are now in specialized controllers
-    public function searchWord($query) {
-        $stmt = $this->pdo->prepare("SELECT * FROM words WHERE word_tfng LIKE :q OR word_lat LIKE :q OR translation_fr LIKE :q");
-        $stmt->execute(['q' => "%$query%"]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-    
-    // Remaining methods like pendingReviews, sessions, analytics should also be moved eventually
+
     public function analytics() {
         require_once ROOT_PATH . '/app/models/Analytics.php';
         $analyticsModel = new Analytics($this->pdo);
@@ -99,7 +83,6 @@ class AdminController {
         $popularSearches = $analyticsModel->getPopularSearches(20);
         $topPages = $analyticsModel->getTopPages(20);
         
-        // Prepare Chart data
         $chartLabels = [];
         $chartData = [];
         foreach ($dailyVisits as $visit) {
@@ -117,13 +100,17 @@ class AdminController {
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $id = $_POST['id'];
-            if ($_POST['action'] === 'approve') {
-                $contrib->approve($id, $_SESSION['user_id'], $_POST['notes'] ?? '');
-            } elseif ($_POST['action'] === 'reject') {
-                $contrib->reject($id, $_SESSION['user_id'], $_POST['notes'] ?? '');
+            try {
+                if ($_POST['action'] === 'approve') {
+                    $contrib->approve($id, $_SESSION['user_id'], $_POST['notes'] ?? '');
+                    $this->redirectWith('/admin/reviews', 'Contribution approuvée avec succès.');
+                } elseif ($_POST['action'] === 'reject') {
+                    $contrib->reject($id, $_SESSION['user_id'], $_POST['notes'] ?? '');
+                    $this->redirectWith('/admin/reviews', 'Contribution rejetée.');
+                }
+            } catch (Exception $e) {
+                $this->redirectWithError('/admin/reviews', 'Erreur : ' . $e->getMessage());
             }
-            header('Location: ' . BASE_URL . '/admin/reviews');
-            exit;
         }
         
         $pending = $contrib->findPending();

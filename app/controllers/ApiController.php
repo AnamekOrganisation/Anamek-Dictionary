@@ -2,22 +2,16 @@
 
 use App\Core\Cache;
 
-class ApiController {
-    private $pdo;
+class ApiController extends BaseController {
+    private $wordRepo;
     private $wordModel;
     private $proverbModel;
 
     public function __construct($pdo) {
-        $this->pdo = $pdo;
-        $this->wordModel = new Word($pdo);
+        parent::__construct($pdo);
+        $this->wordRepo = new \App\Repositories\WordRepository($pdo);
+        $this->wordModel = new Word($pdo); // Still needed for incrementSearchCount
         $this->proverbModel = new Proverb($pdo);
-    }
-
-    private function jsonResponse($data, $status = 200) {
-        header('Content-Type: application/json; charset=utf-8');
-        http_response_code($status);
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
-        exit;
     }
 
     public function search() {
@@ -30,7 +24,7 @@ class ApiController {
         }
 
         try {
-            $results = $this->wordModel->search($query, $lang, $type, true);
+            $results = $this->wordRepo->search($query, $lang, $type, true);
             
             // Record in analytics (Accurate & Optimized)
             require_once ROOT_PATH . '/app/models/Analytics.php';
@@ -50,8 +44,9 @@ class ApiController {
             $word = $cache->get($cacheKey, 86400); // Cache for 24 hours
 
             if ($word === false) {
-                $word = $this->wordModel->getRandomWithDefinition();
+                $word = $this->wordRepo->getRandomWithDefinition();
                 if ($word) {
+                    $this->wordRepo->hydrateRelations($word);
                     $cache->set($cacheKey, $word);
                 }
             }
@@ -90,7 +85,7 @@ class ApiController {
 
     public function recentSearches() {
         try {
-            $results = $this->wordModel->getRecentSearches();
+            $results = $this->wordRepo->getRecentSearches();
             $this->jsonResponse([
                 'success' => true, 
                 'data' => $results ?: [],
@@ -129,7 +124,7 @@ class ApiController {
 
         try {
             // Find all variants/homonyms for this exact text
-            $variants = $this->wordModel->findAllByText($query);
+            $variants = $this->wordRepo->findAllByText($query);
             
             if (empty($variants)) {
                  $this->jsonResponse(['success' => false, 'message' => 'Word not found'], 404);
