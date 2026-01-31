@@ -1,6 +1,5 @@
 <?php 
-require_once ROOT_PATH . '/app/controllers/AuthController.php';
-$csrf_token = AuthController::generateCsrfToken();
+
 include ROOT_PATH . '/app/views/partials/dashboard-head.php'; 
 ?>
 
@@ -56,7 +55,7 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
                             <?php endif; ?>
 
                             <form action="<?= BASE_URL ?>/user/profile" method="POST">
-                                <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+                                <?= csrf_field() ?>
                                 
                                 <div class="row g-4">
                                     <div class="col-md-6">

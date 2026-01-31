@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($page_title ?? 'Anamek') ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/public/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .auth-container {
             max-width: 450px;
@@ -37,6 +38,9 @@
             font-weight: 500;
             font-size: 14px;
         }
+        .input-wrapper {
+            position: relative;
+        }
         .form-group input {
             width: 100%;
             padding: 12px 15px;
@@ -49,6 +53,18 @@
         .form-group input:focus {
             outline: none;
             border-color: #3498db;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .password-toggle:hover {
+            color: #3498db;
         }
         .checkbox-group {
             display: flex;
@@ -139,7 +155,7 @@
         <?php endif; ?>
 
         <form method="POST" action="<?= BASE_URL ?>/login">
-            <input type="hidden" name="csrf_token" value="<?= AuthController::generateCsrfToken() ?>">
+            <?= csrf_field() ?>
             
             <div class="form-group">
                 <label for="email_or_username">Email ou nom d'utilisateur</label>
@@ -153,11 +169,14 @@
 
             <div class="form-group">
                 <label for="password">Mot de passe</label>
-                <input type="password" 
-                       id="password" 
-                       name="password" 
-                       required
-                       placeholder="Entrez votre mot de passe">
+                <div class="input-wrapper">
+                    <input type="password" 
+                           id="password" 
+                           name="password" 
+                           required
+                           placeholder="Entrez votre mot de passe">
+                    <i class="fas fa-eye password-toggle" onclick="togglePassword('password', this)"></i>
+                </div>
             </div>
 
             <div class="forgot-password">
@@ -177,5 +196,20 @@
             <p><a href="<?= BASE_URL ?>/">← Retour à l'accueil</a></p>
         </div>
     </div>
+
+    <script>
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+    </script>
 </body>
 </html>

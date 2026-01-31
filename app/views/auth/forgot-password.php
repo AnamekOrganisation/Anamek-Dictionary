@@ -87,7 +87,7 @@
         <?php endif; ?>
 
         <form method="POST" action="<?= BASE_URL ?>/forgot-password">
-            <input type="hidden" name="csrf_token" value="<?= AuthController::generateCsrfToken() ?>">
+            <?= csrf_field() ?>
             
             <div class="form-group">
                 <label for="email">Adresse email</label>

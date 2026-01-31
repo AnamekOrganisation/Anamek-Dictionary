@@ -122,7 +122,7 @@ class AuthController extends BaseController {
             setcookie('session_token', $sessionToken, time() + (30 * 24 * 60 * 60), '/', '', false, true);
         }
 
-        $defaultDashboard = ($user['user_type'] === 'admin') ? '/dashboard' : '/user/dashboard';
+        $defaultDashboard = ($user['user_type'] === 'admin') ? BASE_URL . '/admin/dashboard' : BASE_URL . '/user/dashboard';
         $redirectUrl = $_SESSION['intended_url'] ?? $defaultDashboard;
         unset($_SESSION['intended_url']);
         

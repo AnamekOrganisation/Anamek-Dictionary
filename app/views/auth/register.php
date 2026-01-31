@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($page_title ?? 'Anamek') ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/public/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .auth-container {
             max-width: 450px;
@@ -37,6 +38,9 @@
             font-weight: 500;
             font-size: 14px;
         }
+        .input-wrapper {
+            position: relative;
+        }
         .form-group input {
             width: 100%;
             padding: 12px 15px;
@@ -49,6 +53,18 @@
         .form-group input:focus {
             outline: none;
             border-color: #3498db;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .password-toggle:hover {
+            color: #3498db;
         }
         .error-message {
             background: #fee;
@@ -106,7 +122,7 @@
         <?php endif; ?>
 
         <form method="POST" action="<?= BASE_URL ?>/register">
-            <input type="hidden" name="csrf_token" value="<?= AuthController::generateCsrfToken() ?>">
+            <?= csrf_field() ?>
             
             <div class="form-group">
                 <label for="username">Nom d'utilisateur *</label>
@@ -142,22 +158,28 @@
 
             <div class="form-group">
                 <label for="password">Mot de passe *</label>
-                <input type="password" 
-                       id="password" 
-                       name="password" 
-                       required
-                       minlength="8"
-                       placeholder="Au moins 8 caractères">
+                <div class="input-wrapper">
+                    <input type="password" 
+                           id="password" 
+                           name="password" 
+                           required
+                           minlength="8"
+                           placeholder="Au moins 8 caractères">
+                    <i class="fas fa-eye password-toggle" onclick="togglePassword('password', this)"></i>
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="password_confirm">Confirmer le mot de passe *</label>
-                <input type="password" 
-                       id="password_confirm" 
-                       name="password_confirm" 
-                       required
-                       minlength="8"
-                       placeholder="Retapez votre mot de passe">
+                <div class="input-wrapper">
+                    <input type="password" 
+                           id="password_confirm" 
+                           name="password_confirm" 
+                           required
+                           minlength="8"
+                           placeholder="Retapez votre mot de passe">
+                    <i class="fas fa-eye password-toggle" onclick="togglePassword('password_confirm', this)"></i>
+                </div>
             </div>
 
             <button type="submit" class="btn-primary">S'inscrire</button>
@@ -170,6 +192,19 @@
     </div>
 
     <script>
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+
         // Client-side password match validation
         document.querySelector('form').addEventListener('submit', function(e) {
             const password = document.getElementById('password').value;

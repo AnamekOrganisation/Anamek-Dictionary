@@ -71,7 +71,7 @@
         <?php endif; ?>
 
         <form method="POST" action="<?= BASE_URL ?>/reset-password">
-            <input type="hidden" name="csrf_token" value="<?= AuthController::generateCsrfToken() ?>">
+            <?= csrf_field() ?>
             <input type="hidden" name="token" value="<?= htmlspecialchars($_GET['token'] ?? '') ?>">
             
             <div class="form-group">

@@ -226,11 +226,11 @@ $router->post('/admin/settings', function() use ($adminSettingsController) {
 }, $adminPostAuth);
 
 // --- Admin Management Pages ---
-$router->get('/dashboard', function() use ($adminController) {
+$router->get('/admin/dashboard', function() use ($adminController) {
     $_GET['action'] = 'dashboard';
     $adminController->dashboard();
 }, $adminAuth);
-$router->post('/dashboard', function() use ($adminController) {
+$router->post('/admin/dashboard', function() use ($adminController) {
     $_GET['action'] = 'dashboard';
     $adminController->dashboard();
 }, $adminPostAuth);
