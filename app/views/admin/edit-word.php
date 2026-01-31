@@ -88,7 +88,7 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
                 </div>
 
                 <!-- Section 3: Roots & Variants -->
-                <div class="form-section p-4 p-lg-5">
+                 <div class="form-section p-4 p-lg-5">
                     <div class="section-header mb-4">
                         <span class="section-number">03</span>
                         <h5 class="fw-bold mb-0">Racines & Flexions</h5>
@@ -96,22 +96,31 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
                     <div class="row g-4">
                         <div class="col-md-6 col-lg-3">
                             <label class="form-label-custom">Racine (Tifinagh)</label>
-                            <input type="text" name="root_tfng" class="form-control-custom font-tifinagh" value="<?= htmlspecialchars($word['root_tfng']) ?>">
+                            <input value="<?= htmlspecialchars($word['root_tfng'] ?? '') ?>" type="text" name="root_tfng" class="form-control-custom font-tifinagh" placeholder="ⵣ">
                         </div>
                         <div class="col-md-6 col-lg-3">
                             <label class="form-label-custom">Racine (Latin)</label>
-                            <input type="text" name="root_lat" class="form-control-custom" value="<?= htmlspecialchars($word['root_lat']) ?>">
+                            <input type="text" name="root_lat" class="form-control-custom" value="<?= htmlspecialchars($word['root_lat'] ?? '') ?>" placeholder="Z">
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <label class="form-label-custom">Pluriel (Tifinagh)</label>
+                            <input type="text" name="plural_tfng" class="form-control-custom font-tifinagh" value="<?= htmlspecialchars($word['plural_tfng'] ?? '') ?>" placeholder="Pluriel">
                         </div>
                         <div class="col-md-6 col-lg-3">
                             <label class="form-label-custom">Pluriel (Latin)</label>
-                            <input type="text" name="plural_lat" class="form-control-custom" value="<?= htmlspecialchars($word['plural_lat']) ?>">
+                            <input type="text" name="plural_lat" class="form-control-custom" value="<?= htmlspecialchars($word['plural_lat'] ?? '') ?>" placeholder="Pluriel">
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <label class="form-label-custom">Féminin (Tifinagh)</label>
+                            <input type="text" name="feminine_tfng" class="form-control-custom font-tifinagh" value="<?= htmlspecialchars($word['feminine_tfng'] ?? '') ?>" placeholder="Féminin">
                         </div>
                         <div class="col-md-6 col-lg-3">
                             <label class="form-label-custom">Féminin (Latin)</label>
-                            <input type="text" name="feminine_lat" class="form-control-custom" value="<?= htmlspecialchars($word['feminine_lat']) ?>">
+                            <input type="text" name="feminine_lat" class="form-control-custom" value="<?= htmlspecialchars($word['feminine_lat'] ?? '') ?>" placeholder="Féminin">
                         </div>
                     </div>
                 </div>
+
         <!-- Section 4: Synonyms and Antonyms -->
          <div class="form-section bg-light-subtle p-4 p-lg-5 border-top">
                     <div class="section-header mb-4">

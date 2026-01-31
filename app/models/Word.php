@@ -197,15 +197,70 @@ class Word {
         $stmt->execute(['text' => $text, 'partial_text' => '%' . $text . '%']);
         $words = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Enrich all found words with relations
-        foreach ($words as &$word) {
-            $word['synonyms'] = $this->getRelated('synonyms', $word['id']);
-            $word['antonyms'] = $this->getRelated('antonyms', $word['id']);
-            $word['examples'] = $this->getRelated('examples', $word['id']);
-            $word['pronunciations'] = $this->getMultimedia('pronunciations', $word['id']);
-            $word['illustrations'] = $this->getMultimedia('illustrations', $word['id']);
+        if (empty($words)) {
+            return [];
         }
+
+        // Optimizing with Eager Loading (Fixing N+1 Problem)
+        $wordIds = array_column($words, 'id');
+        $this->loadRelationsForWords($words, $wordIds);
+
         return $words;
+    }
+
+    /**
+     * Eager load all relations for a list of words
+     */
+    private function loadRelationsForWords(&$words, $wordIds) {
+        if (empty($wordIds)) return;
+
+        // Initialize empty arrays
+        $map = [];
+        foreach ($words as &$word) {
+            $word['synonyms'] = [];
+            $word['antonyms'] = [];
+            $word['examples'] = [];
+            $word['pronunciations'] = [];
+            $word['illustrations'] = [];
+            $map[$word['id']] = &$word;
+        }
+
+        $placeholders = str_repeat('?,', count($wordIds) - 1) . '?';
+
+        // 1. Fetch Synonyms
+        $stmt = $this->pdo->prepare("SELECT word_id, synonym_tfng, synonym_lat FROM synonyms WHERE word_id IN ($placeholders)");
+        $stmt->execute($wordIds);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $map[$row['word_id']]['synonyms'][] = $row;
+        }
+
+        // 2. Fetch Antonyms
+        $stmt = $this->pdo->prepare("SELECT word_id, antonym_tfng, antonym_lat FROM antonyms WHERE word_id IN ($placeholders)");
+        $stmt->execute($wordIds);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $map[$row['word_id']]['antonyms'][] = $row;
+        }
+
+        // 3. Fetch Examples
+        $stmt = $this->pdo->prepare("SELECT word_id, example_tfng, example_lat, example_fr FROM examples WHERE word_id IN ($placeholders)");
+        $stmt->execute($wordIds);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $map[$row['word_id']]['examples'][] = $row;
+        }
+
+        // 4. Fetch Pronunciations
+        $stmt = $this->pdo->prepare("SELECT * FROM pronunciations WHERE word_id IN ($placeholders)");
+        $stmt->execute($wordIds);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+             $map[$row['word_id']]['pronunciations'][] = $row;
+        }
+
+        // 5. Fetch Illustrations
+        $stmt = $this->pdo->prepare("SELECT * FROM illustrations WHERE word_id IN ($placeholders)");
+        $stmt->execute($wordIds);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+             $map[$row['word_id']]['illustrations'][] = $row;
+        }
     }
 
     public function getRecentWords($limit = 5) {

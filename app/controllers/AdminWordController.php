@@ -7,6 +7,10 @@ class AdminWordController {
     public function __construct() {
         $this->pdo = Database::getInstance()->getConnection();
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        // Ensure WordService is loaded. In a real app this would be autoloaded or injected.
+        if (!class_exists('\App\Services\WordService')) {
+             require_once ROOT_PATH . '/app/Services/WordService.php';
+        }
         $this->wordService = new \App\Services\WordService($this->pdo);
     }
 
@@ -85,8 +89,6 @@ class AdminWordController {
         return $result['success'];
     }
 
-    // addSynonyms and addAntonyms moved to WordService
-
     public function addWordPage() {
         $this->checkAuth();
         $message = '';
@@ -115,36 +117,20 @@ class AdminWordController {
 
         $message = '';
         $result = false;
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->verifyCsrf();
             if (isset($_POST['update_word'])) {
-                try {
-                    $this->pdo->beginTransaction();
-                    $updated = $this->updateWordLogic($id, $_POST);
-                    if ($updated) {
-                        // Handle synonyms and antonyms as arrays from dynamic fields
-                        $syns_tfng = $_POST['synonyms_tfng'] ?? [];
-                        $syns_lat = $_POST['synonyms_lat'] ?? [];
-                        $this->updateSynonyms($id, $syns_tfng, $syns_lat);
-                        
-                        $ants_tfng = $_POST['antonyms_tfng'] ?? [];
-                        $ants_lat = $_POST['antonyms_lat'] ?? [];
-                        $this->updateAntonyms($id, $ants_tfng, $ants_lat);
-                        
-                        $this->updateExamples($id, $_POST);
-                        $this->pdo->commit();
-                        $message = 'Mot mis à jour avec succès !';
-                        $result = true;
-                        if (class_exists('App\Helpers\SiteStats')) App\Helpers\SiteStats::clearCache();
-                    } else {
-                        $this->pdo->rollBack();
-                        $message = 'Erreur lors de la mise à jour.';
-                        $result = false;
-                    }
-                } catch (Exception $e) {
-                    $this->pdo->rollBack();
-                    error_log("Update word error: " . $e->getMessage());
-                    $message = 'Erreur: ' . $e->getMessage();
+                // Use Service for Logic
+                $updateResult = $this->wordService->updateWord($id, $_POST);
+                
+                if ($updateResult['success']) {
+                    if (class_exists('App\Helpers\SiteStats')) App\Helpers\SiteStats::clearCache();
+                    $message = 'Mot mis à jour avec succès !';
+                    $result = true;
+                } else {
+                    $errors = $updateResult['errors'] ?? ['Erreur inconnue'];
+                    $message = 'Erreur: ' . implode(', ', $errors);
                     $result = false;
                 }
             }
@@ -164,64 +150,15 @@ class AdminWordController {
         require_once ROOT_PATH . '/app/views/admin/edit-word.php';
     }
 
-    private function updateWordLogic($id, $data) {
-        $stmt = $this->pdo->prepare("UPDATE words SET word_tfng = ?, word_lat = ?, translation_fr = ?, definition_tfng = ?, definition_lat = ?, plural_tfng = ?, plural_lat = ?, feminine_tfng = ?, feminine_lat = ?, annexed_tfng = ?, annexed_lat = ?, root_tfng = ?, root_lat = ?, part_of_speech = ?, example_tfng = ?, example_lat = ? WHERE id = ?");
-        return $stmt->execute([
-            $data['word_tfng'] ?? '', $data['word_lat'] ?? '', $data['translation_fr'] ?? '', $data['definition_tfng'] ?? '', $data['definition_lat'] ?? '',
-            $data['plural_tfng'] ?? '', $data['plural_lat'] ?? '', $data['feminine_tfng'] ?? '', $data['feminine_lat'] ?? '',
-            $data['annexed_tfng'] ?? '', $data['annexed_lat'] ?? '', $data['root_tfng'] ?? '', $data['root_lat'] ?? '',
-            $data['part_of_speech'] ?? '', $data['example_tfng'] ?? '', $data['example_lat'] ?? '', $id
-        ]);
-    }
-
-    private function updateSynonyms($wordId, $synonyms, $synonyms_lat = null) {
-        $this->pdo->prepare("DELETE FROM synonyms WHERE word_id = ?")->execute([$wordId]);
-        
-        $tfng = is_array($synonyms) ? $synonyms : (is_string($synonyms) ? array_filter(array_map('trim', explode(',', $synonyms))) : []);
-        $lat = is_array($synonyms_lat) ? $synonyms_lat : (is_string($synonyms_lat) ? array_filter(array_map('trim', explode(',', $synonyms_lat))) : []);
-        
-        $max = max(count($tfng), count($lat));
-        if ($max === 0) return true;
-
-        $stmt = $this->pdo->prepare("INSERT INTO synonyms (word_id, synonym_tfng, synonym_lat) VALUES (?, ?, ?)");
-        for ($i = 0; $i < $max; $i++) {
-            $t = !empty($tfng[$i]) ? trim($tfng[$i]) : null;
-            $l = !empty($lat[$i]) ? trim($lat[$i]) : null;
-            if ($t !== null || $l !== null) {
-                $stmt->execute([$wordId, $t, $l]);
-            }
-        }
-        return true;
-    }
-
-    private function updateAntonyms($wordId, $antonyms, $antonyms_lat = null) {
-        $this->pdo->prepare("DELETE FROM antonyms WHERE word_id = ?")->execute([$wordId]);
-        
-        $tfng = is_array($antonyms) ? $antonyms : (is_string($antonyms) ? array_filter(array_map('trim', explode(',', $antonyms))) : []);
-        $lat = is_array($antonyms_lat) ? $antonyms_lat : (is_string($antonyms_lat) ? array_filter(array_map('trim', explode(',', $antonyms_lat))) : []);
-        
-        $max = max(count($tfng), count($lat));
-        if ($max === 0) return true;
-
-        $stmt = $this->pdo->prepare("INSERT INTO antonyms (word_id, antonym_tfng, antonym_lat) VALUES (?, ?, ?)");
-        for ($i = 0; $i < $max; $i++) {
-            $t = !empty($tfng[$i]) ? trim($tfng[$i]) : null;
-            $l = !empty($lat[$i]) ? trim($lat[$i]) : null;
-            if ($t !== null || $l !== null) {
-                $stmt->execute([$wordId, $t, $l]);
-            }
-        }
-        return true;
-    }
-
     public function deleteWord() {
         $this->checkAuth();
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
             $this->verifyCsrf();
             $id = intval($_POST['id']);
-            require_once ROOT_PATH . '/app/models/Word.php';
-            $wordModel = new Word($this->pdo);
-            if ($wordModel->delete($id)) {
+            
+            $deleteResult = $this->wordService->deleteWord($id);
+
+            if ($deleteResult['success']) {
                 if (class_exists('App\Helpers\SiteStats')) App\Helpers\SiteStats::clearCache();
                 setcookie('admin_message', '<div class="alert success">Mot supprimé avec succès !</div>', time() + 10, '/');
             } else {
@@ -254,46 +191,5 @@ class AdminWordController {
         $stmt = $this->pdo->prepare("SELECT id, example_tfng, example_lat, example_fr FROM examples WHERE word_id = ?");
         $stmt->execute([$wordId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    private function updateExamples($wordId, $data) {
-        // IDs of examples that should be kept
-        $submittedIds = array_filter($data['example_ids'] ?? []);
-        
-        // If we have submitted IDs, delete others. If none, delete ALL for this word.
-        if (!empty($submittedIds)) {
-            $placeholders = str_repeat('?,', count($submittedIds) - 1) . '?';
-            $stmt = $this->pdo->prepare("DELETE FROM examples WHERE word_id = ? AND id NOT IN ($placeholders)");
-            $stmt->execute(array_merge([$wordId], array_values($submittedIds)));
-        } else {
-            $stmt = $this->pdo->prepare("DELETE FROM examples WHERE word_id = ?");
-            $stmt->execute([$wordId]);
-        }
-
-        // Update or insert examples
-        $tfngArray = $data['examples_tfng'] ?? [];
-        $latArray = $data['examples_lat'] ?? [];
-        $frArray = $data['examples_fr'] ?? [];
-        $idArray = $data['example_ids'] ?? [];
-
-        foreach ($tfngArray as $i => $tfng) {
-            $lat = $latArray[$i] ?? '';
-            $fr = $frArray[$i] ?? '';
-            $exampleId = $idArray[$i] ?? '';
-
-            // Skip empty examples
-            if (empty(trim($tfng)) && empty(trim($lat))) continue;
-
-            if (!empty($exampleId)) {
-                // Update existing example
-                $stmt = $this->pdo->prepare("UPDATE examples SET example_tfng = ?, example_lat = ?, example_fr = ? WHERE id = ? AND word_id = ?");
-                $stmt->execute([$tfng, $lat, $fr, $exampleId, $wordId]);
-            } else {
-                // Insert new example
-                $stmt = $this->pdo->prepare("INSERT INTO examples (word_id, example_tfng, example_lat, example_fr) VALUES (?, ?, ?, ?)");
-                $stmt->execute([$wordId, $tfng, $lat, $fr]);
-            }
-        }
-        return true;
     }
 }

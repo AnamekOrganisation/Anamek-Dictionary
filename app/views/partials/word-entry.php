@@ -59,12 +59,24 @@ if (!function_exists('getWordLink')) {
         </ol>
     </section>
 
-    <?php if (!empty($v['examples']) || !empty($v['example_tfng']) || !empty($v['example_lat'])): ?>
-    <section class="examples">
-        <h2 class="section-title text-muted text-uppercase mb-2" style="font-size: 0.85rem; letter-spacing: 0.5px;"><?= __('Exemples') ?></h2>
-        <?php if (!empty($v['examples']) || !empty($v['example_tfng']) || !empty($v['example_lat'])): ?>
-        <div class="examples-container">
-            <?php if (!empty($v['example_tfng']) || !empty($v['example_lat'])): ?>
+
+      <!-- Definitions -->
+       <?php if (!empty($v['definition_tfng']) || !empty($v['definition_lat'])): ?>
+  <section>
+    <h2>📖 Définitions</h2>
+    
+    <div class="definition" data-lat="<?= e($v['definition_lat']) ?>" data-tfng="<?= e($v['definition_tfng']) ?>">
+      <?= e($v['definition_tfng']) ?>
+    </div>
+  </section>
+  <?php endif; ?>
+<!-- end of definitions -->
+
+  <!-- Examples -->
+  <?php if (!empty($v['examples']) || !empty($v['example_tfng']) || !empty($v['example_lat'])): ?>
+  <section>
+    <h2>✍️ Exemples</h2>
+      <?php if (!empty($v['example_tfng']) || !empty($v['example_lat'])): ?>
                 <div class="example">
                     "<?= e($v['example_tfng'] ?? $v['example_lat']) ?>"
                         </div>
@@ -80,11 +92,37 @@ if (!function_exists('getWordLink')) {
                             </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
-                    </div>
-        </section>  
-    <?php endif; ?>
-    <?php endif; ?>
+  </section>
+  <?php endif; ?>
+<!-- end of examples -->
 
+  <!-- Morphology -->
+    <?php 
+    // Check if we have any morphology data to show
+    $hasMorphology = !empty($v['root_tfng']) || !empty($v['root_lat']) || 
+                     !empty($v['plural_tfng']) || !empty($v['feminine_tfng']) || 
+                     !empty($v['annexed_tfng']);
+    if($hasMorphology){
+    ?>
+  <section>
+    <h2>🧬 Morphologie</h2>
+    <table>
+        <?php if (!empty($v['root_tfng']) || !empty($v['root_lat'])): ?>
+      <tr><td><?= __('Root') ?></td><td><?= e($v['root_tfng'] ?? $v['root_lat']) ?></td></tr>
+      <?php endif; ?>
+      <?php if (!empty($v['plural_tfng']) || !empty($v['plural_lat'])): ?>
+      <tr><td><?= __('Plural') ?></td><td><?= e($v['plural_tfng'] ?? $v['plural_lat']) ?></td></tr>
+      <?php endif; ?>
+      <?php if (!empty($v['type_tfng']) || !empty($v['type_lat'])): ?>
+      <tr><td><?= __('Type') ?></td><td><?= e($v['type_tfng'] ?? $v['type_lat']) ?></td></tr>
+      <?php endif; ?>
+      <?php if (!empty($v['formation_tfng']) || !empty($v['formation_lat'])): ?>
+      <tr><td><?= __('Formation') ?></td><td><?= e($v['formation_tfng'] ?? $v['formation_lat']) ?></td></tr>
+      <?php endif; ?>
+    </table>
+  </section>
+  <?php } ?>
+<!-- end of morphology -->
     
     <?php if (!empty($v['etymology'])): ?>
     <section class="word-origin">
