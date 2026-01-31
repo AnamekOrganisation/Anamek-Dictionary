@@ -1,8 +1,9 @@
 <?php
 // UserController already handles auth and data fetching
 // $user and $stats are passed to this view
-include ROOT_PATH . '/app/views/partials/dashboard-head.php';
+include ROOT_PATH . '/app/views/partials/header.php';
 ?>
+<link rel="stylesheet" href="<?= BASE_URL ?>/public/css/admin.css">
 <style>
         .dashboard-container {
             max-width: 1200px;
@@ -91,9 +92,7 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
             color: #2c3e50;
         }
     </style>
-</head>
-<body>
-    <?php include ROOT_PATH . '/app/views/partials/header.php'; ?>
+
 
     <div class="dashboard-container">
         <div class="dashboard-header">
@@ -171,4 +170,3 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
     </div>
 
     <?php include ROOT_PATH . '/app/views/partials/footer.php'; ?>
-<?php include ROOT_PATH . '/app/views/partials/dashboard-footer.php'; ?>

@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Display recent searches
     displayRecentSearches();
 
-    // Initialize Search Language Dropdown
-    initSearchLanguageDropdown();
+    // Initialize account dropdown
+    initAccountDropdown();
 });
 
 /* =========================================
@@ -46,24 +46,18 @@ function initLanguageDropdown() {
     });
 }
 
-function toggleLanguageDropdown() {
-    const dropdown = document.getElementById('languageDropdown');
-    if (dropdown) {
-        dropdown.classList.toggle('show');
-        // Close account dropdown if open
-        const accountDropdown = document.getElementById('accountDropdown');
-        if (accountDropdown) accountDropdown.classList.remove('show');
-    }
-}
-
-function toggleAccountDropdown() {
+function initAccountDropdown() {
+    const accountBtn = document.querySelector('.account-container .account');
     const dropdown = document.getElementById('accountDropdown');
-    if (dropdown) {
+    const langDropdown = document.getElementById('languageDropdown');
+
+    if (!accountBtn || !dropdown) return;
+
+    accountBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
         dropdown.classList.toggle('show');
-        // Close language dropdown if open
-        const langDropdown = document.getElementById('languageDropdown');
         if (langDropdown) langDropdown.classList.remove('show');
-    }
+    });
 }
 
 // Close dropdowns when clicking outside
