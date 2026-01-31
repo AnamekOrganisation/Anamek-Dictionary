@@ -230,157 +230,36 @@ class Contribution {
         $type = $contribution['contribution_type'];
         $action = $contribution['action_type'];
         $data = $contribution['content_after'];
+
+        // Instantiate Services for consistent logic
+        require_once ROOT_PATH . '/app/Services/WordService.php';
+        require_once ROOT_PATH . '/app/Services/ProverbService.php';
+        $wordService = new \App\Services\WordService($this->pdo);
+        $proverbService = new \App\Services\ProverbService($this->pdo);
+
         switch ($type) {
             case 'word':
                 if ($action === 'create') {
-                    $wordId = $this->insertWord($data);
-                    if ($wordId) {
-                        $this->saveRelations($wordId, $data);
-                    }
+                    $wordService->createWord($data);
                 } elseif ($action === 'update') {
-                    $this->updateWord($contribution['target_id'], $data);
-                    $this->saveRelations($contribution['target_id'], $data);
+                    $wordService->updateWord($contribution['target_id'], $data);
                 }
                 break;
             case 'example':
                 if ($action === 'create') {
-                    $this->insertExample($data);
+                    // WordService handles examples if data is formatted correctly, 
+                    // or we can add a specific method to WordService if needed.
+                    // For now, let's assume WordService::updateWord can handle related data.
+                    // If it's a standalone example contribution:
+                    $wordService->updateWord($data['word_id'], ['examples_tfng' => [$data['example_tfng']], 'examples_lat' => [$data['example_lat']], 'examples_fr' => [$data['translation_fr']]]);
                 }
                 break;
             case 'proverb':
                 if ($action === 'create') {
-                    $this->insertProverb($data);
+                    $proverbService->createProverb($data);
                 }
                 break;
-            // Add more cases as needed
         }
-    }
-
-    private function insertWord($data) {
-        $sql = "INSERT INTO words (
-                    word_tfng, word_lat, translation_fr, 
-                    definition_tfng, definition_lat, 
-                    part_of_speech, plural_tfng, plural_lat, 
-                    feminine_tfng, feminine_lat, 
-                    annexed_tfng, annexed_lat, 
-                    root_tfng, root_lat
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            $data['word_tfng'],
-            $data['word_lat'],
-            $data['translation_fr'],
-            $data['definition_tfng'] ?? null,
-            $data['definition_lat'] ?? null,
-            $data['word_type'] ?? $data['part_of_speech'] ?? null,
-            $data['plural_tfng'] ?? null,
-            $data['plural_lat'] ?? null,
-            $data['feminine_tfng'] ?? null,
-            $data['feminine_lat'] ?? null,
-            $data['annexed_tfng'] ?? null,
-            $data['annexed_lat'] ?? null,
-            $data['root_tfng'] ?? null,
-            $data['root_lat'] ?? null
-        ]);
-        return $this->pdo->lastInsertId();
-    }
-
-    private function updateWord($id, $data) {
-        $sql = "UPDATE words SET 
-                    word_tfng = ?, word_lat = ?, translation_fr = ?, 
-                    definition_tfng = ?, definition_lat = ?, 
-                    part_of_speech = ?, plural_tfng = ?, plural_lat = ?, 
-                    feminine_tfng = ?, feminine_lat = ?, 
-                    annexed_tfng = ?, annexed_lat = ?, 
-                    root_tfng = ?, root_lat = ?
-                WHERE id = ?";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            $data['word_tfng'],
-            $data['word_lat'],
-            $data['translation_fr'],
-            $data['definition_tfng'] ?? null,
-            $data['definition_lat'] ?? null,
-            $data['word_type'] ?? $data['part_of_speech'] ?? null,
-            $data['plural_tfng'] ?? null,
-            $data['plural_lat'] ?? null,
-            $data['feminine_tfng'] ?? null,
-            $data['feminine_lat'] ?? null,
-            $data['annexed_tfng'] ?? null,
-            $data['annexed_lat'] ?? null,
-            $data['root_tfng'] ?? null,
-            $data['root_lat'] ?? null,
-            $id
-        ]);
-    }
-
-    private function saveRelations($wordId, $data) {
-        // Handle Synonyms
-        if (!empty($data['synonyms'])) {
-            $this->pdo->prepare("DELETE FROM synonyms WHERE word_id = ?")->execute([$wordId]);
-            $synStmt = $this->pdo->prepare("INSERT INTO synonyms (word_id, synonym_tfng, synonym_lat) VALUES (?, ?, ?)");
-            
-            // data['synonyms'] could be an array of {tfng, lat} or a string (if from simple form)
-            if (is_array($data['synonyms'])) {
-                foreach ($data['synonyms'] as $syn) {
-                    $synStmt->execute([$wordId, $syn['tfng'] ?? null, $syn['lat'] ?? null]);
-                }
-            }
-        }
-
-        // Handle Antonyms
-        if (!empty($data['antonyms'])) {
-            $this->pdo->prepare("DELETE FROM antonyms WHERE word_id = ?")->execute([$wordId]);
-            $antStmt = $this->pdo->prepare("INSERT INTO antonyms (word_id, antonym_tfng, antonym_lat) VALUES (?, ?, ?)");
-            
-            if (is_array($data['antonyms'])) {
-                foreach ($data['antonyms'] as $ant) {
-                    $antStmt->execute([$wordId, $ant['tfng'] ?? null, $ant['lat'] ?? null]);
-                }
-            }
-        }
-
-        // Handle Single Example from Word Form
-        if (!empty($data['example_tfng']) || !empty($data['example_lat'])) {
-            // Check if this example already exists to avoid duplication if running multiple times or updates
-            $check = $this->pdo->prepare("SELECT id FROM examples WHERE word_id = ? AND example_tfng = ? LIMIT 1");
-            $check->execute([$wordId, $data['example_tfng']]);
-            if (!$check->fetch()) {
-                 $exStmt = $this->pdo->prepare("INSERT INTO examples (word_id, example_tfng, example_lat, example_fr) VALUES (?, ?, ?, ?)");
-                 $exStmt->execute([
-                     $wordId, 
-                     $data['example_tfng'] ?? '', 
-                     $data['example_lat'] ?? '',
-                     $data['translation_fr'] ?? '' // Using word translation as fallback or empty
-                 ]);
-            }
-        }
-    }
-
-    private function insertExample($data) {
-        // Using example_fr to match database.sql if strictly followed, 
-        // but AdminController doesn't show independent example insertion.
-        // Assuming 'examples' table exists as per database.sql
-        $sql = "INSERT INTO examples (word_id, example_tfng, example_lat, example_fr) VALUES (?, ?, ?, ?)";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            $data['word_id'],
-            $data['example_tfng'],
-            $data['example_lat'],
-            $data['translation_fr'] // Mapping translation_fr to example_fr
-        ]);
-    }
-
-    private function insertProverb($data) {
-        // Matching AdminController schema for proverbs
-        $sql = "INSERT INTO proverbs (proverb_tfng, proverb_lat, translation_fr, explanation) VALUES (?, ?, ?, ?)";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            $data['text_tfng'] ?? $data['proverb_tfng'] ?? '',
-            $data['text_lat'] ?? $data['proverb_lat'] ?? '',
-            $data['translation_fr'],
-            $data['explanation_fr'] ?? $data['explanation'] ?? null
-        ]);
     }
 
     /**

@@ -6,15 +6,15 @@ class Router {
     private $routes = [];
     private $notFoundCallback;
 
-    public function get($path, $callback) {
-        $this->addRoute('GET', $path, $callback);
+    public function get($path, $callback, $middleware = []) {
+        $this->addRoute('GET', $path, $callback, $middleware);
     }
 
-    public function post($path, $callback) {
-        $this->addRoute('POST', $path, $callback);
+    public function post($path, $callback, $middleware = []) {
+        $this->addRoute('POST', $path, $callback, $middleware);
     }
 
-    private function addRoute($method, $path, $callback) {
+    private function addRoute($method, $path, $callback, $middleware = []) {
         // Convert route parameters (e.g., {id}) to regex capture groups
         $pattern = preg_replace('/\{([a-zA-Z0-9_]+)\}/', '(?P<$1>[^/]+)', $path);
         // Escape forward slashes
@@ -22,7 +22,10 @@ class Router {
         // Add start and end delimiters
         $pattern = '/^' . $pattern . '$/';
 
-        $this->routes[$method][$pattern] = $callback;
+        $this->routes[$method][$pattern] = [
+            'callback' => $callback,
+            'middleware' => is_array($middleware) ? $middleware : [$middleware]
+        ];
     }
 
     public function setNotFound($callback) {
@@ -59,10 +62,19 @@ class Router {
             return;
         }
 
-        foreach ($this->routes[$method] as $pattern => $callback) {
+        foreach ($this->routes[$method] as $pattern => $route) {
             if (preg_match($pattern, $uri, $matches)) {
                 $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
-                call_user_func($callback, $params);
+                
+                // Run Middleware
+                foreach ($route['middleware'] as $mw) {
+                    if (is_callable($mw)) {
+                        $res = call_user_func($mw, $params);
+                        if ($res === false) return; // Middleware halted execution
+                    }
+                }
+
+                call_user_func($route['callback'], $params);
                 return;
             }
         }

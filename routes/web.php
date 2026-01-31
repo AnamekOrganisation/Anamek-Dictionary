@@ -5,6 +5,8 @@
 
 // Global Objects from index.php: $router, $pdo, $controller, $api, $authController, $userController, $adminController, $adminWordController, $adminProverbController, $adminUserController, $adminSettingsController
 
+use App\Core\Middleware\AuthMiddleware as Middleware;
+
 // --- Frontend Routes ---
 $router->get('/sitemap.xml', function() use ($pdo) {
     $sitemap = new SitemapController($pdo);
@@ -77,13 +79,15 @@ $router->get('/register', function() use ($authController) {
 });
 $router->post('/register', function() use ($authController) {
     $authController->register();
-});
+}, [Middleware::class . '::csrf']);
+
 $router->get('/login', function() use ($authController) {
     $authController->showLogin();
 });
 $router->post('/login', function() use ($authController) {
     $authController->login();
-});
+}, [Middleware::class . '::csrf']);
+
 $router->get('/logout', function() use ($authController) {
     $authController->logout();
 });
@@ -92,32 +96,37 @@ $router->get('/forgot-password', function() use ($authController) {
 });
 $router->post('/forgot-password', function() use ($authController) {
     $authController->sendResetLink();
-});
+}, [Middleware::class . '::csrf']);
+
 $router->get('/reset-password', function() use ($authController) {
     $authController->showResetPassword();
 });
 $router->post('/reset-password', function() use ($authController) {
     $authController->resetPassword();
-});
+}, [Middleware::class . '::csrf']);
+
 $router->get('/verify-email', function() use ($authController) {
     $authController->verifyEmail();
 });
 
-// --- User Routes ---
+// --- User Routes (Protected) ---
+$userAuth = [Middleware::class . '::auth'];
+$userPostAuth = [Middleware::class . '::auth', Middleware::class . '::csrf'];
+
 $router->get('/user/dashboard', function() use ($userController) {
     $userController->dashboard();
-});
+}, $userAuth);
 $router->get('/user/profile', function() use ($userController) {
     $userController->profile();
-});
+}, $userAuth);
 $router->post('/user/profile', function() use ($userController) {
     $userController->updateProfile();
-});
+}, $userPostAuth);
 $router->get('/user/contributions', function() use ($pdo) {
     require_once 'app/controllers/ContributionController.php';
     $contributionController = new ContributionController($pdo);
     $contributionController->myContributions();
-});
+}, $userAuth);
 
 // --- Quiz Routes ---
 $router->get('/quizzes', function() use ($pdo) {
@@ -139,12 +148,12 @@ $router->get('/quiz/results/{id}', function($params) use ($pdo) {
     require_once 'app/controllers/QuizController.php';
     $quizController = new QuizController($pdo);
     $quizController->results($params['id']);
-});
+}, $userAuth);
 $router->post('/quiz/submit/{id}', function($params) use ($pdo) {
     require_once 'app/controllers/QuizController.php';
     $quizController = new QuizController($pdo);
     $quizController->submit($params['id']);
-});
+}); // AJAX submission, might handle its own CSRF or use global
 $router->get('/leaderboard', function() use ($pdo) {
     require_once 'app/controllers/QuizController.php';
     $quizController = new QuizController($pdo);
@@ -161,119 +170,122 @@ $router->get('/quiz/daily', function() use ($pdo) {
     $quizController->dailyChallenge();
 });
 
-// --- Contribution Submission ---
+// --- Contribution Submission (Protected) ---
 $router->get('/contribute/word', function() use ($pdo) {
     require_once 'app/controllers/ContributionController.php';
     $contributionController = new ContributionController($pdo);
     $contributionController->showWordForm();
-});
+}, $userAuth);
 $router->post('/contribute/word', function() use ($pdo) {
     require_once 'app/controllers/ContributionController.php';
     $contributionController = new ContributionController($pdo);
     $contributionController->submitWord();
-});
+}, $userPostAuth);
 $router->get('/contribute/example', function() use ($pdo) {
     require_once 'app/controllers/ContributionController.php';
     $contributionController = new ContributionController($pdo);
     $contributionController->showExampleForm();
-});
+}, $userAuth);
 $router->post('/contribute/example', function() use ($pdo) {
     require_once 'app/controllers/ContributionController.php';
     $contributionController = new ContributionController($pdo);
     $contributionController->submitExample();
-});
+}, $userPostAuth);
 
 // --- Admin Auth (Redirects) ---
 $router->get('/admin/login', function() { header('Location: ' . BASE_URL . '/login'); exit; });
 $router->post('/admin/login', function() { header('Location: ' . BASE_URL . '/login'); exit; });
 $router->get('/admin/logout', function() { header('Location: ' . BASE_URL . '/logout'); exit; });
 
-// --- Admin Features ---
+// --- Admin Features (Admin Protected) ---
+$adminAuth = [Middleware::class . '::admin'];
+$adminPostAuth = [Middleware::class . '::admin', Middleware::class . '::csrf'];
+
 $router->get('/admin/reviews', function() use ($adminController) {
     $adminController->pendingReviews();
-});
+}, $adminAuth);
 $router->post('/admin/reviews', function() use ($adminController) {
     $adminController->pendingReviews();
-});
+}, $adminPostAuth);
 $router->get('/admin/users', function() use ($adminUserController) {
     $adminUserController->users();
-});
+}, $adminAuth);
 $router->post('/admin/users', function() use ($adminUserController) {
     $adminUserController->users();
-});
+}, $adminPostAuth);
 $router->get('/admin/words', function() use ($adminWordController) {
     $adminWordController->words(); 
-});
+}, $adminAuth);
 $router->post('/admin/words', function() use ($adminWordController) {
     $adminWordController->editWord(); 
-});
+}, $adminPostAuth);
 $router->get('/admin/proverbs', function() use ($adminProverbController) {
     $adminProverbController->proverbs();
-});
+}, $adminAuth);
 $router->post('/admin/proverbs', function() use ($adminProverbController) {
     $adminProverbController->proverbs();
-});
+}, $adminPostAuth);
 $router->post('/admin/delete-proverb', function() use ($adminProverbController) {
     $adminProverbController->deleteProverb();
-});
+}, $adminPostAuth);
 $router->get('/admin/analytics', function() use ($adminController) {
     $adminController->analytics();
-});
+}, $adminAuth);
 $router->get('/admin/settings', function() use ($adminSettingsController) {
     $adminSettingsController->settings();
-});
+}, $adminAuth);
 $router->post('/admin/settings', function() use ($adminSettingsController) {
     $adminSettingsController->settings();
-});
+}, $adminPostAuth);
 
 // --- Admin Management Pages ---
 $router->get('/dashboard', function() use ($adminController) {
     $_GET['action'] = 'dashboard';
     $adminController->dashboard();
-});
+}, $adminAuth);
 $router->post('/dashboard', function() use ($adminController) {
     $_GET['action'] = 'dashboard';
     $adminController->dashboard();
-});
+}, $adminPostAuth);
 $router->get('/admin', function() use ($adminWordController) {
     $_GET['action'] = 'add-word';
     $adminWordController->addWordPage();
-});
+}, $adminAuth);
 $router->get('/admin/add-word', function() use ($adminWordController) {
     $_GET['action'] = 'add-word';
     $adminWordController->addWordPage();
-});
+}, $adminAuth);
 $router->post('/admin/add-word', function() use ($adminWordController) {
     $_GET['action'] = 'add-word';
     $adminWordController->addWordPage();
-});
+}, $adminPostAuth);
 $router->get('/admin/add-proverb', function() use ($adminProverbController) {
     $_GET['action'] = 'add-proverb';
     $adminProverbController->addProverbPage();
-});
+}, $adminAuth);
 $router->post('/admin/add-proverb', function() use ($adminProverbController) {
     $_GET['action'] = 'add-proverb';
     $adminProverbController->addProverbPage();
-});
+}, $adminPostAuth);
 $router->get('/admin/edit-word', function() use ($adminWordController) {
     $_GET['action'] = 'edit-word';
     $adminWordController->editWord();
-});
+}, $adminAuth);
 $router->post('/admin/edit-word', function() use ($adminWordController) {
     $_GET['action'] = 'edit-word';
     $adminWordController->editWord();
-});
+}, $adminPostAuth);
 $router->post('/admin/delete-word', function() use ($adminWordController) {
     $adminWordController->deleteWord();
-});
+}, $adminPostAuth);
 $router->get('/admin/edit-proverb', function() use ($adminProverbController) {
     $_GET['action'] = 'edit-proverb';
     $adminProverbController->editProverbPage();
-});
+}, $adminAuth);
 $router->post('/admin/edit-proverb', function() use ($adminProverbController) {
     $_GET['action'] = 'edit-proverb';
     $adminProverbController->editProverbPage();
-});
+}, $adminPostAuth);
 
 // --- 404 Handler ---
 $router->setNotFound(function() use ($controller) {

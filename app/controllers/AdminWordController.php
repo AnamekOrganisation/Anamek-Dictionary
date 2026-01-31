@@ -14,27 +14,7 @@ class AdminWordController {
         $this->wordService = new \App\Services\WordService($this->pdo);
     }
 
-    private function verifyCsrf() {
-        if (!verify_csrf($_POST['csrf_token'] ?? '')) {
-            die('CSRF validation failed.');
-        }
-    }
-
-    public function checkAuth() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        
-        if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'admin') {
-            $_SESSION['intended_url'] = $_SERVER['REQUEST_URI'];
-            header('Location: ' . BASE_URL . '/login');
-            exit;
-        }
-    }
-
     public function words() {
-        $this->checkAuth();
-        
         $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
         $limit = 20;
         $offset = ($page - 1) * $limit;
@@ -77,8 +57,6 @@ class AdminWordController {
     }
 
     public function addWord(array $data) {
-        $this->verifyCsrf();
-        
         $validation = $this->wordService->validateWord($data);
         if (!$validation['success']) {
             $_SESSION['errors'] = $validation['errors'];
@@ -90,7 +68,6 @@ class AdminWordController {
     }
 
     public function addWordPage() {
-        $this->checkAuth();
         $message = '';
         $result = false;
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -108,7 +85,6 @@ class AdminWordController {
     }
 
     public function editWord() {
-        $this->checkAuth();
         $id = isset($_GET['id']) ? intval($_GET['id']) : (isset($_POST['id']) ? intval($_POST['id']) : null);
         if (!$id) {
              header('Location: ' . BASE_URL . '/admin/words');
@@ -119,7 +95,6 @@ class AdminWordController {
         $result = false;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->verifyCsrf();
             if (isset($_POST['update_word'])) {
                 // Use Service for Logic
                 $updateResult = $this->wordService->updateWord($id, $_POST);
@@ -151,9 +126,7 @@ class AdminWordController {
     }
 
     public function deleteWord() {
-        $this->checkAuth();
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
-            $this->verifyCsrf();
             $id = intval($_POST['id']);
             
             $deleteResult = $this->wordService->deleteWord($id);

@@ -13,13 +13,6 @@ class ContributionController {
         $this->pdo = $pdo;
         $this->contributionModel = new Contribution($pdo);
         $this->notificationModel = new Notification($pdo);
-        
-        // Ensure user is logged in for all contribution actions
-        if (!isset($_SESSION['user_id'])) {
-            $_SESSION['intended_url'] = $_SERVER['REQUEST_URI'];
-            header('Location: ' . BASE_URL . '/login');
-            exit;
-        }
     }
 
     /**
@@ -52,7 +45,6 @@ class ContributionController {
         }
 
         $page_title = $word ? "Suggérer une modification - Amawal" : "Contribuer un mot - Amawal";
-        $csrf_token = $this->generateCsrfToken();
         include ROOT_PATH . '/app/views/contribute/word.php';
     }
 
@@ -63,10 +55,6 @@ class ContributionController {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL . '/contribute/word');
             exit;
-        }
-
-        if (!$this->verifyCsrfToken($_POST['csrf_token'] ?? '')) {
-            die("Security check failed");
         }
 
         $data = [
@@ -168,7 +156,6 @@ class ContributionController {
         }
 
         $page_title = "Ajouter un exemple - Amawal";
-        $csrf_token = $this->generateCsrfToken();
         include ROOT_PATH . '/app/views/contribute/example.php';
     }
 
@@ -177,8 +164,6 @@ class ContributionController {
      */
     public function submitExample() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') exit;
-
-        if (!$this->verifyCsrfToken($_POST['csrf_token'] ?? '')) die("Security check failed");
 
         $data = [
             'word_id' => $_POST['word_id'],
@@ -203,16 +188,5 @@ class ContributionController {
             header('Location: ' . BASE_URL . '/user/contributions');
         }
         exit;
-    }
-
-    private function generateCsrfToken() {
-        if (!isset($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
-        return $_SESSION['csrf_token'];
-    }
-
-    private function verifyCsrfToken($token) {
-        return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
     }
 }

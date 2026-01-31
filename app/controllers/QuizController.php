@@ -7,16 +7,13 @@
 class QuizController {
     private $pdo;
     private $quizModel;
+    private $quizService;
 
     public function __construct($pdo) {
         $this->pdo = $pdo;
         require_once ROOT_PATH . '/app/models/Quiz.php';
         $this->quizModel = new Quiz($pdo);
-        
-        // Ensure session is started
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        $this->quizService = new \App\Services\QuizService($pdo);
     }
 
     /**
@@ -67,9 +64,6 @@ class QuizController {
             exit;
         }
         
-        // Shuffle questions or options if needed (shuffle in PHP or just random in SQL)
-        // For now, keep display_order
-        
         $page_title = "Jouer : " . $quiz['title_fr'];
         include ROOT_PATH . '/app/views/quiz/play.php';
     }
@@ -84,70 +78,24 @@ class QuizController {
             exit;
         }
 
-        $quiz = $this->quizModel->find($id);
-        $questions = $this->quizModel->getQuestions($id);
         $userAnswers = $_POST['answers'] ?? [];
         $timeTaken = (int)($_POST['time_taken'] ?? 0);
-        
-        $score = 0;
-        $correctCount = 0;
-        $totalPoints = 0;
-        $totalQuestions = count($questions);
-        $resultsDetail = [];
+        $isDaily = isset($_GET['daily']) || isset($_POST['is_daily']);
+        $userId = $_SESSION['user_id'] ?? null;
 
-        foreach ($questions as $question) {
-            $totalPoints += $question['points'];
-            $qId = $question['id'];
-            $userAnswer = $userAnswers[$qId] ?? null;
-            $isCorrect = (trim($userAnswer) == trim($question['correct_answer']));
+        try {
+            $result = $this->quizService->submitQuiz($id, $userId, $userAnswers, $timeTaken, $isDaily);
             
-            if ($isCorrect) {
-                $score += $question['points'];
-                $correctCount++;
+            if ($result['success'] && $result['result_id']) {
+                $result['results_url'] = BASE_URL . '/quiz/results/' . $result['result_id'];
             }
-            
-            $resultsDetail[] = [
-                'question_id' => $qId,
-                'user_answer' => $userAnswer,
-                'correct_answer' => $question['correct_answer'],
-                'is_correct' => $isCorrect
-            ];
+
+            header('Content-Type: application/json');
+            echo json_encode($result);
+        } catch (Exception $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
-
-        $percentage = ($totalPoints > 0) ? ($score / $totalPoints) * 100 : 0;
-        $passed = $percentage >= ($quiz['passing_score'] ?? 70);
-
-        $resultId = null;
-        if (isset($_SESSION['user_id'])) {
-            $isDaily = isset($_GET['daily']) || isset($_POST['is_daily']); // Support both for flexibility
-            $resultData = [
-                'user_id' => $_SESSION['user_id'],
-                'quiz_id' => $id,
-                'score' => $score,
-                'total_questions' => $totalQuestions,
-                'correct_answers' => $correctCount,
-                'percentage' => $percentage,
-                'time_taken_seconds' => $timeTaken,
-                'answers' => $resultsDetail,
-                'passed' => $passed,
-                'is_daily' => $isDaily
-            ];
-            $resultId = $this->quizModel->saveResult($resultData);
-        }
-
-        header('Content-Type: application/json');
-        echo json_encode([
-            'success' => true,
-            'result_id' => $resultId,
-            'results_url' => BASE_URL . '/quiz/results/' . $resultId,
-            'score' => $score,
-            'total_points' => $totalPoints,
-            'percentage' => round($percentage, 1),
-            'correct_count' => $correctCount,
-            'total_questions' => $totalQuestions,
-            'passed' => $passed,
-            'details' => $resultsDetail
-        ]);
         exit;
     }
 
@@ -162,7 +110,7 @@ class QuizController {
         }
 
         // Only allow user to see their own results (or admins)
-        if (!isset($_SESSION['user_id']) || ($_SESSION['user_id'] != $result['user_id'] && $_SESSION['user_type'] != 'admin')) {
+        if ($_SESSION['user_id'] != $result['user_id'] && $_SESSION['user_type'] != 'admin') {
             header('Location: ' . BASE_URL . '/quizzes');
             exit;
         }

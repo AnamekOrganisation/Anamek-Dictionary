@@ -8,26 +8,7 @@ class AdminController {
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
-    private function verifyCsrf() {
-        if (!verify_csrf($_POST['csrf_token'] ?? '')) {
-            die('CSRF validation failed.');
-        }
-    }
-
-    public function checkAuth() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        
-        if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'admin') {
-            $_SESSION['intended_url'] = $_SERVER['REQUEST_URI'];
-            header('Location: ' . BASE_URL . '/login');
-            exit;
-        }
-    }
-
     public function dashboard() {
-        $this->checkAuth();
         
         require_once ROOT_PATH . '/app/models/Analytics.php';
         $analyticsModel = new Analytics($this->pdo);
@@ -112,7 +93,6 @@ class AdminController {
     
     // Remaining methods like pendingReviews, sessions, analytics should also be moved eventually
     public function analytics() {
-        $this->checkAuth();
         require_once ROOT_PATH . '/app/models/Analytics.php';
         $analyticsModel = new Analytics($this->pdo);
         $dailyVisits = $analyticsModel->getDailyUniqueVisitors(30);
@@ -132,12 +112,10 @@ class AdminController {
     }
 
     public function pendingReviews() {
-        $this->checkAuth();
         require_once ROOT_PATH . '/app/models/Contribution.php';
         $contrib = new Contribution($this->pdo);
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-            $this->verifyCsrf();
             $id = $_POST['id'];
             if ($_POST['action'] === 'approve') {
                 $contrib->approve($id, $_SESSION['user_id'], $_POST['notes'] ?? '');

@@ -86,9 +86,11 @@ class Word {
         $stmt->execute($params);
         $words = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Enrich with relations (optional for list view, maybe too heavy?)
-        // For autocomplete, maybe we don't need all relations. 
-        // But Oxford style implies rich results. Let's keep it light for search list.
+        if (!empty($words)) {
+            $wordIds = array_column($words, 'id');
+            $this->loadRelationsForWords($words, $wordIds);
+        }
+        
         return $words;
     }
 

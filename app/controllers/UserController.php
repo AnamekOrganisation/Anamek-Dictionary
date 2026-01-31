@@ -15,22 +15,9 @@ class UserController {
     }
 
     /**
-     * Check if user is logged in
-     */
-    private function checkAuth() {
-        if (!isset($_SESSION['user_id'])) {
-            $_SESSION['intended_url'] = $_SERVER['REQUEST_URI'];
-            header('Location: ' . BASE_URL . '/login');
-            exit;
-        }
-    }
-
-    /**
      * Show user dashboard
      */
     public function dashboard() {
-        $this->checkAuth();
-        
         $user = $this->userModel->find($_SESSION['user_id']);
         $stats = $this->userModel->getStats($_SESSION['user_id']);
         
@@ -42,8 +29,6 @@ class UserController {
      * Show user profile
      */
     public function profile() {
-        $this->checkAuth();
-        
         $user = $this->userModel->find($_SESSION['user_id']);
         $stats = $this->userModel->getStats($_SESSION['user_id']);
         
@@ -55,14 +40,7 @@ class UserController {
      * Update user profile
      */
     public function updateProfile() {
-        $this->checkAuth();
-        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // CSRF Check (using AuthController helper or similar)
-            if (!isset($_POST['csrf_token']) || $_SESSION['csrf_token'] !== $_POST['csrf_token']) {
-                die("Invalid security token");
-            }
-
             $data = [
                 'full_name' => trim($_POST['full_name'] ?? ''),
                 'bio' => trim($_POST['bio'] ?? '')

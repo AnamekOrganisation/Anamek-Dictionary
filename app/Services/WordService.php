@@ -29,8 +29,12 @@ class WordService {
     }
 
     public function createWord(array $data) {
+        $mustCommit = false;
         try {
-            $this->pdo->beginTransaction();
+            if (!$this->pdo->inTransaction()) {
+                $this->pdo->beginTransaction();
+                $mustCommit = true;
+            }
 
             $sql = "INSERT INTO words (
                 word_tfng, word_lat, translation_fr,
@@ -82,11 +86,13 @@ class WordService {
                 $this->saveRelations($wordId, 'antonyms', $data['antonyms'] ?? '', $data['antonyms_lat'] ?? '');
             }
 
-            $this->pdo->commit();
+            if ($mustCommit) {
+                $this->pdo->commit();
+            }
             return ['success' => true, 'id' => $wordId];
 
         } catch (Exception $e) {
-            if ($this->pdo->inTransaction()) {
+            if ($mustCommit && $this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
             }
             return ['success' => false, 'errors' => [$e->getMessage()]];
@@ -94,8 +100,12 @@ class WordService {
     }
 
     public function updateWord($id, array $data) {
+        $mustCommit = false;
         try {
-            $this->pdo->beginTransaction();
+            if (!$this->pdo->inTransaction()) {
+                $this->pdo->beginTransaction();
+                $mustCommit = true;
+            }
 
             $sql = "UPDATE words SET 
                 word_tfng = ?, word_lat = ?, translation_fr = ?, 
@@ -126,11 +136,13 @@ class WordService {
             $this->updateRelations($id, 'antonyms', $data['antonyms_tfng'] ?? [], $data['antonyms_lat'] ?? []);
             $this->updateExamples($id, $data);
 
-            $this->pdo->commit();
+            if ($mustCommit) {
+                $this->pdo->commit();
+            }
             return ['success' => true];
 
         } catch (Exception $e) {
-            if ($this->pdo->inTransaction()) {
+            if ($mustCommit && $this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
             }
             return ['success' => false, 'errors' => [$e->getMessage()]];

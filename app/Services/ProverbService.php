@@ -27,6 +27,49 @@ class ProverbService {
         ];
     }
 
+    public function createProverb(array $data) {
+        $validation = $this->validateProverb($data);
+        if (!$validation['success']) return $validation;
+
+        try {
+            $success = $this->proverbModel->create([
+                'proverb_tfng' => $data['proverb_tfng'],
+                'proverb_lat' => $data['proverb_lat'],
+                'translation_fr' => $data['translation_fr'],
+                'explanation' => $data['explanation'] ?? ''
+            ]);
+            return ['success' => $success];
+        } catch (\Exception $e) {
+            return ['success' => false, 'errors' => [$e->getMessage()]];
+        }
+    }
+
+    public function updateProverb($id, array $data) {
+        $validation = $this->validateProverb($data);
+        if (!$validation['success']) return $validation;
+
+        try {
+            $success = $this->proverbModel->update($id, [
+                'proverb_tfng' => $data['proverb_tfng'],
+                'proverb_lat' => $data['proverb_lat'],
+                'translation_fr' => $data['translation_fr'],
+                'explanation' => $data['explanation'] ?? ''
+            ]);
+            return ['success' => $success];
+        } catch (\Exception $e) {
+            return ['success' => false, 'errors' => [$e->getMessage()]];
+        }
+    }
+
+    public function deleteProverb($id) {
+        try {
+            $success = $this->proverbModel->delete($id);
+            return ['success' => $success];
+        } catch (\Exception $e) {
+            return ['success' => false, 'errors' => [$e->getMessage()]];
+        }
+    }
+
     public function validateProverb(array $data) {
         $validator = new Validator($data);
         $rules = [

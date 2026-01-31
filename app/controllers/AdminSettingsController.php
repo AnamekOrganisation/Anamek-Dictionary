@@ -8,27 +8,8 @@ class AdminSettingsController {
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
-    private function verifyCsrf() {
-        if (!verify_csrf($_POST['csrf_token'] ?? '')) {
-            die('CSRF validation failed.');
-        }
-    }
-
-    public function checkAuth() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'admin') {
-            $_SESSION['intended_url'] = $_SERVER['REQUEST_URI'];
-            header('Location: ' . BASE_URL . '/login');
-            exit;
-        }
-    }
-
     public function settings() {
-        $this->checkAuth();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->verifyCsrf();
             if (isset($_POST['update_social'])) {
                 foreach ($_POST['social'] as $platform => $url) {
                     if (filter_var($url, FILTER_VALIDATE_URL) || empty($url)) {

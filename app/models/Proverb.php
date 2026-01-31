@@ -78,4 +78,32 @@ class Proverb {
         $stmt->execute();
         return $stmt->fetchColumn();
     }
+
+    public function create(array $data) {
+        $sql = "INSERT INTO proverbs (proverb_tfng, proverb_lat, translation_fr, explanation) VALUES (?, ?, ?, ?)";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            $data['proverb_tfng'],
+            $data['proverb_lat'],
+            $data['translation_fr'],
+            $data['explanation'] ?? ''
+        ]);
+    }
+
+    public function update($id, array $data) {
+        $sql = "UPDATE proverbs SET proverb_tfng = ?, proverb_lat = ?, translation_fr = ?, explanation = ? WHERE id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            $data['proverb_tfng'],
+            $data['proverb_lat'],
+            $data['translation_fr'],
+            $data['explanation'] ?? '',
+            $id
+        ]);
+    }
+
+    public function delete($id) {
+        $stmt = $this->pdo->prepare("DELETE FROM proverbs WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
 }

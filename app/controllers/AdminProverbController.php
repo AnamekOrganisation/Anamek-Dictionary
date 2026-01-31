@@ -10,26 +10,7 @@ class AdminProverbController {
         $this->proverbService = new \App\Services\ProverbService($this->pdo);
     }
 
-    private function verifyCsrf() {
-        if (!verify_csrf($_POST['csrf_token'] ?? '')) {
-            die('CSRF validation failed.');
-        }
-    }
-
-    public function checkAuth() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'admin') {
-            $_SESSION['intended_url'] = $_SERVER['REQUEST_URI'];
-            header('Location: ' . BASE_URL . '/login');
-            exit;
-        }
-    }
-
     public function proverbs() {
-        $this->checkAuth();
-        
         $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
         $limit = 20;
         $search = isset($_GET['q']) ? trim($_GET['q']) : '';
@@ -49,7 +30,6 @@ class AdminProverbController {
     }
 
     public function editProverbPage() {
-        $this->checkAuth();
         $id = isset($_GET['id']) ? intval($_GET['id']) : (isset($_POST['id']) ? intval($_POST['id']) : null);
         
         if (!$id) {
@@ -60,8 +40,7 @@ class AdminProverbController {
         $message = '';
         $result = false;
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_proverb'])) {
-            $this->verifyCsrf();
-            if ($this->updateProverb($id, $_POST['proverb_tfng'], $_POST['proverb_lat'], $_POST['translation_fr'], $_POST['explanation'])) {
+            if ($this->proverbService->updateProverb($id, $_POST)) {
                 $message = 'Proverbe mis à jour avec succès !';
                 $result = true;
             } else {
@@ -81,12 +60,10 @@ class AdminProverbController {
     }
 
     public function addProverbPage() {
-        $this->checkAuth();
         $message = '';
         $result = false;
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->verifyCsrf();
-            if ($this->addProverb($_POST)) {
+            if ($this->proverbService->createProverb($_POST)) {
                 $message = 'Proverbe ajouté avec succès !';
                 $result = true;
             } else {
@@ -98,16 +75,6 @@ class AdminProverbController {
         require_once ROOT_PATH . '/app/views/admin/add-proverb.php';
     }
 
-    public function updateProverb($id, $tfng, $lat, $fr, $expl) {
-        $stmt = $this->pdo->prepare("UPDATE proverbs SET proverb_tfng = ?, proverb_lat = ?, translation_fr = ?, explanation = ? WHERE id = ?");
-        return $stmt->execute([$tfng, $lat, $fr, $expl, $id]);
-    }
-
-    public function addProverb($data) {
-        $stmt = $this->pdo->prepare("INSERT INTO proverbs (proverb_tfng, proverb_lat, translation_fr, explanation) VALUES (?, ?, ?, ?)");
-        return $stmt->execute([$data['proverb_tfng'] ?? '', $data['proverb_lat'] ?? '', $data['translation_fr'] ?? '', $data['explanation'] ?? '']);
-    }
-
     public function getProverbById($id) {
         $stmt = $this->pdo->prepare("SELECT * FROM proverbs WHERE id = ?");
         $stmt->execute([$id]);
@@ -115,12 +82,9 @@ class AdminProverbController {
     }
 
     public function deleteProverb() {
-        $this->checkAuth();
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
-            $this->verifyCsrf();
             $id = intval($_POST['id']);
-            $stmt = $this->pdo->prepare("DELETE FROM proverbs WHERE id = ?");
-            if ($stmt->execute([$id])) {
+            if ($this->proverbService->deleteProverb($id)) {
                 setcookie('admin_message', '<div class="alert success">Proverbe supprimé avec succès !</div>', time() + 10, '/');
             } else {
                 setcookie('admin_message', '<div class="alert error">Erreur lors de la suppression.</div>', time() + 10, '/');
