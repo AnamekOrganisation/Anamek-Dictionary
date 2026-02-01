@@ -146,13 +146,13 @@ class User {
     }
 
     /**
-     * Find user by email
-     * @param string $email Email address
-     * @return array|false User data or false
+     * Find user by Google ID
+     * @param string $googleId
+     * @return array|false
      */
-    public function findByEmail($email) {
-        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = ?");
-        $stmt->execute([$email]);
+    public function findByGoogleId($googleId) {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE google_id = ?");
+        $stmt->execute([$googleId]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user) {
@@ -161,6 +161,57 @@ class User {
 
         return $user;
     }
+
+    /**
+     * Find or create user from Google data
+     * @param array $googleData (id, email, name, picture)
+     * @return array|false
+     */
+    public function findOrCreateByGoogle($googleData) {
+        try {
+            // 1. Try to find by Google ID
+            $user = $this->findByGoogleId($googleData['id']);
+            if ($user) return $user;
+
+            // 2. Try to find by email (to link account if it exists)
+            $user = $this->findByEmail($googleData['email']);
+            if ($user) {
+                // Link account
+                $stmt = $this->pdo->prepare("UPDATE users SET google_id = ? WHERE id = ?");
+                $stmt->execute([$googleData['id'], $user['id']]);
+                return $this->find($user['id']);
+            }
+
+            // 3. Create new user
+            $username = strtolower(str_replace(' ', '.', $googleData['name'])) . rand(100, 999);
+            // Check if username exists, if so append more randomness
+            $checkStmt = $this->pdo->prepare("SELECT id FROM users WHERE username = ?");
+            $checkStmt->execute([$username]);
+            if ($checkStmt->fetch()) {
+                $username .= rand(1000, 9999);
+            }
+
+            $sql = "INSERT INTO users (username, email, google_id, full_name, avatar_url, email_verified, created_at) 
+                    VALUES (?, ?, ?, ?, ?, 1, NOW())";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                $username,
+                $googleData['email'],
+                $googleData['id'],
+                $googleData['name'],
+                $googleData['picture'] ?? null
+            ]);
+
+            return $this->find($this->pdo->lastInsertId());
+
+        } catch (Exception $e) {
+            error_log("Google findOrCreate error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Find user by email
 
     /**
      * Verify email with token

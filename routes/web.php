@@ -95,6 +95,14 @@ $router->get('/logout', function() use ($authController) {
 $router->get('/forgot-password', function() use ($authController) {
     $authController->showForgotPassword();
 });
+
+// Google Auth Routes
+$router->get('/auth/google', function() use ($authController) {
+    $authController->googleRedirect();
+});
+$router->get('/auth/google/callback', function() use ($authController) {
+    $authController->googleCallback();
+});
 $router->post('/forgot-password', function() use ($authController) {
     $authController->sendResetLink();
 }, [Middleware::class . '::csrf']);
@@ -201,6 +209,9 @@ $router->get('/admin/users', function() use ($adminUserController) {
 $router->post('/admin/users', function() use ($adminUserController) {
     $adminUserController->users();
 }, $adminPostAuth);
+$router->get('/admin/user/{id}', function($params) use ($adminUserController) {
+    $adminUserController->userDetails($params['id']);
+}, $adminAuth);
 $router->get('/admin/words', function() use ($adminWordController) {
     $adminWordController->words(); 
 }, $adminAuth);
@@ -273,6 +284,57 @@ $router->get('/admin/edit-proverb', function() use ($adminProverbController) {
 $router->post('/admin/edit-proverb', function() use ($adminProverbController) {
     $_GET['action'] = 'edit-proverb';
     $adminProverbController->editProverbPage();
+}, $adminPostAuth);
+
+// --- Admin Quiz Management ---
+$router->get('/admin/quizzes', function() use ($pdo) {
+    $quizAdmin = new AdminQuizController($pdo);
+    $quizAdmin->index();
+}, $adminAuth);
+$router->get('/admin/quiz/add', function() use ($pdo) {
+    $quizAdmin = new AdminQuizController($pdo);
+    $quizAdmin->add();
+}, $adminAuth);
+$router->post('/admin/quiz/add', function() use ($pdo) {
+    $quizAdmin = new AdminQuizController($pdo);
+    $quizAdmin->add();
+}, $adminPostAuth);
+$router->get('/admin/quiz/edit/{id}', function($params) use ($pdo) {
+    $quizAdmin = new AdminQuizController($pdo);
+    $quizAdmin->edit($params['id']);
+}, $adminAuth);
+$router->post('/admin/quiz/edit/{id}', function($params) use ($pdo) {
+    $quizAdmin = new AdminQuizController($pdo);
+    $quizAdmin->edit($params['id']);
+}, $adminPostAuth);
+$router->post('/admin/quiz/delete', function() use ($pdo) {
+    $quizAdmin = new AdminQuizController($pdo);
+    $quizAdmin->delete();
+}, $adminPostAuth);
+
+$router->get('/admin/quiz/questions/{id}', function($params) use ($pdo) {
+    $quizAdmin = new AdminQuizController($pdo);
+    $quizAdmin->manageQuestions($params['id']);
+}, $adminAuth);
+$router->get('/admin/quiz/question/add/{id}', function($params) use ($pdo) {
+    $quizAdmin = new AdminQuizController($pdo);
+    $quizAdmin->addQuestion($params['id']);
+}, $adminAuth);
+$router->post('/admin/quiz/question/add/{id}', function($params) use ($pdo) {
+    $quizAdmin = new AdminQuizController($pdo);
+    $quizAdmin->addQuestion($params['id']);
+}, $adminPostAuth);
+$router->get('/admin/quiz/question/edit/{id}', function($params) use ($pdo) {
+    $quizAdmin = new AdminQuizController($pdo);
+    $quizAdmin->editQuestion($params['id']);
+}, $adminAuth);
+$router->post('/admin/quiz/question/edit/{id}', function($params) use ($pdo) {
+    $quizAdmin = new AdminQuizController($pdo);
+    $quizAdmin->editQuestion($params['id']);
+}, $adminPostAuth);
+$router->post('/admin/quiz/question/delete', function() use ($pdo) {
+    $quizAdmin = new AdminQuizController($pdo);
+    $quizAdmin->deleteQuestion();
 }, $adminPostAuth);
 
 // --- 404 Handler ---

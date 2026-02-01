@@ -204,4 +204,133 @@ class Quiz {
         ");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Admin: Create a new quiz
+     */
+    public function create($data) {
+        $sql = "INSERT INTO quizzes (title_fr, description_fr, category_id, difficulty_level, estimated_time, passing_score, is_active, created_by) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            $data['title_fr'],
+            $data['description_fr'],
+            $data['category_id'],
+            $data['difficulty_level'],
+            $data['estimated_time'],
+            $data['passing_score'],
+            $data['is_active'] ?? 1,
+            $data['created_by']
+        ]);
+        return $this->pdo->lastInsertId();
+    }
+
+    /**
+     * Admin: Update an existing quiz
+     */
+    public function update($id, $data) {
+        $sql = "UPDATE quizzes SET 
+                title_fr = ?, 
+                description_fr = ?, 
+                category_id = ?, 
+                difficulty_level = ?, 
+                estimated_time = ?, 
+                passing_score = ?, 
+                is_active = ?,
+                is_featured = ?
+                WHERE id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            $data['title_fr'],
+            $data['description_fr'],
+            $data['category_id'],
+            $data['difficulty_level'],
+            $data['estimated_time'],
+            $data['passing_score'],
+            $data['is_active'],
+            $data['is_featured'] ?? 0,
+            $id
+        ]);
+    }
+
+    /**
+     * Admin: Delete a quiz and its questions
+     */
+    public function delete($id) {
+        try {
+            $this->pdo->beginTransaction();
+            
+            // Delete questions first (though DB might have cascading deletes, safer to be explicit)
+            $stmt = $this->pdo->prepare("DELETE FROM quiz_questions WHERE quiz_id = ?");
+            $stmt->execute([$id]);
+            
+            $stmt = $this->pdo->prepare("DELETE FROM quizzes WHERE id = ?");
+            $stmt->execute([$id]);
+            
+            $this->pdo->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Admin: Add a question to a quiz
+     */
+    public function addQuestion($data) {
+        $sql = "INSERT INTO quiz_questions (quiz_id, question_text_fr, question_text_tfng, options, correct_answer, points, display_order) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            $data['quiz_id'],
+            $data['question_text_fr'],
+            $data['question_text_tfng'] ?? null,
+            json_encode($data['options']),
+            $data['correct_answer'],
+            $data['points'] ?? 1,
+            $data['display_order'] ?? 0
+        ]);
+        return $this->pdo->lastInsertId();
+    }
+
+    /**
+     * Admin: Update a question
+     */
+    public function updateQuestion($id, $data) {
+        $sql = "UPDATE quiz_questions SET 
+                question_text_fr = ?, 
+                question_text_tfng = ?, 
+                options = ?, 
+                correct_answer = ?, 
+                points = ?, 
+                display_order = ?
+                WHERE id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            $data['question_text_fr'],
+            $data['question_text_tfng'] ?? null,
+            json_encode($data['options']),
+            $data['correct_answer'],
+            $data['points'],
+            $data['display_order'],
+            $id
+        ]);
+    }
+
+    /**
+     * Admin: Delete a question
+     */
+    public function deleteQuestion($id) {
+        $stmt = $this->pdo->prepare("DELETE FROM quiz_questions WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
+
+    /**
+     * Admin: Get all categories (not just active ones)
+     */
+    public function getAllCategories() {
+        $stmt = $this->pdo->query("SELECT id, category_name_fr as name FROM word_categories ORDER BY category_name_fr ASC");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

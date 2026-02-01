@@ -27,6 +27,13 @@ include ROOT_PATH . '/app/views/partials/admin_sidebar.php';
             </div>
         <?php endif; ?>
 
+        <?php if (isset($error) && $error): ?>
+            <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm mb-4 border-0" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i><?= $error ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
         <div class="glass-card rounded-4 overflow-hidden border-0 shadow-sm">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -91,6 +98,9 @@ include ROOT_PATH . '/app/views/partials/admin_sidebar.php';
                                             <?= $u['is_active'] ? 'Désactiver' : 'Réactiver' ?>
                                         </button>
                                     </form>
+                                    <a href="<?= BASE_URL ?>/admin/user/<?= $u['id'] ?>" class="btn btn-sm btn-outline-primary rounded-circle ms-1" title="Voir les contributions" style="width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

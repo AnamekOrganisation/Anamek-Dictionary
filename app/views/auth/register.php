@@ -98,6 +98,47 @@
     .auth-footer a:hover {
         text-decoration: underline;
     }
+    
+    /* Google Button Styles */
+    .divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 20px 0;
+        color: #7f8c8d;
+    }
+    .divider::before, .divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #ecf0f1;
+    }
+    .divider span {
+        padding: 0 10px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .btn-google {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        padding: 12px;
+        background: white;
+        color: #34495e;
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s;
+        box-sizing: border-box;
+    }
+    .btn-google:hover {
+        background: #f8f9fa;
+        border-color: #dcdde1;
+        color: #2c3e50;
+    }
 </style>
 
 <div class="auth-container">
@@ -176,6 +217,15 @@
         </div>
 
         <button type="submit" class="btn-primary">S'inscrire</button>
+
+        <div class="divider">
+            <span>OU</span>
+        </div>
+
+        <a href="<?= BASE_URL ?>/auth/google" class="btn-google">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="18">
+            S'inscrire avec Google
+        </a>
     </form>
 
     <div class="auth-footer">

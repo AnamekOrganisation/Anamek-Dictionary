@@ -14,6 +14,78 @@ class AuthController extends BaseController {
         $this->authService = new \App\Services\AuthService($pdo);
     }
 
+    private function getGoogleClient() {
+        $client = new \Google\Client();
+        $clientId = $_ENV['GOOGLE_CLIENT_ID'] ?? getenv('GOOGLE_CLIENT_ID') ?? '';
+        $clientSecret = $_ENV['GOOGLE_CLIENT_SECRET'] ?? getenv('GOOGLE_CLIENT_SECRET') ?? '';
+        $redirectUri = $_ENV['GOOGLE_REDIRECT_URL'] ?? getenv('GOOGLE_REDIRECT_URL') ?? '';
+        
+        $client->setClientId($clientId);
+        $client->setClientSecret($clientSecret);
+        $client->setRedirectUri($redirectUri);
+        $client->addScope("email");
+        $client->addScope("profile");
+        return $client;
+    }
+
+    /**
+     * Redirect to Google for authentication
+     */
+    public function googleRedirect() {
+        $client = $this->getGoogleClient();
+        $authUrl = $client->createAuthUrl();
+        header('Location: ' . filter_var($authUrl, FILTER_SANITIZE_URL));
+        exit;
+    }
+
+    /**
+     * Handle callback from Google
+     */
+    public function googleCallback() {
+        $client = $this->getGoogleClient();
+        
+        if (isset($_GET['code'])) {
+            try {
+                $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
+                if (isset($token['error'])) {
+                    throw new Exception("Erreur Google : " . $token['error_description']);
+                }
+                $client->setAccessToken($token);
+
+                // Get user info
+                $googleService = new \Google\Service\Oauth2($client);
+                $userData = $googleService->userinfo->get();
+
+                // Find or create regional user
+                $user = $this->userModel->findOrCreateByGoogle([
+                    'id' => $userData->id,
+                    'email' => $userData->email,
+                    'name' => $userData->name,
+                    'picture' => $userData->picture
+                ]);
+
+                if ($user) {
+                    // Log the user in
+                    session_regenerate_id(true);
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['username'] = $user['username'];
+                    $_SESSION['user_type'] = $user['user_type'];
+                    $_SESSION['email_verified'] = true;
+                    $_SESSION['login_time'] = time();
+
+                    $this->redirectWith('/user/dashboard', "Bienvenue " . $user['username'] . " !");
+                } else {
+                    $this->redirectWithError('/login', "Échec de l'authentification Google.");
+                }
+            } catch (Exception $e) {
+                error_log("Google Login Error: " . $e->getMessage());
+                $this->redirectWithError('/login', "Une erreur est survenue lors de la connexion avec Google.");
+            }
+        } else {
+            $this->redirectWithError('/login', "Demande de connexion Google invalide.");
+        }
+    }
+
     /**
      * Show registration form
      */

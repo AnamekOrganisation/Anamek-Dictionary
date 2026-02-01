@@ -17,6 +17,9 @@ $pendingCount = $pendingCount ?? 0;
         <a href="<?= BASE_URL ?>/admin/proverbs" class="nav-link <?= $current_page == 'proverbs' ? 'active' : '' ?> rounded-3 mb-2">
             <i class="fas fa-quote-left me-3"></i>Gestion Proverbes
         </a>
+        <a href="<?= BASE_URL ?>/admin/quizzes" class="nav-link <?= $current_page == 'quizzes' ? 'active' : '' ?> rounded-3 mb-2">
+            <i class="fas fa-question-circle me-3"></i>Gestion des Quizz
+        </a>
         <a href="<?= BASE_URL ?>/admin/reviews" class="nav-link <?= $current_page == 'reviews' ? 'active' : '' ?> rounded-3 mb-2 d-flex justify-content-between align-items-center">
             <span><i class="fas fa-hand-holding-heart me-3"></i>Contributions</span>
             <?php if ($pendingCount > 0): ?>
