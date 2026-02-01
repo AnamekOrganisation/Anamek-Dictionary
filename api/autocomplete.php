@@ -17,6 +17,12 @@ try {
     $lang = $_GET['lang'] ?? 'ber'; // Default to Amazigh
     $query = trim($query);
     
+    // SECURITY: Whitelist allowed languages
+    $allowedLangs = ['fr', 'ber', 'tfng'];
+    if (!in_array($lang, $allowedLangs, true)) {
+        throw new Exception('Invalid language parameter');
+    }
+    
     if (strlen($query) < 2) {
         echo json_encode(['results' => []]);
         exit;
@@ -61,8 +67,18 @@ try {
     
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
+    // Security: Sanitize all output before JSON encoding
+    $safeResults = array_map(function($result) {
+        return [
+            'id' => (int)$result['id'],
+            'word_tfng' => htmlspecialchars($result['word_tfng'], ENT_QUOTES, 'UTF-8'),
+            'word_lat' => htmlspecialchars($result['word_lat'], ENT_QUOTES, 'UTF-8'),
+            'translation_fr' => htmlspecialchars($result['translation_fr'], ENT_QUOTES, 'UTF-8')
+        ];
+    }, $results);
+    
     echo json_encode([
-        'results' => $results,
+        'results' => $safeResults,
         'count' => count($results)
     ]);
     

@@ -1,15 +1,32 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
+    // Security: Explicit session timeout (30 minutes)
+    $sessionTimeout = 1800;
+    
     // Secure session cookie settings
     session_set_cookie_params([
         'lifetime' => 0,
         'path' => '/',
         'domain' => '',
-        'secure' => isset($_SERVER['HTTPS']),
+        'secure' => !empty($_SERVER['HTTPS']) || $_SERVER['HTTP_HOST'] !== 'localhost',
         'httponly' => true,
-        'samesite' => 'Lax'
+        'samesite' => 'Strict'
     ]);
     session_start();
+}
+
+// Security: Check for session timeout
+if (isset($_SESSION['user_id'])) {
+    $sessionTimeout = 1800; // 30 minutes
+    $lastActivity = $_SESSION['last_activity'] ?? time();
+    
+    if (time() - $lastActivity > $sessionTimeout) {
+        session_destroy();
+        $_SESSION = [];
+        header('Location: ' . BASE_URL . '/login?expired=1');
+        exit;
+    }
+    $_SESSION['last_activity'] = time();
 }
 
 // Generate CSRF token if not exists
@@ -17,10 +34,12 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Regenerate session ID periodically or on login to prevent fixation
-if (!isset($_SESSION['last_regeneration']) || time() - $_SESSION['last_regeneration'] > 1800) {
-    session_regenerate_id(true);
-    $_SESSION['last_regeneration'] = time();
+// Security: Force HTTPS in production
+if (PHP_SAPI !== 'cli' && getenv('APP_ENV') === 'production') {
+    if (empty($_SERVER['HTTPS'])) {
+        header('Location: https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+        exit;
+    }
 }
 
 define('ROOT_PATH', dirname(__FILE__, 2));

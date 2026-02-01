@@ -106,11 +106,19 @@ class AuthController extends BaseController {
 
         $user = $result['user'];
 
+        // CRITICAL FIX: Regenerate session ID on login (prevent fixation)
+        session_regenerate_id(true);
+        
+        // Store session metadata for hijacking detection
+        $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
+        $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'] ?? '';
+
         // Set session data
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['user_type'] = $user['user_type'];
         $_SESSION['email_verified'] = $user['email_verified'];
+        $_SESSION['login_time'] = time();
 
         // Persistent session
         if ($rememberMe) {

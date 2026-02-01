@@ -14,6 +14,7 @@ class Cache {
 
     /**
      * Get cached data
+     * SECURITY: Uses json_decode instead of unserialize to prevent PHP object injection
      * 
      * @param string $key Unique key for the data
      * @param int $ttl Time to live in seconds (default 3600 = 1 hour)
@@ -37,11 +38,18 @@ class Cache {
             return false;
         }
 
-        return unserialize($content);
+        $data = json_decode($content, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            error_log("Cache deserialization error: " . json_last_error_msg());
+            return false;
+        }
+
+        return $data;
     }
 
     /**
      * Set cached data
+     * SECURITY: Uses json_encode instead of serialize to prevent PHP object injection
      * 
      * @param string $key Unique key
      * @param mixed $data Data to store
@@ -50,7 +58,12 @@ class Cache {
     public function set($key, $data) {
         if (!is_writable($this->cacheDir)) return false;
         $filename = $this->getFilename($key);
-        $result = @file_put_contents($filename, serialize($data));
+        $encoded = json_encode($data);
+        if ($encoded === false) {
+            error_log("Cache encoding error: " . json_last_error_msg());
+            return false;
+        }
+        $result = @file_put_contents($filename, $encoded);
         return $result !== false;
     }
 

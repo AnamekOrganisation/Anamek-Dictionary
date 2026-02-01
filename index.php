@@ -3,6 +3,17 @@
  * Anamek Dictionary - Main Entry point
  */
 
+/**
+ * CRITICAL: Set security headers before any output
+ */
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: SAMEORIGIN');
+header('X-XSS-Protection: 1; mode=block');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
+header('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
+header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:");
+
 // Enable Error Logging, but hide from users for a clean UI
 error_reporting(E_ALL);
 ini_set('display_errors', '0');
@@ -74,10 +85,20 @@ try {
     }
 
 } catch (Exception $e) {
+    // SECURITY: Log full error details server-side only, hide from users
     error_log("Bootstrap Error: " . $e->getMessage());
+    error_log("File: " . $e->getFile() . " Line: " . $e->getLine());
+    error_log("Trace: " . $e->getTraceAsString());
+    
+    // SECURITY: Show generic error to user, no technical details
+    $errorMsg = "An error occurred. Please try again later.";
+    if (defined('DEBUG_MODE') && DEBUG_MODE === true) {
+        $errorMsg = htmlspecialchars($e->getMessage());
+    }
+    
     die('<div style="font-family:sans-serif;padding:30px;background:#fff;color:#721c24;border-top:4px solid #cc0000;box-shadow:0 10px 30px rgba(0,0,0,0.1);max-width:600px;margin:100px auto;">
             <h2 style="margin-top:0;">System Error</h2>
-            <p><strong>' . htmlspecialchars($e->getMessage()) . '</strong></p>
-            <p style="font-size:0.85em;color:#999;border-top:1px solid #eee;padding-top:15px;">' . $e->getFile() . ':' . $e->getLine() . '</p>
+            <p><strong>' . $errorMsg . '</strong></p>
+            <p style="font-size:0.85em;color:#999;">Error ID: ' . bin2hex(random_bytes(4)) . '</p>
          </div>');
 }

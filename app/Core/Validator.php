@@ -42,6 +42,11 @@ class Validator {
                     $this->addError($field, "The $field must be at least $param characters.");
                 }
                 break;
+            case 'max':
+                if (strlen($value) > $param) {
+                    $this->addError($field, "The $field must not exceed $param characters.");
+                }
+                break;
             case 'email':
                 if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
                     $this->addError($field, "The $field must be a valid email address.");
@@ -55,6 +60,42 @@ class Validator {
             case 'regex':
                 if (!preg_match($param, $value)) {
                     $this->addError($field, "The $field format is invalid.");
+                }
+                break;
+            case 'numeric':
+                if (!is_numeric($value)) {
+                    $this->addError($field, "The $field must be numeric.");
+                }
+                break;
+            case 'alpha':
+                if (!ctype_alpha($value)) {
+                    $this->addError($field, "The $field must contain only letters.");
+                }
+                break;
+            case 'alphanumeric':
+                if (!ctype_alnum($value)) {
+                    $this->addError($field, "The $field must contain only alphanumeric characters.");
+                }
+                break;
+            case 'url':
+                if (!filter_var($value, FILTER_VALIDATE_URL)) {
+                    $this->addError($field, "The $field must be a valid URL.");
+                }
+                break;
+            case 'unique':
+                // SECURITY: Validate against whitelist to prevent SQL injection
+                $allowedTables = ['users', 'words', 'proverbs'];
+                $parts = explode(':', $param);
+                if (count($parts) === 2 && in_array($parts[0], $allowedTables, true)) {
+                    $table = $parts[0];
+                    $column = $parts[1];
+                    // Only allow alphanumeric + underscore for column names
+                    if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $column)) {
+                        $this->addError($field, "Invalid validation configuration.");
+                        break;
+                    }
+                    // Note: Actual DB check should be done in service layer
+                    // This is a schema validation only
                 }
                 break;
         }

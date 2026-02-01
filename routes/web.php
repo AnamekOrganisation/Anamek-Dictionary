@@ -6,6 +6,7 @@
 // Global Objects from index.php: $router, $pdo, $controller, $api, $authController, $userController, $adminController, $adminWordController, $adminProverbController, $adminUserController, $adminSettingsController
 
 use App\Core\Middleware\AuthMiddleware as Middleware;
+use App\Core\Middleware\RateLimitMiddleware;
 
 // --- Frontend Routes ---
 $router->get('/sitemap.xml', function() use ($pdo) {
@@ -79,14 +80,14 @@ $router->get('/register', function() use ($authController) {
 });
 $router->post('/register', function() use ($authController) {
     $authController->register();
-}, [Middleware::class . '::csrf']);
+}, [RateLimitMiddleware::loginAttempts($pdo), Middleware::class . '::csrf']);
 
 $router->get('/login', function() use ($authController) {
     $authController->showLogin();
 });
 $router->post('/login', function() use ($authController) {
     $authController->login();
-}, [Middleware::class . '::csrf']);
+}, [RateLimitMiddleware::loginAttempts($pdo), Middleware::class . '::csrf']);
 
 $router->get('/logout', function() use ($authController) {
     $authController->logout();

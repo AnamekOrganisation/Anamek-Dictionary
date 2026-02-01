@@ -109,7 +109,7 @@ class DictionaryController extends BaseController {
             return;
         }
 
-        $page_title = $word['word_lat'] . " (" . $word['word_tfng'] . ") - Amawal";
+        $page_title = e($word['word_lat']) . " (" . e($word['word_tfng']) . ") - Amawal";
         
         $params_id = $params['id'] ?? '';
         // If the URL contains a specific ID in Slug-ID format (e.g. tarrist-15976), show ONLY that word.

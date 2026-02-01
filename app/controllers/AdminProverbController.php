@@ -60,12 +60,18 @@ class AdminProverbController extends BaseController {
     }
 
     public function deleteProverb() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
-            $id = intval($_POST['id']);
-            if ($this->proverbService->deleteProverb($id)) {
-                $this->redirectWith('/admin/proverbs', 'Proverbe supprimé avec succès !');
-            } else {
-                $this->redirectWithError('/admin/proverbs', 'Erreur lors de la suppression.');
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // SECURITY: Verify CSRF token
+            if (!verify_csrf($_POST['csrf_token'] ?? '')) {
+                $this->redirectWithError('/admin/proverbs', 'Security token invalid. Please try again.');
+            }
+            if (isset($_POST['id'])) {
+                $id = intval($_POST['id']);
+                if ($this->proverbService->deleteProverb($id)) {
+                    $this->redirectWith('/admin/proverbs', 'Proverbe supprimé avec succès !');
+                } else {
+                    $this->redirectWithError('/admin/proverbs', 'Erreur lors de la suppression.');
+                }
             }
         }
         $this->redirectWithError('/admin/proverbs', 'Action non autorisée.');

@@ -16,10 +16,25 @@ class WordService {
     public function validateWord(array $data) {
         $validator = new Validator($data);
         $rules = [
-            'word_tfng' => 'required',
-            'word_lat' => 'required',
-            'translation_fr' => 'required'
+            'word_tfng' => 'required|min:2|max:100',
+            'word_lat' => 'required|min:2|max:100',
+            'translation_fr' => 'required|min:2|max:500'
         ];
+
+        // SECURITY: Validate optional fields with constraints
+        if (!empty($data['definition_tfng'])) {
+            $validator->validate(['definition_tfng' => 'max:1000']);
+        }
+        if (!empty($data['definition_lat'])) {
+            $validator->validate(['definition_lat' => 'max:1000']);
+        }
+        if (!empty($data['part_of_speech'])) {
+            // Whitelist valid parts of speech
+            $validPOS = ['noun', 'verb', 'adjective', 'adverb', 'preposition', 'conjunction', 'pronoun', 'interjection'];
+            if (!in_array($data['part_of_speech'], $validPOS, true)) {
+                return ['success' => false, 'errors' => ['part_of_speech' => 'Invalid part of speech']];
+            }
+        }
 
         if (!$validator->validate($rules)) {
             return ['success' => false, 'errors' => $validator->getErrors()];

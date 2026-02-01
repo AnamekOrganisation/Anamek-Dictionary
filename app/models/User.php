@@ -28,9 +28,14 @@ class User {
                 throw new Exception("Invalid email format");
             }
 
-            // Validate password strength (min 8 characters)
-            if (strlen($data['password']) < 8) {
-                throw new Exception("Password must be at least 8 characters");
+            // Validate password strength (min 12 characters + complexity)
+            if (strlen($data['password']) < 12) {
+                throw new Exception("Password must be at least 12 characters");
+            }
+
+            // SECURITY: Require password complexity
+            if (!$this->isPasswordStrong($data['password'])) {
+                throw new Exception("Password must contain uppercase, lowercase, number, and special character (@$!%*?&)");
             }
 
             // Check if username or email already exists
@@ -224,12 +229,17 @@ class User {
      */
     public function resetPassword($token, $newPassword) {
         try {
-            // Validate password
-            if (strlen($newPassword) < 8) {
-                throw new Exception("Password must be at least 8 characters");
+            // SECURITY: Validate password strength (min 12 characters + complexity)
+            if (strlen($newPassword) < 12) {
+                throw new Exception("Password must be at least 12 characters");
             }
 
-            // Find user with valid token
+            // SECURITY: Require password complexity
+            if (!$this->isPasswordStrong($newPassword)) {
+                throw new Exception("Password must contain uppercase, lowercase, number, and special character (@$!%*?&)");
+            }
+
+            // Find user with valid token (checks expiration)
             $stmt = $this->pdo->prepare(
                 "SELECT id FROM users WHERE reset_token = ? AND reset_token_expires > NOW()"
             );
@@ -436,5 +446,16 @@ class User {
     public function destroySession($sessionToken) {
         $stmt = $this->pdo->prepare("DELETE FROM user_sessions WHERE session_token = ?");
         return $stmt->execute([$sessionToken]);
+    }
+
+    /**
+     * SECURITY: Validate password strength
+     * Requirements: 12+ chars, uppercase, lowercase, digit, special char
+     * @param string $password Password to validate
+     * @return bool True if password meets requirements
+     */
+    private function isPasswordStrong($password) {
+        $pattern = '/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/';
+        return preg_match($pattern, $password) === 1;
     }
 }

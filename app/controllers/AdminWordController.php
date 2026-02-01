@@ -78,15 +78,22 @@ class AdminWordController extends BaseController {
     }
 
     public function deleteWord() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
-            $id = intval($_POST['id']);
-            $deleteResult = $this->wordService->deleteWord($id);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // SECURITY: Verify CSRF token
+            if (!verify_csrf($_POST['csrf_token'] ?? '')) {
+                $this->redirectWithError('/admin/words', 'Security token invalid. Please try again.');
+            }
+            
+            if (isset($_POST['id'])) {
+                $id = intval($_POST['id']);
+                $deleteResult = $this->wordService->deleteWord($id);
 
-            if ($deleteResult['success']) {
-                if (class_exists('App\Helpers\SiteStats')) App\Helpers\SiteStats::clearCache();
-                $this->redirectWith('/admin/words', 'Mot supprimé avec succès !');
-            } else {
-                $this->redirectWithError('/admin/words', 'Erreur lors de la suppression.');
+                if ($deleteResult['success']) {
+                    if (class_exists('App\Helpers\SiteStats')) App\Helpers\SiteStats::clearCache();
+                    $this->redirectWith('/admin/words', 'Mot supprimé avec succès !');
+                } else {
+                    $this->redirectWithError('/admin/words', 'Erreur lors de la suppression.');
+                }
             }
         }
         $this->redirectWithError('/admin/words', 'Action non autorisée.');
