@@ -63,7 +63,7 @@ include ROOT_PATH . '/app/views/partials/admin_sidebar.php';
                                 </td>
                                 <td>
                                     <form method="POST" class="d-flex align-items-center">
-                                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                        <?= csrf_field() ?>
                                         <input type="hidden" name="user_id" value="<?= $u['id'] ?>">
                                         <select name="role" class="form-select form-select-sm border-0 bg-light rounded-pill" onchange="this.form.submit()">
                                             <option value="regular" <?= $u['user_type'] == 'regular' ? 'selected' : '' ?>>Régulier</option>
@@ -92,7 +92,7 @@ include ROOT_PATH . '/app/views/partials/admin_sidebar.php';
                                 </td>
                                 <td class="text-end pe-4">
                                     <form method="POST" class="d-inline">
-                                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                        <?= csrf_field() ?>
                                         <input type="hidden" name="user_id" value="<?= $u['id'] ?>">
                                         <button type="submit" name="toggle_status" class="btn btn-sm <?= $u['is_active'] ? 'btn-outline-danger' : 'btn-outline-success' ?> rounded-pill px-3">
                                             <?= $u['is_active'] ? 'Désactiver' : 'Réactiver' ?>

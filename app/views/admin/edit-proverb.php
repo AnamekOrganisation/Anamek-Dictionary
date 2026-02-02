@@ -20,7 +20,7 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
             </div>
             <div class="search-box glass-card p-2 rounded-pill d-flex align-items-center bg-white border" style="width: 100%; max-width: 400px;">
                 <form method="post" class="d-flex w-100">
-                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                    <?= csrf_field() ?>
                     <input type="text" name="search_query" class="form-control border-0 bg-transparent shadow-none" placeholder="Rechercher un proverbe..." required>
                     <button type="submit" class="btn btn-warning rounded-pill px-4">
                         <i class="fas fa-search"></i>
@@ -72,7 +72,7 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
                 </div>
                 
                 <form method="post" class="row g-4">
-                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                    <?= csrf_field() ?>
                     <input type="hidden" name="id" value="<?= htmlspecialchars($proverb['id']) ?>">
 
                     <div class="col-12">

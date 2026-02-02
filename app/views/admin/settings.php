@@ -22,7 +22,7 @@ include ROOT_PATH . '/app/views/partials/admin_sidebar.php';
         <?php endif; ?>
 
         <form method="POST">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+            <?= csrf_field() ?>
             
             <div class="row g-4">
                 <?php foreach ($groupedSettings as $group => $items): ?>

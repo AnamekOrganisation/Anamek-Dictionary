@@ -92,7 +92,7 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
                                                 <i class="fas fa-pen"></i>
                                             </a>
                                             <form method="POST" action="<?= BASE_URL ?>/admin/quiz/delete" class="d-inline" onsubmit="return confirm('Confirmer la suppression ?');">
-                                                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                                <?= csrf_field() ?>
                                                 <input type="hidden" name="id" value="<?= $q['id'] ?>">
                                                 <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle action-btn" title="Supprimer">
                                                     <i class="fas fa-trash-alt"></i>

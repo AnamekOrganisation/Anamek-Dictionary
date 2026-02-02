@@ -163,7 +163,7 @@ include ROOT_PATH . '/app/views/partials/admin_sidebar.php';
                                 <div class="col-lg-4 ps-lg-4">
                                     <form action="<?= BASE_URL ?>/admin/reviews" method="POST" class="h-100 d-flex flex-column">
                                         <input type="hidden" name="id" value="<?= $c['id'] ?>">
-                                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                        <?= csrf_field() ?>
                                         
                                         <div class="form-group mb-3">
                                             <label class="small fw-bold mb-2">Notes administratives</label>

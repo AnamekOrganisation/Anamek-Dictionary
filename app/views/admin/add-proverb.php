@@ -28,7 +28,7 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
 
         <div class="glass-card rounded-4 p-4 shadow-sm">
             <form method="POST" class="row g-4">
-                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                <?= csrf_field() ?>
 
                 <div class="col-12">
                     <label class="small fw-bold text-muted mb-2">Proverbe (Tifinagh) <span class="text-danger">*</span></label>

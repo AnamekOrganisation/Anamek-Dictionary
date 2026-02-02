@@ -169,7 +169,7 @@ include ROOT_PATH . '/app/views/partials/admin_sidebar.php';
                 <div class="glass-card rounded-4 p-4 h-100">
                     <h5 class="fw-bold mb-4">Liens Sociaux</h5>
                     <form method="POST" class="social-links-form">
-                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                        <?= csrf_field() ?>
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="input-group">

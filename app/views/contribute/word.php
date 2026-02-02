@@ -27,7 +27,7 @@ include ROOT_PATH . '/app/views/partials/header.php';
             <?php endif; ?>
 
             <form action="<?= BASE_URL ?>/contribute/word" method="POST" class="needs-validation" novalidate>
-                <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+                <?= csrf_field() ?>
                 <?php if ($isEdit): ?>
                     <input type="hidden" name="target_id" value="<?= $word['id'] ?>">
                 <?php endif; ?>

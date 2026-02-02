@@ -63,7 +63,7 @@
                             <h3 class="fw-bold text-dark mb-4"><?= __('Envoyez-nous un message') ?></h3>
                             
                             <form action="<?= BASE_URL ?>/contact" method="POST" class="needs-validation" novalidate>
-                                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                <?= csrf_field() ?>
                                 
                                 <div class="row g-3">
                                     <div class="col-md-6">

@@ -28,7 +28,7 @@ $action = $isEdit ? '/admin/quiz/question/edit/' . $question['id'] : '/admin/qui
             <div class="col-lg-10">
                 <div class="premium-card rounded-4 shadow-sm p-4 p-lg-5">
                     <form method="POST" action="<?= BASE_URL . $action ?>">
-                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                        <?= csrf_field() ?>
                         
                         <div class="mb-4">
                             <label class="form-label-custom">Texte de la Question (Français)</label>

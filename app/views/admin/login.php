@@ -8,7 +8,7 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
         <h1>Administration</h1>
 
         <form method="post" class="login-form" novalidate>
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+            <?= csrf_field() ?>
 
             <div class="form-group">
                 <label for="username">Nom d'utilisateur</label>

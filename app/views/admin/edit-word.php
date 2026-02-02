@@ -33,7 +33,7 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
         <!-- Form Card -->
         <div class="premium-card rounded-4 shadow-sm overflow-hidden mb-5">
             <form method="POST" class="p-0">
-                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                <?= csrf_field() ?>
                 <input type="hidden" name="id" value="<?= $word['id'] ?>">
 
                 <!-- Section 1: Core Information -->

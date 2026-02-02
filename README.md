@@ -113,7 +113,7 @@ Every contribution, small or large, helps preserve and grow the Amazigh language
 
 The following features are planned for future development.
 Contributors are welcome to participate in their design, implementation, and improvement.
-- [ ] Google Sign-In / OAuth authentication
+- [x] Google Sign-In / OAuth authentication
 - [ ] Favorites / Bookmark words
 - [ ] Export / Import dictionary data (CSV, JSON)
 - [ ] Notifications for new words, proverbs, or updates

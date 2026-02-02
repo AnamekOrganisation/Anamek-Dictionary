@@ -68,7 +68,7 @@
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                             <form method="POST" action="<?= BASE_URL ?>/admin/message/delete" class="d-inline" onsubmit="return confirm('Supprimer ce message ?');">
-                                                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                                <?= csrf_field() ?>
                                                 <input type="hidden" name="id" value="<?= $msg['id'] ?>">
                                                 <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle action-btn" title="Supprimer">
                                                     <i class="fas fa-trash-alt"></i>

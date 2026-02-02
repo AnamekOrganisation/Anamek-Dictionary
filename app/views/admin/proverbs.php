@@ -105,7 +105,7 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
 
 <!-- Delete Confirmation Modal -->
 <form id="deleteForm" method="POST" action="<?= BASE_URL ?>/admin/delete-proverb">
-    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+    <?= csrf_field() ?>
     <input type="hidden" name="id" id="deleteId">
 </form>
 

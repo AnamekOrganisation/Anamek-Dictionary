@@ -41,7 +41,7 @@
                             <i class="fas fa-reply me-2"></i>Répondre par email
                         </a>
                         <form method="POST" action="<?= BASE_URL ?>/admin/message/delete" class="d-inline ms-2" onsubmit="return confirm('Supprimer ce message ?');">
-                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                            <?= csrf_field() ?>
                             <input type="hidden" name="id" value="<?= $message['id'] ?>">
                             <button type="submit" class="btn btn-outline-danger rounded-pill px-4 fw-bold">
                                 <i class="fas fa-trash-alt me-2"></i>Supprimer

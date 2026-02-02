@@ -97,7 +97,7 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
                                             <!-- Delete Button -->
                                             <form method="POST" action="<?= BASE_URL ?>/admin/delete-word" class="d-inline"
                                                   onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce mot ? Cette action est irréversible.');">
-                                                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                                <?= csrf_field() ?>
                                                 <input type="hidden" name="id" value="<?= $word['id'] ?>">
                                                 <button type="submit" 
                                                         class="btn btn-sm btn-outline-danger rounded-circle action-btn" 
