@@ -3156,17 +3156,6 @@ word of the day */
    NEW PREMIUM HEADER DESIGN - 2026-01-09
    ======================================== */
 
-.main-header::after {
-    content: "";
-    display: block;
-    width: 100%;
-    height: 30px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='20 140 40 20'%3E%3Cg stroke='%23f38d1e' stroke-width='2' fill='none'%3E%3Cpath d='M35 150 L50 150 M40 140 L40 160'/%3E%3Cpath d='M25 145 L35 155 M35 145 L25 155'/%3E%3Cpath d='M45 145 L55 155 M55 145 L45 155'/%3E%3C/g%3E%3C/svg%3E");
-    background-repeat: repeat-x;
-    background-size: 50px 20px;
-    margin: -24px;
-}
-
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -3221,11 +3210,22 @@ word of the day */
 }
 
 /* Hero Search Section */
+
+.hero-search::after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 30px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='20 140 40 20'%3E%3Cg stroke='%23f38d1e' stroke-width='2' fill='none'%3E%3Cpath d='M35 150 L50 150 M40 140 L40 160'/%3E%3Cpath d='M25 145 L35 155 M35 145 L25 155'/%3E%3Cpath d='M45 145 L55 155 M55 145 L45 155'/%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+    background-size: 50px 20px;
+    margin-top: 60px;
+}
 .hero-search {
     background-color: #4e6476;
     color: white;
     text-align: center;
-    padding: 60px 0 100px;
+    padding: 60px 0 0px;
 }
 
 .hero-search h6 {

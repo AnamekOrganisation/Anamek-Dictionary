@@ -61,5 +61,8 @@ return [
     'new words' =>'Nouveaux mots',
     'Link' => 'Lien',
     'verb' => 'verbe',
+    'Discover ancestral wisdom through our proverbs.' => 'Découvrez la sagesse ancestrale à travers nos proverbes.',
+    'Amazigh Proverbs' => 'Proverbes Amazigh',
+    'About Anamek' => 'À propos de Anamek',
 
 ];

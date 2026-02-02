@@ -102,6 +102,7 @@ class DictionaryController extends BaseController {
 
         if (!$word) {
             $page_title = __('Word not found');
+            $page_description = __('Désolé, nous n\'avons trouvé aucun résultat pour votre recherche.');
             $variants = [];
             $word = null;
             
@@ -109,7 +110,31 @@ class DictionaryController extends BaseController {
             return;
         }
 
-        $page_title = e($word['word_lat']) . " (" . e($word['word_tfng']) . ") - Amawal";
+        // --- SEO Enhancement ---
+        $wordLat = e($word['word_lat']);
+        $wordTfng = e($word['word_tfng']);
+        $translation = e($word['translation_fr']);
+        
+        $page_title = "$wordTfng ($wordLat) - $translation | Dictionnaire Anamek";
+        
+        // Build detailed description
+        $desc = "Découvrez la signification de '$wordTfng' ($wordLat) en français : $translation.";
+        if (!empty($word['definition_fr'])) {
+            $desc .= " " . mb_strimwidth(strip_tags($word['definition_fr']), 0, 150, "...");
+        } elseif (!empty($word['part_of_speech'])) {
+            $desc .= " Nature grammaticale : " . $word['part_of_speech'] . ".";
+        }
+        $page_description = $desc;
+
+        // Keywords
+        $page_keywords = "$wordTfng, $wordLat, $translation, dictionnaire amazigh, tamazight, traduction, amawal";
+        if (!empty($word['root_lat'])) {
+            $page_keywords .= ", racine " . $word['root_lat'];
+        }
+
+        // Open Graph
+        $og_title = "$wordTfng ($wordLat) : Définition et Traduction";
+        $og_description = $page_description;
         
         $params_id = $params['id'] ?? '';
         // If the URL contains a specific ID in Slug-ID format (e.g. tarrist-15976), show ONLY that word.
@@ -196,9 +221,55 @@ class DictionaryController extends BaseController {
     }
 
     public function contact() {
+        $page_title = __('Contactez-nous') . " - Amawal";
+        $page_description = "N'hésitez pas à nous contacter pour toute question, suggestion ou signalement d'erreur sur le dictionnaire Anamek.";
         include ROOT_PATH . '/app/views/contact.php';
     }
-    
+
+    public function submitContact() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/contact');
+            exit;
+        }
+
+        // Verify CSRF
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
+            $_SESSION['flash_error'] = "Erreur de sécurité. Veuillez réessayer.";
+            header('Location: ' . BASE_URL . '/contact');
+            exit;
+        }
+
+        $name = trim($_POST['name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $subject = trim($_POST['subject'] ?? '');
+        $message = trim($_POST['message'] ?? '');
+
+        if (empty($name) || empty($email) || empty($message)) {
+            $_SESSION['flash_error'] = "Tous les champs obligatoires doivent être remplis.";
+            header('Location: ' . BASE_URL . '/contact');
+            exit;
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['flash_error'] = "Adresse email invalide.";
+            header('Location: ' . BASE_URL . '/contact');
+            exit;
+        }
+
+        try {
+            $stmt = $this->pdo->prepare("INSERT INTO contact_messages (name, email, subject, message, created_at) VALUES (?, ?, ?, ?, NOW())");
+            $stmt->execute([$name, $email, $subject, $message]);
+            
+            $_SESSION['flash_message'] = "Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.";
+            header('Location: ' . BASE_URL . '/contact');
+        } catch (PDOException $e) {
+            error_log("Contact form error: " . $e->getMessage());
+            $_SESSION['flash_error'] = "Une erreur est survenue lors de l'envoi du message. Veuillez réessayer plus tard.";
+            header('Location: ' . BASE_URL . '/contact');
+        }
+        exit;
+    }
+
     public function about() {
         include ROOT_PATH . '/app/views/about.php';
     }

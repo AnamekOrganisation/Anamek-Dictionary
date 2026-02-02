@@ -85,4 +85,6 @@ require_once ROOT_PATH . '/app/controllers/AdminSettingsController.php';
 require_once ROOT_PATH . '/app/controllers/ApiController.php';
 require_once ROOT_PATH . '/app/controllers/SitemapController.php';
 require_once ROOT_PATH . '/app/controllers/QuizController.php';
-require_once ROOT_PATH . '/app/controllers/ContributionController.php';require_once ROOT_PATH . '/app/controllers/AdminQuizController.php';
+require_once ROOT_PATH . '/app/controllers/ContributionController.php';
+require_once ROOT_PATH . '/app/controllers/AdminQuizController.php';
+require_once ROOT_PATH . '/app/controllers/AdminContactController.php';

@@ -1,7 +1,12 @@
+<?php
+include ROOT_PATH . '/app/views/partials/head.php';
+include ROOT_PATH . '/app/views/partials/navbar.php';
+
+?>
 <section class="about-page">
   <div class="about-container">
 
-    <h1>À propos de Anamek</h1>
+    <h1><?= __('About Anamek') ?></h1>
 
     <p class="intro">
       <strong>Anamek</strong> est un dictionnaire collaboratif de la langue amazighe,
@@ -197,3 +202,4 @@
   color: #ffffff;
 }</style>
 
+<?php include ROOT_PATH . '/app/views/partials/footer.php'; ?>

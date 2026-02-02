@@ -1,6 +1,23 @@
 <!-- Header -->
 <?php include_once __DIR__ . '/partials/header.php'; ?>
 
+<?php if (!empty($word)): ?>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DefinedTerm",
+  "name": "<?= e($word['word_tfng']) ?>",
+  "identifier": "<?= e($word['word_lat']) ?>",
+  "description": "<?= e($word['translation_fr']) ?>",
+  "inDefinedTermSet": {
+    "@type": "DefinedTermSet",
+    "name": "Dictionnaire Anamek",
+    "url": "<?= BASE_URL ?>"
+  }
+}
+</script>
+<?php endif; ?>
+
 <!-- Main Content -->
 <main class="main" id="main">
     <!-- Search Header Section -->

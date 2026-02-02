@@ -30,7 +30,7 @@ if (isset($is_404) && $is_404) {
 <footer class="footer">
         <div class="footer-container">
             <div class="footer-top">
-            <div class="footer-logo"><img src="<?= BASE_URL ?>/public/img/logo.png" alt=""></div>
+            <div class="footer-logo"><img src="<?= BASE_URL ?>/public/img/logo.webp" alt=""></div>
              <div class="social-icons">
                     <?php 
                     $platforms = ['facebook', 'twitter', 'instagram', 'tiktok', 'youtube'];
@@ -45,11 +45,11 @@ if (isset($is_404) && $is_404) {
             </div>
             <div class="footer-bottom">
             <nav class="footer-nav">
-                <a href="#" class="footer-link">About</a>
-                <a href="#" class="footer-link">Privacy Policy</a>
-                <a href="#" class="footer-link">Terms of Use</a>
-                <a href="#" class="footer-link">Contact</a>
-                <a href="#" class="footer-link">Cookies</a>
+                <a href="<?= BASE_URL ?>/about" class="footer-link"><?= __('About') ?></a>
+                <a href="<?= BASE_URL ?>/privacy" class="footer-link"><?= __('Privacy Policy') ?></a>
+                <a href="<?= BASE_URL ?>/terms" class="footer-link"><?= __('Terms of Use') ?></a>
+                <a href="<?= BASE_URL ?>/contact" class="footer-link"><?= __('Contact') ?></a>
+                <a href="<?= BASE_URL ?>/cookies" class="footer-link"><?= __('Cookies') ?></a>
             </nav>
             </div>
             <p class="footer-copyright">© <?php echo date('Y'); ?> anamek - Dictionnaire Amazigh. Tous droits réservés.</p>

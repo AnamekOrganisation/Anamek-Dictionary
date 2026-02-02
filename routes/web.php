@@ -14,6 +14,21 @@ $router->get('/sitemap.xml', function() use ($pdo) {
     $sitemap->index();
 });
 
+$router->get('/sitemap-main.xml', function() use ($pdo) {
+    $sitemap = new SitemapController($pdo);
+    $sitemap->main();
+});
+
+$router->get('/sitemap-words-{id}.xml', function($params) use ($pdo) {
+    $sitemap = new SitemapController($pdo);
+    $sitemap->words($params);
+});
+
+$router->get('/sitemap-proverbs.xml', function() use ($pdo) {
+    $sitemap = new SitemapController($pdo);
+    $sitemap->proverbs();
+});
+
 $router->get('/', function() use ($controller) {
     $_GET['action'] = 'home';
     $controller->home();
@@ -42,6 +57,10 @@ $router->get('/proverb/{id}', function($params) use ($controller) {
 $router->get('/contact', function() use ($controller) {
     $_GET['action'] = 'contact';
     $controller->contact();
+});
+$router->post('/contact', function() use ($controller) {
+    $_GET['action'] = 'contact';
+    $controller->submitContact();
 });
 
 $router->get('/about', function() use ($controller) {
@@ -335,6 +354,20 @@ $router->post('/admin/quiz/question/edit/{id}', function($params) use ($pdo) {
 $router->post('/admin/quiz/question/delete', function() use ($pdo) {
     $quizAdmin = new AdminQuizController($pdo);
     $quizAdmin->deleteQuestion();
+}, $adminPostAuth);
+
+// --- Admin Contact Messages ---
+$router->get('/admin/messages', function() use ($pdo) {
+    $adminContact = new AdminContactController($pdo);
+    $adminContact->index();
+}, $adminAuth);
+$router->get('/admin/message/view/{id}', function($params) use ($pdo) {
+    $adminContact = new AdminContactController($pdo);
+    $adminContact->view($params['id']);
+}, $adminAuth);
+$router->post('/admin/message/delete', function() use ($pdo) {
+    $adminContact = new AdminContactController($pdo);
+    $adminContact->delete();
 }, $adminPostAuth);
 
 // --- 404 Handler ---
