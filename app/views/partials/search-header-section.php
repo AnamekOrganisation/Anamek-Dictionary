@@ -34,9 +34,8 @@
             <?php endif; ?>
 
             <form id="searchForm" style="width: 100%; display: flex; justify-content: center;">
-                <div class="search-bar-container"
-                    style="position:relative; justify-content:center; width: 100%; max-width: 800px;">
                     <div class="lang-dropdown">
+                        <input type="hidden" name="lang" id="search-lang" value="ber">
                         <button type="button" class="lang-btn">
                             <span><span><?php echo isMobileDevice() ? "ⵜⵎⵣ" : "ⵜⴰⵎⴰⵣⵉⵖⵜ"; ?></span>
                             </span>

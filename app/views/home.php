@@ -67,7 +67,7 @@
 <?php if (isset($preLoadedWord) && empty($isHomepage)): ?>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        selectWord(<?= json_encode($preLoadedWord) ?>);
+        selectWord(<?= json_encode($preLoadedWord['word_lat'] ?? '') ?>);
     });
 </script>
 <?php endif; ?>

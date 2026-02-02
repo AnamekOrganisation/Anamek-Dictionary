@@ -28,53 +28,48 @@ try {
         exit;
     }
     
-    // Prepare SQL based on language
-    $sql = "SELECT id, word_tfng, word_lat, translation_fr FROM words WHERE ";
-    $params = [];
-    
-    // Logic:
-    // If lang == 'fr', we search PRIMARILY in translation_fr, but also other fields for flexibility.
-    // If lang == 'ber', we search PRIMARILY in word_tfng/word_lat.
-    // To make it strict:
-    
     if ($lang === 'fr') {
-        // French Search: Prioritize translation_fr
-        $sql .= "(translation_fr LIKE :query OR word_lat LIKE :query)";
+        // French Search: Unique translations starting with query
+        $sql = "SELECT translation_fr as res_fr, MIN(word_tfng) as res_tfng, MIN(word_lat) as res_lat, COUNT(*) as occurrence_count, MIN(id) as word_id FROM words WHERE ";
+        $sql .= "(translation_fr LIKE :start_query OR word_lat LIKE :start_query)";
+        $sql .= " GROUP BY translation_fr";
         $sql .= " ORDER BY CASE 
                     WHEN translation_fr LIKE :exact THEN 1
-                    WHEN translation_fr LIKE :start THEN 2
-                    WHEN word_lat LIKE :start THEN 3
-                    ELSE 4 END, translation_fr ASC";
+                    WHEN translation_fr LIKE :start_query THEN 2
+                    ELSE 3 END, res_fr ASC";
     } else {
-        // Amazigh Search (ber/tfng): Prioritize word_tfng and word_lat
-        $sql .= "(word_lat LIKE :query OR word_tfng LIKE :query OR translation_fr LIKE :query)";
+        // Amazigh Search: Unique Latin words starting with query
+        $sql = "SELECT MIN(word_tfng) as res_tfng, word_lat as res_lat, COUNT(*) as occurrence_count, MIN(id) as word_id FROM words WHERE ";
+        $sql .= "(word_lat LIKE :start_query OR word_tfng LIKE :start_query OR translation_fr LIKE :start_query)";
+        $sql .= " GROUP BY word_lat";
         $sql .= " ORDER BY CASE 
                     WHEN word_lat LIKE :exact THEN 1
-                    WHEN word_tfng LIKE :exact THEN 2
-                    WHEN word_lat LIKE :start THEN 3
-                    WHEN word_tfng LIKE :start THEN 4
-                    ELSE 5 END, word_lat ASC";
+                    WHEN word_lat LIKE :start_query THEN 2
+                    ELSE 3 END, res_lat ASC";
     }
     
     $sql .= " LIMIT 10";
     
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
-        ':query' => '%' . $query . '%',
-        ':exact' => $query,
-        ':start' => $query . '%'
+        ':start_query' => $query . '%', // Only matches at the beginning
+        ':exact' => $query
     ]);
     
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Security: Sanitize all output before JSON encoding
-    $safeResults = array_map(function($result) {
-        return [
-            'id' => (int)$result['id'],
-            'word_tfng' => htmlspecialchars($result['word_tfng'], ENT_QUOTES, 'UTF-8'),
-            'word_lat' => htmlspecialchars($result['word_lat'], ENT_QUOTES, 'UTF-8'),
-            'translation_fr' => htmlspecialchars($result['translation_fr'], ENT_QUOTES, 'UTF-8')
+    $safeResults = array_map(function($result) use ($lang) {
+        $item = [
+            'word_tfng' => htmlspecialchars($result['res_tfng'] ?? '', ENT_QUOTES, 'UTF-8'),
+            'word_lat' => htmlspecialchars($result['res_lat'] ?? '', ENT_QUOTES, 'UTF-8'),
+            'count' => (int)$result['occurrence_count'],
+            'id' => (int)$result['word_id']
         ];
+        if ($lang === 'fr') {
+            $item['translation_fr'] = htmlspecialchars($result['res_fr'] ?? '', ENT_QUOTES, 'UTF-8');
+        }
+        return $item;
     }, $results);
     
     echo json_encode([

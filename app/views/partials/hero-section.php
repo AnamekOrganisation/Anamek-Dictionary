@@ -63,22 +63,27 @@ $searchPlaceholder = $isProverbs ? __('Search a proverb...') : __('Search a word
 
             <?php else: ?>
                 <!-- Default Dictionary Header -->
+                <?php 
+                $savedLang = $_COOKIE['search_lang'] ?? 'ber';
+                $isFr = $savedLang === 'fr';
+                $langLabel = $isFr ? 'Français' : 'ⵜⴰⵎⴰⵣⵉⵖⵜ';
+                ?>
                 <h6><?= $headerTitle ?></h6>
                 <form id="searchForm" style="width: 100%; display: flex; justify-content: center;">
                     <div class="search-bar-container search-box">
                         <div class="lang-dropdown">
-                            <input type="hidden" name="lang" id="search-lang" value="ber">
+                            <input type="hidden" name="lang" id="search-lang" value="<?= htmlspecialchars($savedLang) ?>">
                             <button type="button" class="lang-btn">
-                                <span><span class="lang-text">ⵜⴰⵎⴰⵣⵉⵖⵜ</span></span>
+                                <span><span class="lang-text"><?= $langLabel ?></span></span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="margin-left:6px;" viewBox="0 0 24 24">
                                     <polygon points="12 17.414 3.293 8.707 4.707 7.293 12 14.586 19.293 7.293 20.707 8.707 12 17.414"></polygon>
                                 </svg>
                             </button>
                             <div class="lang-menu" style="display:none;">
-                                <div class="lang-item" data-value="ber">
+                                <div class="lang-item <?= !$isFr ? 'active' : '' ?>" data-value="ber">
                                     <span>ⵜⴰⵎⴰⵣⵉⵖⵜ</span>
                                 </div>
-                                <div class="lang-item" data-value="fr">
+                                <div class="lang-item <?= $isFr ? 'active' : '' ?>" data-value="fr">
                                     <span>Français</span>
                                 </div>
                             </div>

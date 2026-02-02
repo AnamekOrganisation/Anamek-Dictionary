@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize social media auto-save
     initSocialMediaAutoSave();
     
+    // Initialize search language dropdown
+    initSearchLanguageDropdown();
+
     // Initialize search autocomplete
     initSearchAutocomplete();
 
@@ -264,52 +267,65 @@ function initSearchAutocomplete() {
 
 async function fetchAutocompleteSuggestions(query, resultsContainer) {
     try {
-         const searchLoadingText = (typeof TRANSLATIONS !== 'undefined' && TRANSLATIONS.no_results) 
-                ? TRANSLATIONS.no_results 
-                : 'Searching...';
-        resultsContainer.innerHTML = `<div class="autocomplete-loading">${searchLoadingText}</div>`;
+        const loadingText = (typeof TRANSLATIONS !== 'undefined' && TRANSLATIONS.no_results) ? TRANSLATIONS.no_results : 'Searching...';
+        resultsContainer.innerHTML = '<div class="autocomplete-loading">' + loadingText + '</div>';
         resultsContainer.classList.add('show');
         resultsContainer.style.display = 'block';
         
-        const lang = document.getElementById('search-lang')?.value || 'ber';
+        // Find the language relative to the results container to handle multiple search bars
+        const searchContainer = resultsContainer.closest('.search-bar-container');
+        const lang = searchContainer?.querySelector('input[name="lang"]')?.value || 'ber';
+        
         const response = await fetch(BASE_URL + '/api/autocomplete?q=' + encodeURIComponent(query) + '&lang=' + encodeURIComponent(lang));
         const data = await response.json();
         
         if (data.results && data.results.length > 0) {
             let html = '';
             data.results.forEach(word => {
-                // Escape single quotes for the onclick handler
-                const safeWordLat = word.word_lat.replace(/'/g, "\\'");
-                html += `
-                    <div class="autocomplete-item" onmousedown="selectWord('${safeWordLat}', ${word.id})">
-                        <div>
-                            <span class="autocomplete-word">${word.word_tfng || word.word_lat}</span>
-                            <span class="autocomplete-translation">${word.translation_fr}</span>
-                        </div>
-                        <span class="autocomplete-arrow">→</span>
-                    </div>
-                `;
+                const displayText = word.translation_fr || word.word_tfng || word.word_lat;
+                const safeWord = (word.word_lat || word.word_tfng || word.translation_fr).replace(/'/g, "\\'");
+                
+                html += '<div class="autocomplete-item" onmousedown="selectWord(\'' + safeWord + '\', ' + (word.id || 0) + ', ' + (word.count || 0) + ')">' +
+                        '<div><span class="autocomplete-word">' + displayText + '</span></div>' +
+                        '<span class="autocomplete-arrow">→</span>' +
+                        '</div>';
             });
             resultsContainer.innerHTML = html;
         } else {
-            const noResultsText = (typeof TRANSLATIONS !== 'undefined' && TRANSLATIONS.no_results) 
-                ? TRANSLATIONS.no_results 
-                : 'No results found';
-            resultsContainer.innerHTML = `<div class="autocomplete-no-results">${noResultsText}</div>`;
+            const noResultsText = (typeof TRANSLATIONS !== 'undefined' && TRANSLATIONS.no_results) ? TRANSLATIONS.no_results : 'No results found';
+            resultsContainer.innerHTML = '<div class="autocomplete-no-results">' + noResultsText + '</div>';
         }
     } catch (error) {
         console.error('Autocomplete error:', error);
-        resultsContainer.classList.remove('show');
+        resultsContainer.style.display = 'none';
     }
 }
 
-// Helper to select a word (used by autocomplete and recent searches)
-window.selectWord = function(wordLat, wordId) {
-    // Add to recent searches (fire and forget)
-    addToRecentSearches(wordId);
+// Helper to select a word (redirects to search results page or direct word page)
+window.selectWord = function(query, id, count) {
+    if (!query) return;
     
-    // Navigate to /word/Slug-ID
-    window.location.href = BASE_URL + '/word/' + encodeURIComponent(wordLat) + '-' + wordId;
+    let searchTerm = query;
+    let targetId = id;
+    let targetCount = count;
+
+    // Handle legacy object passing if necessary
+    if (typeof query === 'object') {
+        const obj = query;
+        searchTerm = obj.word_lat || obj.word_tfng || obj.translation_fr || '';
+        targetId = obj.id;
+        targetCount = obj.count || 1;
+    }
+    
+    if (!searchTerm) return;
+
+    if (targetCount === 1 && targetId) {
+        // Unique word: Redirect directly to word page
+        window.location.href = BASE_URL + '/word/' + encodeURIComponent(searchTerm).replace(/%20/g, '-') + '-' + targetId;
+    } else {
+        // Multiple entries or unknown: Redirect to general search results
+        window.location.href = BASE_URL + '/search?q=' + encodeURIComponent(searchTerm);
+    }
 };
 
 /* =========================================
@@ -345,8 +361,10 @@ function displayRecentSearches() {
                 return;
             }
 
-            recentWordsList.innerHTML = response.data.map(word => `
-                <li class="recent-item" onmousedown='selectWord("${word.word_lat.replace(/'/g, "\\'")}", ${word.id})' style="cursor:pointer">
+            recentWordsList.innerHTML = response.data.map(word => {
+                const query = (word.word_lat || word.word_tfng || '').replace(/'/g, "\\'");
+                return `
+                <li class="recent-item" onmousedown='selectWord("${query}")' style="cursor:pointer">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <div>
                             <span class="word-display" data-tfng="${word.word_tfng}" data-lat="${word.word_lat}">
@@ -359,7 +377,7 @@ function displayRecentSearches() {
                         </div>
                     </div>
                 </li>
-            `).join('');
+            `;}).join('');
             
             // Re-apply script preference to new elements
             const currentScript = localStorage.getItem('preferred_script') || 'tfng';
@@ -500,17 +518,26 @@ function initSearchLanguageDropdown() {
                     this.classList.add('active');
 
                     // Update hidden input
-                    const hiddenInput = document.getElementById('search-lang');
+                    const hiddenInput = dropdown.querySelector('input[name="lang"]');
                     if (hiddenInput) {
                         hiddenInput.value = value;
                     }
 
+                    // Save preference in cookie for 30 days
+                    const d = new Date();
+                    d.setTime(d.getTime() + (30 * 24 * 60 * 60 * 1000));
+                    document.cookie = "search_lang=" + value + ";expires=" + d.toUTCString() + ";path=/";
+
                     // Close menu
                     langMenu.style.display = 'none';
                     
-                    // NOTE: Previously, this triggered a global script update (applyScriptToAll).
-                    // We REMOVED that because the user requested the search button NOT trigger
-                    // a global change. It now only updates the UI of the dropdown.
+                    // Trigger a new search if input is not empty
+                    const searchContainer = dropdown.closest('.search-bar-container');
+                    const searchInput = searchContainer?.querySelector('.search-bar');
+                    const autocompleteResults = searchContainer?.querySelector('.suggestions');
+                    if (searchInput && searchInput.value.length >= 2 && autocompleteResults) {
+                        fetchAutocompleteSuggestions(searchInput.value, autocompleteResults);
+                    }
                 });
             });
         }
