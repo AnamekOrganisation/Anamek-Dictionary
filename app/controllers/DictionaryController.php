@@ -135,8 +135,8 @@ class DictionaryController extends BaseController {
         // Open Graph
         $og_title = "$wordTfng ($wordLat) : Définition et Traduction";
         $og_description = $page_description;
-        $og_url = BASE_URL . "/word/" . urlencode($word['word_lat']) . "-" . $word['id'];
-        $og_image = BASE_URL . "/public/img/og-word.jpg"; // Should exist or fallback to default
+        $og_url = absolute_url("/word/" . urlencode($word['word_lat']) . "-" . $word['id']);
+        $og_image = "/public/img/og-default.jpg"; 
         
         $isSingleView = false;
         $params_id = $params['id'] ?? '';
@@ -229,8 +229,8 @@ class DictionaryController extends BaseController {
         // Open Graph
         $og_title = "Sagesse Amazighe #" . $proverb['id'];
         $og_description = $proverb['translation_fr'];
-        $og_url = BASE_URL . "/proverb/" . $proverb['id'];
-        $og_image = BASE_URL . "/public/img/og-proverb.jpg";
+        $og_url = absolute_url("/proverb/" . $proverb['id']);
+        $og_image = "/public/img/og-default.jpg";
 
         include ROOT_PATH . '/app/views/proverb-page.php';
     }

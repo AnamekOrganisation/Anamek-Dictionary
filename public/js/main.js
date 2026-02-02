@@ -617,8 +617,9 @@ window.shareProverb = function(button) {
     const fr = container.querySelector('.proverb-translation, .translation, p.quote-text + .translation')?.innerText || "";
     
     const text = `${tfng}\n${lat}\n${fr}`;
+    const url = (typeof ABSOLUTE_URL !== 'undefined') ? ABSOLUTE_URL + '/proverbs' : window.location.href;
     
-    shareContent('Amawal Proverb', text, window.location.href);
+    shareContent('Amawal Proverb', text, url);
 };
 
 window.copyProverb = function(button) {
@@ -660,7 +661,7 @@ window.shareWord = function(entryId, title) {
     shareContent(
         'Amawal - ' + (title || tfng),
         tfng,
-        permalink || window.location.href
+        (typeof ABSOLUTE_URL !== 'undefined' && tfng) ? ABSOLUTE_URL + '/word/' + encodeURIComponent(tfng) : (permalink || window.location.href)
     );
 };
 
@@ -717,9 +718,23 @@ function showShareModal(text, url) {
     // Update links dynamically
     const xBtn = modal.querySelector('.twitter');
     if (xBtn) xBtn.href = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-    modal.querySelector('.facebook').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
-    modal.querySelector('.whatsapp').href = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
     
+    const fbBtn = modal.querySelector('.facebook');
+    fbBtn.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
+    
+    const waBtn = modal.querySelector('.whatsapp');
+    waBtn.href = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
+    
+    // Use popups for better experience
+    [xBtn, fbBtn].forEach(btn => {
+        if (!btn) return;
+        btn.onclick = (e) => {
+            e.preventDefault();
+            window.open(btn.href, 'share-window', 'width=600,height=400,menubar=no,toolbar=no,resizable=yes,scrollbars=yes');
+            return false;
+        };
+    });
+
     const copyBtn = modal.querySelector('.copy-link');
     copyBtn.onclick = () => {
         copyToClipboard(url, 'Lien copié !');

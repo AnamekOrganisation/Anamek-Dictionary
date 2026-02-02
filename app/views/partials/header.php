@@ -30,4 +30,5 @@ include ROOT_PATH . '/app/views/partials/hero-section.php';
 
 <script>
     const BASE_URL = '<?= BASE_URL ?>';
+    const ABSOLUTE_URL = '<?= absolute_url() ?>';
 </script>

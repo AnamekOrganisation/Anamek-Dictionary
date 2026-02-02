@@ -33,10 +33,7 @@ setupLocale($currentLang);
   <meta name="author" content="<?= e($author ?? 'Anamek') ?>">
 
   <!-- Canonical -->
-  <link rel="canonical" href="<?= $canonical_url ?? (
-    (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
-    . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']
-  ) ?>">
+  <link rel="canonical" href="<?= $canonical_url ?? absolute_url($_SERVER['REQUEST_URI']) ?>">
 
   <!-- Favicons -->
   <link rel="icon" type="image/png" sizes="32x32" href="<?= BASE_URL ?>/public/favicon/favicon-32x32.png">
@@ -46,11 +43,8 @@ setupLocale($currentLang);
   <!-- Open Graph -->
   <meta property="og:title" content="<?= e($og_title ?? $page_title ?? 'Anamek') ?>">
   <meta property="og:description" content="<?= e($og_description ?? $page_description) ?>">
-  <meta property="og:image" content="<?= $og_image ?? BASE_URL . '/public/img/og-default.jpg' ?>">
-  <meta property="og:url" content="<?= $og_url ?? (
-    (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
-    . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']
-  ) ?>">
+  <meta property="og:image" content="<?= isset($og_image) ? (strpos($og_image, 'http') === 0 ? $og_image : absolute_url($og_image)) : absolute_url('/public/img/og-default.jpg') ?>">
+  <meta property="og:url" content="<?= $og_url ?? absolute_url($_SERVER['REQUEST_URI']) ?>">
   <meta property="og:type" content="website">
 
   <!-- Twitter -->
