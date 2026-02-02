@@ -26,7 +26,15 @@ $success = '';
 
 // Helper to write .env
 function writeEnv($data) {
-    $content = "";
+    // Add default environment settings if missing
+    $defaults = [
+        'APP_ENV' => 'production',
+        'APP_DEBUG' => 'false',
+        'APP_URL' => (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME'])
+    ];
+    $data = array_merge($defaults, $data);
+
+    $content = "# Anamek Dictionary Configuration\n";
     foreach ($data as $key => $value) {
         $content .= "$key=\"$value\"\n";
     }
@@ -270,12 +278,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
             );
 
-            CREATE TABLE IF NOT EXISTS social_links (
-                platform VARCHAR(50) PRIMARY KEY,
-                url VARCHAR(255)
-            );
-
             INSERT IGNORE INTO social_links (platform, url) VALUES ('facebook', ''), ('instagram', ''), ('twitter', ''), ('youtube', '');
+
+            -- Default Categories
+            INSERT IGNORE INTO word_categories (category_name_fr, description) VALUES 
+            ('Nature', 'Mots liés à la nature, l\'environnement et le climat.'),
+            ('Architecture', 'Termes d\'architecture et de construction.'),
+            ('Anatomie', 'Parties du corps humain et biologie.'),
+            ('Cuisine', 'Gastronomie, aliments et ustensiles.'),
+            ('Société', 'Vie sociale, culture et traditions.'),
+            ('Technique', 'Outils, métiers et techniques.');
+
+            -- Welcome Word
+            INSERT IGNORE INTO words (word_tfng, word_lat, translation_fr, definition_tfng, definition_lat, part_of_speech) VALUES 
+            ('ⴰⵣⵓⵍ', 'Azul', 'Bonjour / Salut', 'ⵜⴰⵎⵙⵙⵍⵉⵡⵜ ⵏ ⵓⵙⵏⵓⴱⴱⵛ ⴷ ⵓⵙⴷⵔⴼⵉ.', 'Salutation de bienvenue et de paix.', 'interjection');
             ";
 
             $pdo->exec($sql);
@@ -318,9 +334,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Requirement Check
+if (!is_dir('cache')) {
+    @mkdir('cache', 0755, true);
+}
+
 $requirements = [
     'PHP Version (>= 7.4)' => version_compare(PHP_VERSION, '7.4.0', '>='),
     'PDO MySQL Extension' => extension_loaded('pdo_mysql'),
+    'JSON Extension' => extension_loaded('json'),
     'Writable Root Directory' => is_writable('.'),
     'Writable cache Directory' => is_writable('cache'),
 ];
@@ -585,7 +606,7 @@ $allMet = !in_array(false, $requirements);
             <button class="btn" onclick="location.href='index.php'">Accéder au Glossaire ➜</button>
             
             <p style="text-align: center; margin-top: 20px; font-size: 0.75rem; color: var(--success);">
-                Note: Le fichier .env a été créé et l'installation است مقفلة تلقائياً.
+                Note: Le fichier .env a été créé et l'installation est maintenant verrouillée pour votre sécurité.
             </p>
         <?php endif; ?>
 
