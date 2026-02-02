@@ -273,4 +273,19 @@ class DictionaryController extends BaseController {
     public function about() {
         include ROOT_PATH . '/app/views/about.php';
     }
+
+    public function privacy() {
+        $page_title = __('Politique de confidentialité') . " - Amawal";
+        include ROOT_PATH . '/app/views/legal/privacy.php';
+    }
+
+    public function terms() {
+        $page_title = __('Conditions d’utilisation') . " - Amawal";
+        include ROOT_PATH . '/app/views/legal/terms.php';
+    }
+
+    public function cookies() {
+        $page_title = __('Politique relative aux cookies') . " - Amawal";
+        include ROOT_PATH . '/app/views/legal/cookies.php';
+    }
 }

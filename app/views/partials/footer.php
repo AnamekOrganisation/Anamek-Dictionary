@@ -46,10 +46,10 @@ if (isset($is_404) && $is_404) {
             <div class="footer-bottom">
             <nav class="footer-nav">
                 <a href="<?= BASE_URL ?>/about" class="footer-link"><?= __('About') ?></a>
-                <a href="<?= BASE_URL ?>/privacy" class="footer-link"><?= __('Privacy Policy') ?></a>
-                <a href="<?= BASE_URL ?>/terms" class="footer-link"><?= __('Terms of Use') ?></a>
+                <a href="<?= BASE_URL ?>/privacy-policy" class="footer-link"><?= __('Privacy Policy') ?></a>
+                <a href="<?= BASE_URL ?>/terms-of-use" class="footer-link"><?= __('Terms of Use') ?></a>
                 <a href="<?= BASE_URL ?>/contact" class="footer-link"><?= __('Contact') ?></a>
-                <a href="<?= BASE_URL ?>/cookies" class="footer-link"><?= __('Cookies') ?></a>
+                <a href="<?= BASE_URL ?>/cookies-policy" class="footer-link"><?= __('Cookies Policy') ?></a>
             </nav>
             </div>
             <p class="footer-copyright">© <?php echo date('Y'); ?> anamek - Dictionnaire Amazigh. Tous droits réservés.</p>

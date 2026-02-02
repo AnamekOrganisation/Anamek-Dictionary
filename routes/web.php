@@ -63,6 +63,18 @@ $router->post('/contact', function() use ($controller) {
     $controller->submitContact();
 });
 
+$router->get('/privacy-policy', function() use ($controller) {
+    $controller->privacy();
+});
+
+$router->get('/terms-of-use', function() use ($controller) {
+    $controller->terms();
+});
+
+$router->get('/cookies-policy', function() use ($controller) {
+    $controller->cookies();
+});
+
 $router->get('/about', function() use ($controller) {
     $_GET['action'] = 'about';
     $controller->about();
