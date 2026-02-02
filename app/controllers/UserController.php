@@ -31,7 +31,7 @@ class UserController extends BaseController {
         $user = $this->userModel->find($_SESSION['user_id']);
         $stats = $this->userModel->getStats($_SESSION['user_id']);
         
-        $page_title = "Mon Profil - Amawal";
+        $page_title = "Mon Profil - Anamek";
         include ROOT_PATH . '/app/views/user/profile.php';
     }
 

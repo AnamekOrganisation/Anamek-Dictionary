@@ -1,3 +1,18 @@
+<?php
+// Ensure the $user variable is available for the account dropdown if logged in
+if (isset($_SESSION['user_id']) && !isset($user)) {
+    try {
+        // Use existing $pdo if available, otherwise get a new connection
+        $navbar_db = $pdo ?? (class_exists('Database') ? Database::getInstance()->getConnection() : null);
+        if ($navbar_db) {
+            $navbar_userModel = new User($navbar_db);
+            $user = $navbar_userModel->find($_SESSION['user_id']);
+        }
+    } catch (Exception $e) {
+        error_log("Navbar lazy-load error: " . $e->getMessage());
+    }
+}
+?>
 <header class="main-header">
     <div class="top-bar">
         <div class="container flex-row">

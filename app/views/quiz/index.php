@@ -1,4 +1,5 @@
-<?php include ROOT_PATH . '/app/views/partials/header.php'; ?>
+<?php include ROOT_PATH . '/app/views/partials/head.php'; ?>
+<?php include ROOT_PATH . '/app/views/partials/navbar.php'; ?>
 
 <div class="main-content bg-white py-5" style="position: relative; z-index: 10;">
     <div class="container">
