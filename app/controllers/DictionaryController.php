@@ -135,11 +135,16 @@ class DictionaryController extends BaseController {
         // Open Graph
         $og_title = "$wordTfng ($wordLat) : Définition et Traduction";
         $og_description = $page_description;
+        $og_url = BASE_URL . "/word/" . urlencode($word['word_lat']) . "-" . $word['id'];
+        $og_image = BASE_URL . "/public/img/og-word.jpg"; // Should exist or fallback to default
         
+        $isSingleView = false;
         $params_id = $params['id'] ?? '';
+        
         // If the URL contains a specific ID in Slug-ID format (e.g. tarrist-15976), show ONLY that word.
         if (preg_match('/-(\d+)$/', $params_id)) {
             $variants = [$word];
+            $isSingleView = true;
         } else {
             // If the URL is just a slug (e.g. 'tarrist' or 'pays'), show all variants.
             // Use the original search term to find all matches (including homonyms or french matches)
@@ -149,6 +154,9 @@ class DictionaryController extends BaseController {
             if (empty($variants)) {
                 $variants = [$word]; // Fallback
             }
+            
+            // If it's a list but only contains 1 word, we could still treat it as single view if we want,
+            // but the user wants a link. So let's keep it false if not explicitly -ID.
         }
 
         // Analytics (non-blocking)
@@ -217,6 +225,13 @@ class DictionaryController extends BaseController {
         }
 
         $page_title = __('Proverb') . " #" . $proverb['id'] . " - Amawal";
+        
+        // Open Graph
+        $og_title = "Sagesse Amazighe #" . $proverb['id'];
+        $og_description = $proverb['translation_fr'];
+        $og_url = BASE_URL . "/proverb/" . $proverb['id'];
+        $og_image = BASE_URL . "/public/img/og-proverb.jpg";
+
         include ROOT_PATH . '/app/views/proverb-page.php';
     }
 

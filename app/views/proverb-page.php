@@ -59,10 +59,10 @@
                     </div>
                     
                     <div class="proverb-actions">
-                        <button class="btn btn-outline-primary rounded-pill px-4 me-2" onclick="copyProverbOnPage(<?= $proverb['id'] ?>)">
+                        <button class="btn btn-outline-primary rounded-pill px-4 me-2" onclick="copyProverb(this)">
                             <i class="far fa-copy me-2"></i> <?= __('Copier') ?>
                         </button>
-                        <button class="btn btn-primary rounded-pill px-4" onclick="shareProverbOnPage(<?= $proverb['id'] ?>)">
+                        <button class="btn btn-primary rounded-pill px-4" onclick="shareProverb(this)">
                             <i class="fas fa-share-alt me-2"></i> <?= __('Partager') ?>
                         </button>
                     </div>

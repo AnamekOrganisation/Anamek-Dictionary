@@ -35,23 +35,36 @@
                         <a href="<?= BASE_URL ?>" class="view-btn"><?= __('Retour à l\'accueil') ?></a>
                     </div>
                 <?php else: ?>
-                    <?php if (count($variants) > 1): ?>
-                    <div class="sense-selector mb-4">
-                        <h3 class="sense-selector-title"><?= __('Plusieurs sens trouvés :') ?></h3>
-                        <div class="sense-grid">
-                            <?php foreach ($variants as $idx => $v): ?>
-                            <a href="#entry-<?= $v['id'] ?>" class="sense-item <?= $v['id'] == ($word['id'] ?? 0) ? 'current-sense' : '' ?>">
-                                <span class="sense-num"><?= $idx + 1 ?></span>
-                                <span class="sense-summary"><?= htmlspecialchars($v['translation_fr']) ?></span>
-                            </a>
+                    <?php if (!$isSingleView): ?>
+                        <!-- Summary List Mode -->
+                        <div class="search-results-list">
+                            <h2 class="mb-4 h4 fw-bold"><?= count($variants) ?> <?= __('résultats trouvés') ?></h2>
+                            <?php foreach ($variants as $v): ?>
+                                <a href="<?= BASE_URL ?>/word/<?= urlencode($v['word_lat']) ?>-<?= $v['id'] ?>" class="text-decoration-none">
+                                    <div class="word-summary-card mb-3 p-4 bg-white border rounded-4 shadow-sm">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h3 class="tifinagh h3 mb-1 text-primary"><?= e($v['word_tfng']) ?></h3>
+                                                <div class="latin text-muted h5 mb-0"><?= e($v['word_lat']) ?></div>
+                                            </div>
+                                            <div class="text-end">
+                                                <div class="badge bg-light text-dark border mb-2"><?= __(e($v['part_of_speech'])) ?></div>
+                                                <div class="translation text-dark fw-bold"><?= e($v['translation_fr']) ?></div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3 text-primary small fw-bold">
+                                            <?= __('Voir la fiche complète') ?> <i class="fas fa-arrow-right ms-1"></i>
+                                        </div>
+                                    </div>
+                                </a>
                             <?php endforeach; ?>
                         </div>
-                    </div>
+                    <?php else: ?>
+                        <!-- Full Entry Mode -->
+                        <?php foreach ($variants as $index => $v): ?>
+                            <?php include ROOT_PATH . '/app/views/partials/word-entry.php'; ?>
+                        <?php endforeach; ?>
                     <?php endif; ?>
-
-                    <?php foreach ($variants as $index => $v): ?>
-                        <?php include ROOT_PATH . '/app/views/partials/word-entry.php'; ?>
-                    <?php endforeach; ?>
 
 
                 <?php endif; ?>

@@ -666,8 +666,8 @@ function showShareModal(text, url) {
                     <button class="share-modal-close">&times;</button>
                 </div>
                 <div class="share-options">
-                    <a href="#" target="_blank" class="share-option twitter">
-                        <i class="fab fa-twitter"></i> Twitter
+                    <a href="#" target="_blank" class="share-option twitter x-twitter">
+                        <i class="fab fa-x"></i> share on X
                     </a>
                     <a href="#" target="_blank" class="share-option facebook">
                         <i class="fab fa-facebook-f"></i> Facebook
@@ -688,8 +688,9 @@ function showShareModal(text, url) {
     }
     
     // Update links dynamically
-    modal.querySelector('.twitter').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-    modal.querySelector('.facebook').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+    const xBtn = modal.querySelector('.twitter');
+    if (xBtn) xBtn.href = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+    modal.querySelector('.facebook').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
     modal.querySelector('.whatsapp').href = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
     
     const copyBtn = modal.querySelector('.copy-link');
