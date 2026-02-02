@@ -171,11 +171,15 @@ class User {
         try {
             // 1. Try to find by Google ID
             $user = $this->findByGoogleId($googleData['id']);
-            if ($user) return $user;
+            if ($user) {
+                error_log("Google Login: Found user by Google ID: " . $user['username']);
+                return $user;
+            }
 
             // 2. Try to find by email (to link account if it exists)
             $user = $this->findByEmail($googleData['email']);
             if ($user) {
+                error_log("Google Login: Found user by email, linking account: " . $user['email']);
                 // Link account
                 $stmt = $this->pdo->prepare("UPDATE users SET google_id = ? WHERE id = ?");
                 $stmt->execute([$googleData['id'], $user['id']]);
@@ -183,6 +187,7 @@ class User {
             }
 
             // 3. Create new user
+            error_log("Google Login: Creating new user for " . $googleData['email']);
             $username = strtolower(str_replace(' ', '.', $googleData['name'])) . rand(100, 999);
             // Check if username exists, if so append more randomness
             $checkStmt = $this->pdo->prepare("SELECT id FROM users WHERE username = ?");
@@ -202,7 +207,9 @@ class User {
                 $googleData['picture'] ?? null
             ]);
 
-            return $this->find($this->pdo->lastInsertId());
+            $newId = $this->pdo->lastInsertId();
+            error_log("Google Login: Created new user with ID: " . $newId);
+            return $this->find($newId);
 
         } catch (Exception $e) {
             error_log("Google findOrCreate error: " . $e->getMessage());
@@ -212,6 +219,14 @@ class User {
 
     /**
      * Find user by email
+     * @param string $email
+     * @return array|false
+     */
+    public function findByEmail($email) {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
     /**
      * Verify email with token

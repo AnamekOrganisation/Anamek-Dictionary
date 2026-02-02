@@ -1,9 +1,10 @@
 <?php 
 
 include ROOT_PATH . '/app/views/partials/dashboard-head.php'; 
+include ROOT_PATH . '/app/views/partials/navbar.php';
 ?>
 
-<div class="main-content bg-light py-5" style="border-radius: 30px 30px 0 0; margin-top: -30px; position: relative; z-index: 10;">
+<div class="main-content bg-light py-5" style="position: relative; z-index: 10;">
     <div class="container" style="max-width: 1000px;">
         <div class="row g-4">
             <!-- Left Column: User Card & Navigation -->
@@ -12,12 +13,11 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
                     <div class="text-center mb-4">
                         <div class="avatar-container mb-3 position-relative d-inline-block">
                             <div class="avatar-circle rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto shadow" style="width: 100px; height: 100px; font-size: 2.5rem; font-weight: 700;">
-                                <?= strtoupper(substr($user['username'], 0, 1)) ?>
+                                <?= strtoupper(substr($user['full_name'] ?: ($user['username'] ?: 'U'), 0, 1)) ?>
                             </div>
                             <span class="status-indicator bg-success border border-white border-3 position-absolute bottom-0 end-0 rounded-circle" style="width: 20px; height: 20px;"></span>
                         </div>
-                        <h2 class="h4 fw-bold mb-1"><?= htmlspecialchars($user['full_name'] ?: $user['username']) ?></h2>
-                        <p class="text-muted small">@<?= htmlspecialchars($user['username']) ?></p>
+                        <h2 class="h4 fw-bold mb-1"><?= htmlspecialchars($user['full_name'] ?: __('Utilisateur')) ?></h2>
                         <div class="badge bg-primary-soft text-primary px-3 py-2 rounded-pill mb-2" style="background: rgba(var(--bs-primary-rgb), 0.1);">
                             <i class="fas fa-crown me-1 small"></i> <?= ucfirst($user['user_type']) ?>
                         </div>
@@ -58,14 +58,9 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
                                 <?= csrf_field() ?>
                                 
                                 <div class="row g-4">
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <label class="form-label fw-bold"><?= __('Nom complet') ?></label>
                                         <input type="text" name="full_name" class="form-control form-control-lg border-2" value="<?= htmlspecialchars($user['full_name'] ?? '') ?>" placeholder="Ex: Karim Amazigh">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold"><?= __('Nom d\'utilisateur') ?></label>
-                                        <input type="text" class="form-control form-control-lg border-2 bg-light" value="<?= htmlspecialchars($user['username']) ?>" readonly>
-                                        <div class="form-text small"><?= __('Le nom d\'utilisateur ne peut pas être modifié.') ?></div>
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label fw-bold"><?= __('E-mail') ?></label>
@@ -100,32 +95,57 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
                                 <div class="col-md-6">
                                     <div class="stat-box p-4 rounded-4 text-center h-100" style="background: #f8faff; border: 1.5px solid #e1e7f5;">
                                         <div class="h1 fw-bold text-primary mb-1"><?= $stats['contribution_points'] ?></div>
-                                        <div class="text-muted small fw-bold text-uppercase"><?= __('Points de Savoir') ?></div>
+                                        <div class="text-muted small fw-bold text-uppercase"><?= __('Contribution points') ?></div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="stat-box p-4 rounded-4 text-center h-100" style="background: #fff9f2; border: 1.5px solid #f9f0e1;">
-                                        <div class="h1 fw-bold text-warning mb-1"><?= $stats['approved_contributions'] ?></div>
-                                        <div class="text-muted small fw-bold text-uppercase"><?= __('Contributions validées') ?></div>
+                                        <div class="h1 fw-bold text-warning mb-1"><?= ($stats['approved_contributions'] > 0) ? $stats['approved_contributions'] : 0;?></div>
+                                        <div class="text-muted small fw-bold text-uppercase"><?= __('approved contributions') ?></div>
                                     </div>
                                 </div>
                             </div>
 
                             <h4 class="h6 fw-bold text-muted text-uppercase mb-4"><?= __('Succès & Badges') ?></h4>
-                            <div class="d-flex flex-wrap gap-3">
-                                <div class="badge-item p-3 text-center rounded-4 border-2" style="width: 100px; background: #fff; border: 2px solid var(--lex-border);">
-                                    <div class="h2 mb-1">🌱</div>
-                                    <div class="small fw-bold">Novice</div>
+                            <div class="d-flex flex-wrap gap-4 mt-2">
+                                <!-- Novice Badge -->
+                                <div class="badge-token badge-novice">
+                                    <div class="badge-icon-bg">
+                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 21L12 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                            <path d="M12 14C12 14 15 11 18 11C21 11 21 15 18 16C15 17 12 16 12 16" stroke="currentColor" stroke-width="2" stroke-opacity="0.4"/>
+                                            <path d="M12 14C12 14 9 11 6 11C3 11 3 15 6 16C9 17 12 16 12 16" stroke="currentColor" stroke-width="2" stroke-opacity="0.4"/>
+                                            <path d="M12 10L14 7M12 10L10 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                        </svg>
+                                    </div>
+                                    <span class="badge-name">Novice</span>
+                                    <div class="badge-tooltip">Bienvenue dans la communauté !</div>
                                 </div>
+
                                 <?php if ($stats['approved_contributions'] >= 10): ?>
-                                <div class="badge-item p-3 text-center rounded-4 border-2" style="width: 100px; background: #fff; border: 2px solid var(--lex-accent);">
-                                    <div class="h2 mb-1">📚</div>
-                                    <div class="small fw-bold">Érudit</div>
+                                <!-- Scholar Badge -->
+                                <div class="badge-token badge-scholar">
+                                    <div class="badge-icon-bg">
+                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 6V18M12 6H19V18H12M12 6H5V18H12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                                            <path d="M12 18C12 18 9 20 6 20C3 20 3 18 3 18V6" stroke="currentColor" stroke-width="2" stroke-opacity="0.3"/>
+                                            <path d="M12 18C12 18 15 20 18 20C21 20 21 18 21 18V6" stroke="currentColor" stroke-width="2" stroke-opacity="0.3"/>
+                                        </svg>
+                                    </div>
+                                    <span class="badge-name">Érudit</span>
+                                    <div class="badge-tooltip">Contributeur régulier et passionné.</div>
                                 </div>
                                 <?php endif; ?>
-                                <div class="badge-item p-3 text-center rounded-4 border-2 opacity-50 bg-light" style="width: 100px; border: 2px dashed #ccc;">
-                                    <div class="h2 mb-1">🛡️</div>
-                                    <div class="small fw-bold">Modérateur?</div>
+
+                                <!-- Locked/Upcoming -->
+                                <div class="badge-token locked">
+                                    <div class="badge-icon-bg">
+                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2" stroke-opacity="0.2"/>
+                                            <path d="M8 11V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V11" stroke="currentColor" stroke-width="2" stroke-opacity="0.1"/>
+                                        </svg>
+                                    </div>
+                                    <span class="badge-name">Elite</span>
                                 </div>
                             </div>
                         </div>
@@ -137,23 +157,93 @@ include ROOT_PATH . '/app/views/partials/dashboard-head.php';
 </div>
 
 <style>
+:root {
+    --badge-gold: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    --badge-emerald: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --badge-locked: #f1f5f9;
+}
+
 .nav-pills .nav-link {
-    color: var(--lex-text);
-    font-weight: 500;
-    border: 1.5px solid transparent;
+    color: #64748b;
+    font-weight: 600;
+    padding: 16px 24px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
 }
 .nav-pills .nav-link:hover {
-    background: #f1f5f9;
+    background: #f8fafc;
+    color: #1e293b;
 }
 .nav-pills .nav-link.active {
-    background: var(--lex-primary) !important;
+    background: #1e293b !important;
     color: white !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
 }
-.form-control:focus {
-    border-color: var(--lex-accent);
-    box-shadow: 0 0 0 4px rgba(var(--lex-accent-rgb, 179, 134, 0), 0.1);
+
+/* Premium Badge Tokens */
+.badge-token {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    cursor: help;
 }
+.badge-icon-bg {
+    width: 80px;
+    height: 80px;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.badge-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-novice .badge-icon-bg { color: #10b981; }
+.badge-scholar .badge-icon-bg { color: #f59e0b; }
+.badge-token.locked { opacity: 0.4; color: #94a3b8; }
+
+.badge-token:hover .badge-icon-bg {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+}
+
+.badge-novice:hover .badge-icon-bg { border-color: #10b981; background: #ecfdf5; }
+.badge-scholar:hover .badge-icon-bg { border-color: #f59e0b; background: #fffbeb; }
+
+/* Tooltip */
+.badge-tooltip {
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: #1e293b;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+.badge-token:hover .badge-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
 .profile-sidebar {
     position: sticky;
     top: 20px;

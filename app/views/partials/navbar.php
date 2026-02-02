@@ -71,7 +71,7 @@
                     <div class="account-dropdown" id="accountDropdown">
                         <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin'): ?>
                             <div class="dropdown-header">
-                                <strong><?= e($_SESSION['username'] ?? 'Admin') ?></strong>
+                                <strong><?= e($user['full_name'] ?? 'Admin') ?></strong>
                             </div>
                             <hr>
                             <a href="<?= BASE_URL ?>/admin/dashboard"><?= __('Tableau de bord') ?></a>
@@ -81,7 +81,7 @@
                             <a href="<?= BASE_URL ?>/logout" class="text-danger"><?= __('Déconnexion') ?></a>
                         <?php elseif (isset($_SESSION['user_id'])): ?>
                             <div class="dropdown-header">
-                                <strong><?= e($_SESSION['username'] ?? 'User') ?></strong>
+                                <strong><?= e($user['full_name'] ?? 'User') ?></strong>
                             </div>
                             <hr>
                             <a href="<?= BASE_URL ?>/user/dashboard"><?= __('Tableau de bord') ?></a>

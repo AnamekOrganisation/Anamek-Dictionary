@@ -56,6 +56,12 @@ class AuthController extends BaseController {
                 $googleService = new \Google\Service\Oauth2($client);
                 $userData = $googleService->userinfo->get();
 
+                error_log("Google User Data: " . json_encode([
+                    'id' => $userData->id,
+                    'email' => $userData->email,
+                    'name' => $userData->name
+                ]));
+
                 // Find or create regional user
                 $user = $this->userModel->findOrCreateByGoogle([
                     'id' => $userData->id,
@@ -63,6 +69,8 @@ class AuthController extends BaseController {
                     'name' => $userData->name,
                     'picture' => $userData->picture
                 ]);
+
+                error_log("Google Login Result: " . ($user ? "Success (User ID: " . $user['id'] . ")" : "Failure"));
 
                 if ($user) {
                     // Log the user in
@@ -73,8 +81,10 @@ class AuthController extends BaseController {
                     $_SESSION['email_verified'] = true;
                     $_SESSION['login_time'] = time();
 
+                    error_log("Google Login: Redirecting to dashboard for user " . $user['username']);
                     $this->redirectWith('/user/dashboard', "Bienvenue " . $user['username'] . " !");
                 } else {
+                    error_log("Google Login: No user found/created.");
                     $this->redirectWithError('/login', "Échec de l'authentification Google.");
                 }
             } catch (Exception $e) {

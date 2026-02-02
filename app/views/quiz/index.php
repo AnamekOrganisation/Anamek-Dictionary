@@ -1,6 +1,6 @@
 <?php include ROOT_PATH . '/app/views/partials/header.php'; ?>
 
-<div class="main-content bg-white py-5" style="border-radius: 30px 30px 0 0; margin-top: -30px; position: relative; z-index: 10;">
+<div class="main-content bg-white py-5" style="position: relative; z-index: 10;">
     <div class="container">
         <!-- Daily Challenge Banner -->
         <div class="row mb-5">

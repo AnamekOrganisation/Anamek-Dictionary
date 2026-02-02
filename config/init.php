@@ -10,7 +10,7 @@ if (session_status() === PHP_SESSION_NONE) {
         'domain' => '',
         'secure' => !empty($_SERVER['HTTPS']) || $_SERVER['HTTP_HOST'] !== 'localhost',
         'httponly' => true,
-        'samesite' => 'Strict'
+        'samesite' => 'Lax'
     ]);
     session_start();
 }
