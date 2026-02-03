@@ -1490,85 +1490,120 @@ body.no-scroll {
         display: block;
     }
 
-    /* Hamburger Icon Styles */
-    .hamburger-icon {
-        width: 30px;
-        height: 24px;
-        position: relative;
+    /* --- Target Premium Header Refinements --- */
+    .main-header {
+        background: #4e6476; /* Target dark-blueish background */
+    }
+
+    .top-bar .container.flex-row {
+        height: 70px;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        padding: 0 15px;
+        width: 100%;
+    }
+
+    /* Left Side: Hamburger Trigger with Square Wrapper */
+    .main-nav {
+        order: 1;
+        grid-column: 1;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+    
+    /* Center: Logo */
+    .logo {
+        order: 2;
+        grid-column: 2;
+        justify-self: center;
+    }
+
+    .hamburger-wrapper {
+        width: 44px;
+        height: 44px;
+        background: rgba(0, 0, 0, 0.2); /* Darkened square background */
+        border-radius: 12px; /* Smooth corners */
+        display: flex;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
-        z-index: 101;
+        transition: all 0.2s ease;
+    }
+
+    .hamburger-wrapper:hover {
+        background: rgba(0, 0, 0, 0.3);
+        transform: translateY(-1px);
+    }
+
+    .hamburger-icon {
+        width: 20px; /* Precise icon size */
+        height: 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .hamburger-icon span {
         display: block;
         width: 100%;
-        height: 3px;
-        background: #fff;
-        border-radius: 3px;
-        position: absolute;
-        transition: all 0.3s ease;
+        height: 2px; /* Clean lines */
+        background: #fff; /* Target white color */
+        border-radius: 4px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .hamburger-icon .icon-1 { top: 0; }
-    .hamburger-icon .icon-2 { top: 10px; }
-    .hamburger-icon .icon-3 { top: 20px; }
+    .hamburger-icon.active .icon-1 { transform: translateY(6px) rotate(45deg); }
+    .hamburger-icon.active .icon-2 { opacity: 0; width: 0; }
+    .hamburger-icon.active .icon-3 { transform: translateY(-6px) rotate(-45deg); }
 
-    /* Active State (X shape) */
-    .nav-menu.active ~ .hamburger-icon .icon-1,
-    .hamburger-icon.active .icon-1 {
-        top: 10px;
-        transform: rotate(45deg);
-    }
-
-    .nav-menu.active ~ .hamburger-icon .icon-2,
-    .hamburger-icon.active .icon-2 {
-        opacity: 0;
-    }
-
-    .nav-menu.active ~ .hamburger-icon .icon-3,
-    .hamburger-icon.active .icon-3 {
-        top: 10px;
-        transform: rotate(-45deg);
-    }
-
-    /* Fix Header Layout on Mobile */
-    .top-bar .container.flex-row {
-        justify-content: flex-start; /* We control spacing with auto margins */
-        gap: 15px;
-    }
-
-    .logo {
-        order: 1;
-        margin-right: auto; /* Push others to right */
-    }
-
-    .secondary-brand {
-        order: 2;
-    }
-
-    .main-nav {
-        order: 3;
-    }
-    /* ... Icon styles remain same, but ensure close button is visible ... */
-    div#icon {
-        width: 40px;
-        height: 24px;
-        background: transparent;
+    /* Center: Logo */
+    .top-bar .logo {
+        grid-column: 2;
         display: flex;
         justify-content: center;
         align-items: center;
-        align-content: space-between;
-        flex-wrap: wrap;
     }
 
-    #icon>span {
-        height: 3px;
-        width: 100%;
-        display: block;
-        background: #f99417;
+    .top-bar .logo img {
+        max-height: 48px; /* Precise scale */
+        width: auto;
     }
-    
-    /* Ensure hamburger color contrasts with header if needed, or keep orange */
+
+    /* Right Side: Lang & Account */
+    .secondary-brand {
+        order: 3;
+        grid-column: 3;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .nav-separator {
+        width: 1px;
+        height: 30px;
+        background: rgba(255, 255, 255, 0.2); /* Thin subtle line */
+        margin: 0 5px;
+    }
+
+    .language-switcher {
+        padding: 4px 8px;
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .account {
+        width: 36px;
+        height: 36px;
+        background: transparent; /* Clean profile look */
+        border: 1.5px solid rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        color: white;
+    }
+
+    /* Redundant styles removed to favor consolidated premium header block above */
 
     .menu_close {
         position: absolute;
@@ -4559,4 +4594,1143 @@ word of the day */
   .word-entry .elite-content:has(*) { padding: 0 1.5rem 2.5rem 1.5rem; }
   .word-entry .elite-actions { padding: 2rem 1.5rem; flex-direction: column; gap: 15px; }
   .word-entry .elite-actions .d-flex { width: 100%; justify-content: center; }
+}
+/* ========================================
+   CULTURAL VARIANT REDESIGN (App-like UI)
+   ======================================== */
+:root {
+    --v-primary: #F99B1C;
+    --v-brand-blue: #4A5D6E;
+    --v-bg-light: #F8F9FA;
+    --v-slate-50: #f8fafc;
+    --v-slate-100: #f1f5f9;
+    --v-slate-200: #e2e8f0;
+    --v-slate-400: #94a3b8;
+    --v-slate-500: #64748b;
+    --v-slate-700: #334155;
+    --v-slate-800: #1e293b;
+    --v-emerald-50: #ecfdf5;
+    --v-emerald-100: #d1fae5;
+    --v-emerald-800: #065f46;
+}
+
+.variant-page {
+    background-color: var(--v-bg-light);
+    color: var(--v-slate-800);
+    min-height: 100vh;
+    padding-bottom: 100px;
+}
+
+.variant-hero-card {
+    background: linear-gradient(135deg, rgba(249,155,28,0.9) 0%, #F99B1C 100%);
+    border-radius: 24px;
+    padding: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    color: white;
+    box-shadow: 0 10px 30px rgba(249, 155, 28, 0.3);
+    margin-bottom: 1.5rem;
+}
+
+.variant-hero-card::after {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 160px;
+    height: 160px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    filter: blur(40px);
+}
+
+.variant-section {
+    background: #fff;
+    border-radius: 24px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--v-slate-100);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--v-slate-100);
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+.variant-example-card {
+    background: var(--v-emerald-50);
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--v-emerald-100);
+}
+
+.variant-example-card .berber {
+    color: var(--v-emerald-800);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.variant-example-card .latin {
+    color: var(--v-slate-500);
+    font-style: italic;
+    font-size: 0.95rem;
+}
+
+.morph-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.morph-pill {
+    background: var(--v-slate-50);
+    padding: 1rem;
+    border-radius: 16px;
+}
+
+.morph-pill .title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--v-slate-400);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.morph-pill .data {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--v-primary);
+}
+
+.variant-rel-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.variant-rel-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--v-slate-50);
+    border: 1px solid var(--v-slate-200);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: var(--v-slate-700);
+    text-decoration: none;
+}
+
+.variant-rel-tag.antonym {
+    background: #fff1f2;
+    border-color: #ffe4e6;
+    color: #be123c;
+}
+
+.variant-action-group {
+    display: flex;
+    gap: 0.75rem;
+    margin: 2rem 0;
+}
+
+.variant-action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: white;
+    border: 1px solid var(--v-slate-200);
+    border-radius: 16px;
+    font-weight: 700;
+    color: var(--v-slate-700);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.variant-action-btn.primary {
+    background: var(--v-primary);
+    color: white;
+    border-color: var(--v-primary);
+}
+
+.variant-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--v-slate-200);
+    display: flex;
+    height: 70px;
+    z-index: 1000;
+}
+
+.nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--v-slate-400);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.nav-item.active { color: var(--v-primary); }
+.nav-item i { font-size: 1.35rem; margin-bottom: 2px; }
+
+.script-toggle-float {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    background: #1e293b;
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    z-index: 999;
+}
+
+/* ================================================================
+   CULTURAL VARIANT DESIGN - MOBILE ONLY
+   Modern app-like interface for word detail pages
+   ================================================================ */
+
+@media (max-width: 768px) {
+    /* === Color Variables === */
+    :root {
+        --cultural-primary: #F99B1C;
+        --cultural-brand-blue: #4A5D6E;
+        --cultural-bg-light: #F8F9FA;
+        --cultural-slate-50: #f8fafc;
+        --cultural-slate-100: #f1f5f9;
+        --cultural-slate-200: #e2e8f0;
+        --cultural-slate-300: #cbd5e1;
+        --cultural-slate-400: #94a3b8;
+        --cultural-slate-500: #64748b;
+        --cultural-slate-600: #475569;
+        --cultural-slate-700: #334155;
+        --cultural-slate-800: #1e293b;
+        --cultural-emerald-50: #ecfdf5;
+        --cultural-emerald-100: #d1fae5;
+        --cultural-emerald-800: #065f46;
+        --cultural-rose-50: #fff1f2;
+        --cultural-rose-100: #ffe4e6;
+        --cultural-rose-700: #be123c;
+    }
+
+    /* === Main Container === */
+    .cultural-variant-page {
+        background-color: var(--cultural-bg-light);
+        color: var(--cultural-slate-800);
+        min-height: 100vh;
+        padding-top: 112px;
+        padding-bottom: 96px;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        position: relative;
+    }
+
+    /* === Hero Card === */
+    .cultural-hero-card {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        background: linear-gradient(to bottom right, rgba(249, 155, 28, 0.9), #F99B1C);
+        color: white;
+        border-radius: 1rem;
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+
+    .cultural-hero-card::before {
+        content: '';
+        position: absolute;
+        top: -2.5rem;
+        right: -2.5rem;
+        width: 10rem;
+        height: 10rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        filter: blur(2.5rem);
+    }
+
+    .cultural-hero-header {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.5rem;
+    }
+
+    .cultural-hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+
+    .cultural-hero-btn {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        backdrop-filter: blur(8px);
+        transition: background 0.2s;
+    }
+
+    .cultural-hero-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .cultural-hero-latin {
+        position: relative;
+        z-index: 10;
+        font-size: 1.5rem;
+        font-family: 'Source Serif Pro', serif;
+        font-style: italic;
+        opacity: 0.9;
+        margin-bottom: 1rem;
+    }
+
+    .cultural-hero-badges {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .cultural-hero-badge {
+        padding: 0.25rem 0.75rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        backdrop-filter: blur(8px);
+    }
+
+    /* === Section Cards === */
+    .cultural-section {
+        position: relative;
+        z-index: 10;
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--cultural-slate-100);
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .cultural-section-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--cultural-slate-100);
+    }
+
+    .cultural-section-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--cultural-slate-800);
+    }
+
+    .cultural-definition-label {
+        font-size: 0.75rem;
+        color: var(--cultural-primary);
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 0.25rem;
+    }
+
+    .cultural-definition-tfng {
+        font-size: 1.125rem;
+        color: var(--cultural-slate-700);
+        margin-bottom: 0.25rem;
+    }
+
+    .cultural-definition-latin {
+        font-size: 0.875rem;
+        color: var(--cultural-slate-500);
+        font-style: italic;
+    }
+
+    /* === Example Cards === */
+    .cultural-example-section {
+        position: relative;
+        z-index: 10;
+        margin-bottom: 1.5rem;
+    }
+
+    .cultural-example-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        padding: 0 0.25rem;
+    }
+
+    .cultural-example-card {
+        background: var(--cultural-emerald-50);
+        border: 1px solid var(--cultural-emerald-100);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .cultural-example-tfng {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--cultural-emerald-800);
+        margin-bottom: 0.25rem;
+    }
+
+    .cultural-example-fr {
+        font-size: 0.875rem;
+        color: var(--cultural-slate-600);
+        font-style: italic;
+    }
+
+    /* === Morphology Grid === */
+    .cultural-morph-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .cultural-morph-pill {
+        background: var(--cultural-slate-50);
+        padding: 0.75rem;
+        border-radius: 0.75rem;
+    }
+
+    .cultural-morph-label {
+        font-size: 0.75rem;
+        color: var(--cultural-slate-400);
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .cultural-morph-value {
+        color: var(--cultural-primary);
+        font-weight: 700;
+        font-size: 1.125rem;
+    }
+
+    /* === Semantic Relations === */
+    .cultural-rel-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--cultural-slate-400);
+        text-transform: uppercase;
+        margin-bottom: 0.75rem;
+        display: block;
+    }
+
+    .cultural-rel-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .cultural-rel-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.5rem;
+        border: 1px solid var(--cultural-slate-200);
+        background: var(--cultural-slate-50);
+        color: var(--cultural-slate-700);
+        font-size: 0.875rem;
+        text-decoration: none;
+    }
+
+    .cultural-rel-tag.antonym {
+        border-color: var(--cultural-rose-100);
+        background: var(--cultural-rose-50);
+        color: var(--cultural-rose-700);
+    }
+
+    /* === Proverb Card === */
+    .cultural-proverb-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1rem;
+        background: #5D534A;
+        color: white;
+        box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+        height: 12rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    .cultural-proverb-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 16rem;
+        height: 16rem;
+        background: #7A6E63;
+        border-radius: 50%;
+        mix-blend-mode: overlay;
+        transform: translate(33%, -33%);
+        filter: blur(3rem);
+        opacity: 0.5;
+    }
+
+    .cultural-proverb-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--cultural-primary);
+    }
+
+    .cultural-proverb-badge span:first-child {
+        font-size: 0.875rem;
+    }
+
+    .cultural-proverb-badge span:last-child {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+
+    .cultural-proverb-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    .cultural-proverb-trans {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #d1d5db;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    .cultural-proverb-btn {
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        width: max-content;
+        cursor: pointer;
+        backdrop-filter: blur(8px);
+        transition: background 0.2s;
+        position: relative;
+        z-index: 10;
+    }
+
+    .cultural-proverb-btn:hover {
+        background: rgba(0, 0, 0, 0.8);
+    }
+
+    /* === Action Buttons === */
+    .cultural-actions {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+    }
+
+    .cultural-action-btn {
+        flex: 1;
+        background: white;
+        border: 1px solid var(--cultural-slate-200);
+        color: var(--cultural-slate-700);
+        padding: 0.75rem;
+        border-radius: 0.75rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s;
+        cursor: pointer;
+    }
+
+    .cultural-action-btn:active {
+        transform: scale(0.95);
+    }
+
+    .cultural-action-btn.primary {
+        flex: none;
+        background: var(--cultural-primary);
+        color: white;
+        padding: 0.75rem;
+        box-shadow: 0 10px 15px rgba(249, 155, 28, 0.3);
+    }
+
+    /* === Bottom Navigation === */
+    .cultural-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background: white;
+        border-top: 1px solid var(--cultural-slate-200);
+        z-index: 50;
+    }
+
+    .cultural-bottom-nav-items {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 4rem;
+        padding: 0 0.5rem;
+    }
+
+    .cultural-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        color: var(--cultural-slate-400);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .cultural-nav-item.active {
+        color: var(--cultural-primary);
+    }
+
+    .cultural-nav-item span:first-child {
+        margin-bottom: 0.125rem;
+    }
+
+    .cultural-nav-item span:last-child {
+        font-size: 10px;
+        font-weight: 500;
+    }
+
+    .cultural-nav-spacer {
+        height: 1.5rem;
+        width: 100%;
+    }
+
+    /* === Script Toggle === */
+    .cultural-script-toggle {
+        position: fixed;
+        bottom: 6rem;
+        right: 1rem;
+        z-index: 40;
+        background: var(--cultural-slate-800);
+        color: white;
+        border-radius: 50px;
+        padding: 0.5rem 1rem;
+        box-shadow: 0 20px 25px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border: 1px solid var(--cultural-slate-700);
+        cursor: pointer;
+    }
+
+    .cultural-script-toggle .tifinagh {
+        color: var(--cultural-primary);
+    }
+
+    /* === Material Icons === */
+    .material-icons-round {
+        font-family: 'Material Icons Round';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        display: inline-block;
+        line-height: 1;
+        text-transform: none;
+        letter-spacing: normal;
+        word-wrap: normal;
+        white-space: nowrap;
+        direction: ltr;
+    }
+}
+
+/* ================================================================
+   CULTURAL VARIANT - GLOBAL COMPONENTS
+   ================================================================ */
+
+/* Clean Styles for Content Cards (Desktop & Mobile) */
+.cultural-hero-card, .cultural-section, .cultural-example-section, .cultural-actions {
+    margin-bottom: 2rem;
+}
+
+/* Ensure clean typography globally */
+.tifinagh {
+    font-family: 'Noto Sans Tifinagh', sans-serif;
+}
+
+/* Desktop Specific Adjustments */
+@media (min-width: 769px) {
+    .cultural-hero-card {
+        padding: 3rem; /* More padding on desktop */
+    }
+    
+    .cultural-hero-title {
+        font-size: 4rem; /* Larger title */
+    }
+    
+    .cultural-morph-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 columns on desktop */
+    }
+    
+    .cultural-action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+}
+
+/* ================================================================
+   CULTURAL VARIANT - GLOBAL VARIABLES & COMPONENTS
+   (Extracted from media query for Desktop support)
+   ================================================================ */
+
+:root {
+    --cultural-primary: #F99B1C;
+    --cultural-brand-blue: #4A5D6E;
+    --cultural-slate-50: #f8fafc;
+    --cultural-slate-100: #f1f5f9;
+    --cultural-slate-200: #e2e8f0;
+    --cultural-slate-400: #94a3b8;
+    --cultural-slate-500: #64748b;
+    --cultural-slate-600: #475569;
+    --cultural-slate-700: #334155;
+    --cultural-slate-800: #1e293b;
+    --cultural-emerald-50: #ecfdf5;
+    --cultural-emerald-100: #d1fae5;
+    --cultural-emerald-800: #065f46;
+    --cultural-rose-50: #fff1f2;
+    --cultural-rose-100: #ffe4e6;
+    --cultural-rose-700: #be123c;
+}
+
+/* === Hero Card === */
+.cultural-hero-card {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    background: linear-gradient(to bottom right, rgba(249, 155, 28, 0.9), #F99B1C);
+    color: white;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.cultural-hero-card::before {
+    content: '';
+    position: absolute;
+    top: -2.5rem;
+    right: -2.5rem;
+    width: 15rem;
+    height: 15rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    filter: blur(2.5rem);
+}
+
+.cultural-hero-header {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.cultural-hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.1;
+}
+
+.cultural-hero-btn {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.75rem;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: background 0.2s;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cultural-hero-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.cultural-hero-latin {
+    position: relative;
+    z-index: 10;
+    font-size: 1.75rem;
+    font-family: 'Source Serif Pro', serif;
+    font-style: italic;
+    opacity: 0.95;
+    margin-bottom: 1.5rem;
+}
+
+.cultural-hero-badges {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.cultural-hero-badge {
+    padding: 0.35rem 1rem;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+}
+
+/* === Section Cards === */
+.cultural-section {
+    position: relative;
+    z-index: 10;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--cultural-slate-100);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.cultural-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--cultural-slate-100);
+}
+
+.cultural-section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--cultural-slate-800);
+    margin: 0;
+}
+
+.cultural-definition-label {
+    font-size: 0.8rem;
+    color: var(--cultural-primary);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.cultural-definition-tfng {
+    font-size: 1.5rem;
+    color: var(--cultural-slate-700);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.cultural-definition-latin {
+    font-size: 1rem;
+    color: var(--cultural-slate-500);
+    font-style: italic;
+}
+
+/* === Example Cards === */
+.cultural-example-section {
+    position: relative;
+    z-index: 10;
+    margin-bottom: 2rem;
+}
+
+.cultural-example-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 0 0.25rem;
+}
+
+.cultural-example-card {
+    background: var(--cultural-emerald-50);
+    border: 1px solid var(--cultural-emerald-100);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: transform 0.2s;
+}
+
+.cultural-example-card:hover {
+    transform: translateY(-2px);
+}
+
+.cultural-example-tfng {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--cultural-emerald-800);
+    margin-bottom: 0.35rem;
+}
+
+.cultural-example-fr {
+    font-size: 0.95rem;
+    color: var(--cultural-slate-600);
+    font-style: italic;
+}
+
+/* === Morphology Grid === */
+.cultural-morph-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+}
+
+.cultural-morph-pill {
+    background: var(--cultural-slate-50);
+    padding: 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.cultural-morph-pill:hover {
+    border-color: var(--cultural-slate-200);
+}
+
+.cultural-morph-label {
+    font-size: 0.75rem;
+    color: var(--cultural-slate-400);
+    text-transform: uppercase;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.35rem;
+}
+
+.cultural-morph-value {
+    color: var(--cultural-primary);
+    font-weight: 700;
+    font-size: 1.25rem;
+    text-decoration: none;
+}
+
+/* === Semantic Relations === */
+.cultural-rel-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.cultural-rel-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--cultural-slate-200);
+    background: var(--cultural-slate-50);
+    color: var(--cultural-slate-700);
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.cultural-rel-tag:hover {
+    background: white;
+    border-color: var(--cultural-slate-400);
+    transform: translateY(-1px);
+}
+
+.cultural-rel-tag.antonym {
+    border-color: var(--cultural-rose-100);
+    background: var(--cultural-rose-50);
+    color: var(--cultural-rose-700);
+}
+
+.cultural-rel-tag.antonym:hover {
+    background: #fff;
+    border-color: var(--cultural-rose-700);
+}
+
+/* === Proverb Card === */
+.cultural-proverb-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: #5D534A;
+    color: white;
+    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+    height: 14rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.cultural-proverb-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20rem;
+    height: 20rem;
+    background: #7A6E63;
+    border-radius: 50%;
+    mix-blend-mode: overlay;
+    transform: translate(33%, -33%);
+    filter: blur(4rem);
+    opacity: 0.6;
+}
+
+.cultural-proverb-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 10;
+}
+
+/* === Action Buttons === */
+.cultural-actions {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.cultural-action-btn {
+    flex: 1;
+    background: white;
+    border: 1px solid var(--cultural-slate-200);
+    color: var(--cultural-slate-700);
+    padding: 1rem;
+    border-radius: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.cultural-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.cultural-action-btn.primary {
+    flex: none;
+    background: var(--cultural-primary);
+    color: white;
+    padding: 1rem;
+    border-color: var(--cultural-primary);
+    box-shadow: 0 10px 15px rgba(249, 155, 28, 0.3);
+}
+
+.cultural-action-btn.primary:hover {
+    background: #e0850b;
+}
+
+/* === Material Icons Utility === */
+.material-icons-round {
+    font-family: 'Material Icons Round';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* === Toast Notification === */
+.toast-notification {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(30, 41, 59, 0.95);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 9999;
+    pointer-events: none;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: max-content;
+}
+
+.toast-notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Adjust position on mobile if bottom nav exists */
+@media (max-width: 768px) {
+    .toast-notification {
+        bottom: 6rem; /* Above bottom nav */
+    }
 }

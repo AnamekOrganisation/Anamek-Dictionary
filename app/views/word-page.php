@@ -20,11 +20,8 @@
 
 <!-- Main Content -->
 <main class="main" id="main">
-    <!-- Search Header Section -->
-    <!-- Search Header Section Removed as per request (redundant with header) -->
-
     <div class="main-grid-row triple-grid mt-4">
-        <!-- Main Column: Word Entry (Takes 2/3 space if we use triple-grid or custom grid) -->
+        <!-- Main Column: Word Entry -->
         <div class="main-column-entry">
             <div class="definition-section">
                 <?php if (empty($variants)): ?>
@@ -65,8 +62,6 @@
                             <?php include ROOT_PATH . '/app/views/partials/word-entry.php'; ?>
                         <?php endforeach; ?>
                     <?php endif; ?>
-
-
                 <?php endif; ?>
             </div>
         </div>
@@ -89,10 +84,13 @@
     </div>
 </main>
 
+
+
 <!-- Footer -->
 <?php include_once __DIR__ . '/partials/footer.php'; ?>
 
 <!-- Scripts -->
 <script src="<?= BASE_URL ?>/public/js/home.js?v=<?= time() ?>"></script>
+<script src="<?= BASE_URL ?>/public/js/modules/script-toggle-float.js?v=<?= time() ?>"></script>
 </body>
 </html>

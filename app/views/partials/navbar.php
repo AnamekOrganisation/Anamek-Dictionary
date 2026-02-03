@@ -23,10 +23,12 @@ if (isset($_SESSION['user_id']) && !isset($user)) {
             </div>
             
             <nav class="main-nav">
-                <div class="hamburger-icon mobile" id="icon">
-                    <span class="icon-1 a" id="a"></span>
-                    <span class="icon-2 c" id="b"></span>
-                    <span class="icon-3 b" id="c"></span>
+                <div class="hamburger-wrapper">
+                    <div class="hamburger-icon mobile" id="icon">
+                        <span class="icon-1 a" id="a"></span>
+                        <span class="icon-2 c" id="b"></span>
+                        <span class="icon-3 b" id="c"></span>
+                    </div>
                 </div>
                 <div class="nav-menu">
                     <a href="<?= BASE_URL ?>/"><?= __('Home') ?></a>
@@ -78,6 +80,8 @@ if (isset($_SESSION['user_id']) && !isset($user)) {
                     <a href="<?= $buildLangUrl('ber_MA') ?>" class="language-option <?= $currentLang === 'ber_MA' ? 'active' : '' ?>">ⵜⴰⵎⴰⵣⵉⵖⵜ</a>
                 </div>
             </div>
+            
+            <div class="nav-separator"></div>
             
                 <div class="account-container">
                     <div class="account">
