@@ -192,9 +192,47 @@ class WordRepository {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function findAllByText($text) {
-        $stmt = $this->pdo->prepare("SELECT * FROM words WHERE word_tfng = :text OR word_lat = :text OR translation_fr LIKE :partial_text");
-        $stmt->execute(['text' => $text, 'partial_text' => '%' . $text . '%']);
+    public function findAllByText($text, $lang = '') {
+        $params = ['text' => $text, 'prefix' => $text . '%'];
+        $isShort = mb_strlen($text) <= 2;
+        
+        $conditions = [];
+        if ($lang === 'fr') {
+            $conditions[] = "translation_fr = :text";
+            if (!$isShort) {
+                $conditions[] = "translation_fr LIKE :partial";
+                $params['partial'] = '%' . $text . '%';
+            }
+        } elseif ($lang === 'ber') {
+            $conditions[] = "word_tfng = :text";
+            $conditions[] = "word_lat = :text";
+            $conditions[] = "word_tfng LIKE :prefix";
+            $conditions[] = "word_lat LIKE :prefix";
+        } else {
+            // Default broad search
+            $conditions[] = "word_tfng = :text";
+            $conditions[] = "word_lat = :text";
+            $conditions[] = "translation_fr = :text";
+            $conditions[] = "word_tfng LIKE :prefix";
+            $conditions[] = "word_lat LIKE :prefix";
+            if (!$isShort) {
+                $conditions[] = "translation_fr LIKE :partial";
+                $params['partial'] = '%' . $text . '%';
+            }
+        }
+
+        $sql = "SELECT *, 
+                CASE 
+                    WHEN word_tfng = :text OR word_lat = :text OR translation_fr = :text THEN 1
+                    WHEN word_lat LIKE :prefix OR word_tfng LIKE :prefix THEN 2
+                    ELSE 3 
+                END as relevance
+                FROM words 
+                WHERE (" . implode(' OR ', $conditions) . ")
+                ORDER BY relevance ASC, word_lat ASC";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
         $words = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if (!empty($words)) {

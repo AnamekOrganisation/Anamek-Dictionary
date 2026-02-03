@@ -149,7 +149,8 @@ class DictionaryController extends BaseController {
             // If the URL is just a slug (e.g. 'tarrist' or 'pays'), show all variants.
             // Use the original search term to find all matches (including homonyms or french matches)
             $searchSlug = urldecode($params_id);
-            $variants = $wordRepo->findAllByText($searchSlug);
+            $lang = $_GET['lang'] ?? '';
+            $variants = $wordRepo->findAllByText($searchSlug, $lang);
             
             if (empty($variants)) {
                 $variants = [$word]; // Fallback
@@ -169,13 +170,18 @@ class DictionaryController extends BaseController {
     public function search() {
         $query = isset($_GET['q']) ? trim($_GET['q']) : '';
         
+        $lang = isset($_GET['lang']) ? $_GET['lang'] : '';
+        
         if (empty($query)) {
             header('Location: ' . BASE_URL);
             exit;
         }
 
-        // Redirect to the word page logic
-        header('Location: ' . BASE_URL . '/word/' . urlencode($query));
+        $url = BASE_URL . '/word/' . urlencode($query);
+        if (!empty($lang)) {
+            $url .= '?' . http_build_query(['lang' => $lang]);
+        }
+        header('Location: ' . $url);
         exit;
     }
 

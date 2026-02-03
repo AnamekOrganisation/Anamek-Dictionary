@@ -180,8 +180,10 @@ function toggleScriptInSearch() {
 
 function performSearch() {
     const searchInput = document.getElementById('search-input');
+    const searchLang = document.getElementById('search-lang');
     if (searchInput && searchInput.value.trim()) {
-        window.location.href = BASE_URL + '/search?q=' + encodeURIComponent(searchInput.value);
+        const lang = searchLang ? searchLang.value : 'ber';
+        window.location.href = BASE_URL + '/search?q=' + encodeURIComponent(searchInput.value) + '&lang=' + encodeURIComponent(lang);
     }
 }
 
