@@ -2662,7 +2662,6 @@ word of the day */
 /* Academic Dictionary Styles (Ported from word-page.css) */
 .main-column-entry {
     background: white;
-    padding: 40px;
     border-radius: 20px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
 }
@@ -4240,7 +4239,6 @@ word of the day */
   border-radius: 24px;
   overflow: hidden;
   box-shadow: 0 20px 50px rgba(0,0,0,0.05);
-  margin-bottom: 4rem;
   border: 1px solid rgba(0,0,0,0.03);
   position: relative;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -4253,20 +4251,28 @@ word of the day */
 
 .word-entry.active-entry {
   border-color: var(--lex-accent);
-  box-shadow: 0 0 0 4px rgba(249, 148, 23, 0.1), 0 20px 50px rgba(0,0,0,0.05);
 }
 
 /* Hero Header */
 .word-entry .elite-hero {
-  background: linear-gradient(135deg, #1a2a3a 0%, #2c3e50 100%);
-  padding: 4rem 3rem;
+  background: linear-gradient(135deg, #f99417 0%, #4e6476 100%);
+  padding: 1rem;
   color: #fff;
   position: relative;
   overflow: hidden;
   text-align: center;
 }
 
-.word-entry .elite-hero::after {
+.word-entry .elite-hero .word-header{
+  display: flex;
+  align-items: center;
+}
+
+.word-entry .elite-hero .word-header .tifinagh span{
+  margin: 0 5px;
+}
+
+/* .word-entry .elite-hero::after {
   content: '';
   position: absolute;
   top: -50%;
@@ -4275,7 +4281,7 @@ word of the day */
   height: 200%;
   background: radial-gradient(circle at center, rgba(249, 148, 23, 0.1) 0%, transparent 70%);
   z-index: 1;
-}
+} */
 
 .word-entry .elite-hero * {
   position: relative;
@@ -4283,13 +4289,23 @@ word of the day */
 }
 
 .word-entry .elite-hero .tifinagh {
-  font-size: clamp(3rem, 8vw, 5.5rem);
+  font-size: clamp(2rem, 8vw, 4rem);
   font-weight: 700;
   display: block;
   margin-bottom: 0.5rem;
   text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  color: #fff;
+
 }
 
+.word-entry .elite-hero .french-translation{
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  opacity: 0.8;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 2px;
+  text-align: left;
+}
 .word-entry .elite-hero .latin {
   font-size: clamp(1.5rem, 4vw, 2.2rem);
   opacity: 0.8;
@@ -4313,7 +4329,7 @@ word of the day */
 }
 
 /* Info Grid */
-.word-entry .elite-info-grid {
+.word-entry .elite-info-grid:has(*) {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 20px;
@@ -4362,7 +4378,7 @@ word of the day */
 }
 
 /* Content Sections */
-.word-entry .elite-content {
+.word-entry .elite-content:has(*) {
   padding: 0 3rem 3rem 3rem;
 }
 
@@ -4521,6 +4537,7 @@ word of the day */
   align-items: center;
   gap: 8px;
   text-decoration: none;
+  margin: 0;
 }
 
 .word-entry .action-btn:hover {
@@ -4531,15 +4548,15 @@ word of the day */
 }
 
 .word-entry .action-btn.primary {
-  background: var(--lex-accent);
+  background: var(--accent-color);
   color: #fff;
-  border-color: var(--lex-accent);
+  border-color: var(--accent-color);
 }
 
 @media (max-width: 768px) {
   .word-entry .elite-hero { padding: 3rem 1.5rem; }
-  .word-entry .elite-info-grid { padding: 1.5rem; }
-  .word-entry .elite-content { padding: 0 1.5rem 2.5rem 1.5rem; }
+  .word-entry .elite-info-grid:has(*) { padding: 1.5rem; }
+  .word-entry .elite-content:has(*) { padding: 0 1.5rem 2.5rem 1.5rem; }
   .word-entry .elite-actions { padding: 2rem 1.5rem; flex-direction: column; gap: 15px; }
   .word-entry .elite-actions .d-flex { width: 100%; justify-content: center; }
 }

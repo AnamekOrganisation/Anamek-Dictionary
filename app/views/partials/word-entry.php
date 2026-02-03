@@ -21,9 +21,13 @@ if (!function_exists('getWordLink')) {
     
     <!-- Word Hero Header -->
     <header class="elite-hero">
-        <span class="tifinagh word-title"><?= e($v['word_tfng']) ?></span>
-        <span class="latin phonetic"><?= e($v['word_lat']) ?></span>
-        
+        <div class="word-header">
+        <h1 class="tifinagh word-title"><?= e($v['word_tfng']) ?><span>-</span><?= e($v['word_lat']) ?></h1>
+        </div>
+         <?php if (!empty($v['translation_fr'])): ?>
+            <div class="french-translation"><?= e($v['translation_fr']) ?></div>
+        <?php endif; ?>
+    
         <?php if (!empty($v['part_of_speech'])): ?>
         <div class="category-pill shadow-sm">
             <?= __(e($v['part_of_speech'])) ?>
@@ -33,6 +37,7 @@ if (!function_exists('getWordLink')) {
 
     <!-- Quick Info Grid -->
     <div class="elite-info-grid">
+        <?php if (!empty($v['part_of_speech'])): ?>
         <div class="info-card">
             <i class="fas fa-tags"></i>
             <div>
@@ -40,6 +45,8 @@ if (!function_exists('getWordLink')) {
                 <span class="value"><?= !empty($v['part_of_speech']) ? __(e($v['part_of_speech'])) : '—' ?></span>
             </div>
         </div>
+        <?php endif; ?>
+        <?php if (!empty($v['gender'])): ?>
         <div class="info-card">
             <i class="fas fa-venus-mars"></i>
             <div>
@@ -47,6 +54,8 @@ if (!function_exists('getWordLink')) {
                 <span class="value"><?= !empty($v['gender']) ? __(e($v['gender'])) : '—' ?></span>
             </div>
         </div>
+        <?php endif; ?>
+        <?php if (!empty($v['dialect'])): ?>
         <div class="info-card">
             <i class="fas fa-map-marker-alt"></i>
             <div>
@@ -54,21 +63,16 @@ if (!function_exists('getWordLink')) {
                 <span class="value"><?= !empty($v['dialect']) ? e($v['dialect']) : 'Général' ?></span>
             </div>
         </div>
+        <?php endif; ?>
     </div>
 
     <!-- Main Content -->
     <div class="elite-content">
         
         <!-- Definitions Section -->
+        <?php if (!empty($v['definition_tfng']) || !empty($v['definition_lat'])): ?>
         <section class="elite-section">
             <h2><i class="fas fa-book-open text-primary"></i> <?= __('Définitions') ?></h2>
-            
-            <?php if (!empty($v['translation_fr'])): ?>
-            <div class="definition-box primary">
-                <span class="type-label"><?= __('Traduction') ?></span>
-                <div class="text fw-bold definition-text"><?= e($v['translation_fr']) ?></div>
-            </div>
-            <?php endif; ?>
 
             <?php if (!empty($v['definition_tfng'])): ?>
             <div class="definition-box">
@@ -80,7 +84,7 @@ if (!function_exists('getWordLink')) {
             </div>
             <?php endif; ?>
         </section>
-
+        <?php endif; ?>
         <!-- Examples Section -->
         <?php if (!empty($v['examples']) || !empty($v['example_tfng'])): ?>
         <section class="elite-section">
