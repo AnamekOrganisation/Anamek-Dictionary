@@ -508,11 +508,27 @@ function initSearchLanguageDropdown() {
                 item.addEventListener('click', function(e) {
                     e.stopPropagation(); // Prevent bubbling
                     const value = this.dataset.value;
-                    const text = this.querySelector('span').textContent;
-
-                    // Update button text
+                    // Update button text and preserve toggling metadata
                     if (langBtnText) {
-                        langBtnText.textContent = text;
+                        const selectedSpan = this.querySelector('span');
+                        langBtnText.innerHTML = selectedSpan.innerHTML;
+                        
+                        // Copy data attributes for script toggling
+                        if (selectedSpan.classList.contains('word-display')) {
+                            langBtnText.classList.add('word-display');
+                            langBtnText.dataset.tfng = selectedSpan.dataset.tfng;
+                            langBtnText.dataset.lat = selectedSpan.dataset.lat;
+                        } else {
+                            langBtnText.classList.remove('word-display');
+                            delete langBtnText.dataset.tfng;
+                            delete langBtnText.dataset.lat;
+                        }
+                        
+                        // Re-apply current preferred script to the updated element
+                        const currentPrefScript = localStorage.getItem('preferred_script') || 'tfng';
+                        if (langBtnText.classList.contains('word-display')) {
+                             langBtnText.textContent = currentPrefScript === 'tfng' ? langBtnText.dataset.tfng : langBtnText.dataset.lat;
+                        }
                     }
 
                     // Update active state in THIS menu
