@@ -69,6 +69,10 @@ if (isset($is_404) && $is_404) {
     </div>
 
     
+    <script src="<?= BASE_URL ?>/public/js/modules/ui-utils.js"></script>
+    <script src="<?= BASE_URL ?>/public/js/modules/script-toggle.js"></script>
+    <script src="<?= BASE_URL ?>/public/js/modules/search-engine.js"></script>
+    <script src="<?= BASE_URL ?>/public/js/modules/actions.js"></script>
     <script src="<?= BASE_URL ?>/public/js/main.js"></script>
 </body>
 </html>

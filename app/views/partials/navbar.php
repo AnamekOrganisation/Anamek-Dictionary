@@ -46,8 +46,12 @@ if (isset($_SESSION['user_id']) && !isset($user)) {
                     default: $langLabel = 'ⵜⵣⵎ'; break;
                 }
                 ?>
+                
                 <div class="language-container">
-                    <div class="language"><?= $langLabel ?></div>
+                    <div class="language-switcher" id="languageBtn">
+                        <span class="lang-text"><?= $langLabel ?></span>
+                        <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
                     <div class="language-dropdown" id="languageDropdown">
                     <?php
                     // Robustly determine current URI and parameters
@@ -77,7 +81,7 @@ if (isset($_SESSION['user_id']) && !isset($user)) {
             
                 <div class="account-container">
                     <div class="account">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="12" cy="9" r="3" stroke="currentColor" stroke-width="1.5"></circle>
                             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
                             <path d="M17.9691 20C17.81 17.1085 16.9247 15 11.9999 15C7.07521 15 6.18991 17.1085 6.03076 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
