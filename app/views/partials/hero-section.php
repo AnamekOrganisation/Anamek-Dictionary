@@ -66,7 +66,7 @@ $searchPlaceholder = $isProverbs ? __('Search a proverb...') : __('Search a word
                 <?php 
                 $savedLang = $_COOKIE['search_lang'] ?? 'ber';
                 $isFr = $savedLang === 'fr';
-                $langLabel = $isFr ? 'Français' : '<span class="word-display" data-tfng="ⵜⴰⵎⴰⵣⵉⵖⵜ" data-lat="Tamazight">ⵜⴰⵎⴰⵣⵉⵖⵜ</span>';
+                $langLabel = $isFr ? 'Français' : '<span class="word-display" data-tfng="ⵜⴰⵎⴰⵣⵉⵖⵜ" data-lat="Tamaziɣt">ⵜⴰⵎⴰⵣⵉⵖⵜ</span>';
                 ?>
                 <h6><?= $headerTitle ?></h6>
                 <form id="searchForm" style="width: 100%; display: flex; justify-content: center;">
@@ -81,7 +81,7 @@ $searchPlaceholder = $isProverbs ? __('Search a proverb...') : __('Search a word
                             </button>
                             <div class="lang-menu" style="display:none;">
                                 <div class="lang-item <?= !$isFr ? 'active' : '' ?>" data-value="ber">
-                                    <span class="word-display" data-tfng="ⵜⴰⵎⴰⵣⵉⵖⵜ" data-lat="Tamazight">ⵜⴰⵎⴰⵣⵉⵖⵜ</span>
+                                    <span class="word-display" data-tfng="ⵜⴰⵎⴰⵣⵉⵖⵜ" data-lat="Tamaziɣt">ⵜⴰⵎⴰⵣⵉⵖⵜ</span>
                                 </div>
                                 <div class="lang-item <?= $isFr ? 'active' : '' ?>" data-value="fr">
                                     <span>Français</span>

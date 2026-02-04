@@ -14,11 +14,17 @@ window.initGlobalScriptToggle = function() {
     updateToggleButtons(currentScript);
     
     // Add click listeners to any global toggle buttons
-    const toggleButtons = document.querySelectorAll('.script-toggle-btn');
+    const toggleButtons = document.querySelectorAll('.script-toggle-btn, .cultural-script-toggle');
     toggleButtons.forEach(btn => {
         btn.addEventListener('click', function() {
-            const script = this.dataset.script;
-            setGlobalScript(script);
+            // If it's the cultural toggle, just flip the current script
+            if (this.classList.contains('cultural-script-toggle')) {
+                const now = localStorage.getItem('preferred_script') || 'tfng';
+                setGlobalScript(now === 'tfng' ? 'lat' : 'tfng');
+            } else {
+                const script = this.dataset.script;
+                setGlobalScript(script);
+            }
         });
     });
 };
@@ -30,6 +36,9 @@ window.setGlobalScript = function(script) {
 };
 
 window.applyScriptToAll = function(script) {
+    // Top-level attribute for CSS
+    document.documentElement.setAttribute('data-script', script);
+
     // Update all elements with data-tfng and data-lat attributes
     document.querySelectorAll('[data-tfng][data-lat]').forEach(element => {
         // Safety Check
@@ -59,12 +68,14 @@ window.applyScriptToAll = function(script) {
     });
     
     // Update any other script-switchable content
-    document.querySelectorAll('.tifinagh-text').forEach(el => {
-        el.style.display = script === 'tfng' ? 'block' : 'none';
+    document.querySelectorAll('.tifinagh-text, .script-tfng').forEach(el => {
+        const isInline = el.classList.contains('cultural-rel-tag') || el.classList.contains('cultural-morph-value');
+        el.style.setProperty('display', script === 'tfng' ? (isInline ? 'inline-block' : 'block') : 'none', 'important');
     });
     
-    document.querySelectorAll('.latin-text').forEach(el => {
-        el.style.display = script === 'lat' ? 'block' : 'none';
+    document.querySelectorAll('.latin-text, .script-lat').forEach(el => {
+        const isInline = el.classList.contains('cultural-rel-tag') || el.classList.contains('cultural-morph-value');
+        el.style.setProperty('display', script === 'lat' ? (isInline ? 'inline-block' : 'block') : 'none', 'important');
     });
 };
 
@@ -77,6 +88,19 @@ window.updateToggleButtons = function(script) {
         }
     });
     
+    // Update cultural toggle
+    document.querySelectorAll('.cultural-script-toggle').forEach(btn => {
+        const btnText = btn.querySelector('span:not(.tifinagh)');
+        if (btnText) {
+            btnText.textContent = script === 'tfng' ? 'Latin' : 'Tifinagh';
+        }
+        if (script === 'lat') {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
     // Also update old-style buttons if they exist
     document.querySelectorAll('.script-btn').forEach(btn => {
         const isTfngBtn = btn.classList.contains('proverb-tfng-btn');

@@ -1,6 +1,7 @@
 <?php 
 
-include ROOT_PATH . '/app/views/partials/dashboard-head.php'; 
+// include ROOT_PATH . '/app/views/partials/dashboard-head.php'; 
+include ROOT_PATH . '/app/views/partials/head.php';
 include ROOT_PATH . '/app/views/partials/navbar.php';
 ?>
 

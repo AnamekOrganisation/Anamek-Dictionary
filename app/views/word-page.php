@@ -87,10 +87,5 @@
 
 
 <!-- Footer -->
-<?php include_once __DIR__ . '/partials/footer.php'; ?>
-
-<!-- Scripts -->
 <script src="<?= BASE_URL ?>/public/js/home.js?v=<?= time() ?>"></script>
-<script src="<?= BASE_URL ?>/public/js/modules/script-toggle-float.js?v=<?= time() ?>"></script>
-</body>
-</html>
+<?php include_once __DIR__ . '/partials/footer.php'; ?>

@@ -58,6 +58,7 @@ setupLocale($currentLang);
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
   <link rel="stylesheet" href="<?= BASE_URL ?>/public/css/style.css">
+  <link rel="stylesheet" href="<?= BASE_URL ?>/public/css/mobile-menu.css">
   <link rel="stylesheet" href="<?= BASE_URL ?>/public/css/language-selector.css">
   <link rel="stylesheet" href="<?= BASE_URL ?>/public/css/quiz.css?v=<?= time() ?>">
 

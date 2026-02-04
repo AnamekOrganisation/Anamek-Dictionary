@@ -31,6 +31,7 @@ window.initAccountDropdown = function() {
     if (!accountBtn || !dropdown) return;
 
     accountBtn.addEventListener('click', function(e) {
+        e.preventDefault();
         e.stopPropagation();
         dropdown.classList.toggle('show');
         if (langDropdown) langDropdown.classList.remove('show');
@@ -170,15 +171,45 @@ document.addEventListener('click', function(e) {
 
 // Mobile Menu and Global Handlers
 document.addEventListener('DOMContentLoaded', function() {
-    const mobileTrigger = document.querySelector('.mobile');
-    const navMenu = document.querySelector('.nav-menu');
+    const mobileTrigger = document.querySelector('.hamburger-icon');
+    const mobileNav = document.querySelector('.mobile-nav-panel');
     
     // Mobile Menu Toggle
-    if (mobileTrigger && navMenu) {
+    if (mobileTrigger && mobileNav) {
+        const overlay = document.querySelector('.menu-overlay');
+
+        const closeMenu = () => {
+            mobileTrigger.classList.remove('active');
+            mobileNav.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
+            document.body.classList.remove('no-scroll');
+        };
+
+        const openMenu = () => {
+            mobileTrigger.classList.add('active');
+            mobileNav.classList.add('active');
+            if (overlay) overlay.classList.add('active');
+            document.body.classList.add('no-scroll');
+        };
+
         mobileTrigger.addEventListener('click', () => {
-            mobileTrigger.classList.toggle('active');
-            navMenu.classList.toggle('active');
+            if (mobileNav.classList.contains('active')) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
         });
+
+        // Close menu button listener
+        const menuClose = document.querySelector('.menu_close');
+        if (menuClose) {
+            menuClose.addEventListener('click', closeMenu);
+        }
+
+        // Overlay click listener
+        if (overlay) {
+            overlay.addEventListener('click', closeMenu);
+        }
     }
 
     // Scroll to Top/Search handler (Removed headerSearchBtn toggle as requested)

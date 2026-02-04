@@ -23,12 +23,13 @@ if (!function_exists('getWordLink')) {
     <!-- Hero Card -->
     <div class="cultural-hero-card">
         <div class="cultural-hero-header">
-            <h1 class="cultural-hero-title tifinagh"><?= e($v['word_tfng']) ?></h1>
-            <button class="cultural-hero-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-            </button>
+            <h1 class="cultural-hero-combined">
+                <span class="tifinagh"><?= e($v['word_tfng']) ?></span>
+                <span class="cultural-separator"></span>
+                <span class="cultural-hero-latin"><?= e($v['word_lat']) ?></span>
+            </h1>
         </div>
-        <p class="cultural-hero-latin"><?= e($v['word_lat']) ?></p>
+        
         <?php if (!empty($v['part_of_speech']) || !empty($v['gender'])): ?>
         <div class="cultural-hero-badges">
             <?php if (!empty($v['part_of_speech'])): ?>
@@ -41,25 +42,34 @@ if (!function_exists('getWordLink')) {
         <?php endif; ?>
     </div>
 
+    <!-- Independent Translation Card -->
+    <?php if (!empty($v['translation_fr'])): ?>
+    <section class="cultural-translation-card">
+        <div class="cultural-section-header">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="var(--cultural-primary)"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg>
+            <h2 class="cultural-section-title"><?= __('Traduction') ?></h2>
+        </div>
+        <p class="cultural-translation-text"><?= e($v['translation_fr']) ?></p>
+    </section>
+    <?php endif; ?>
+
     <!-- Definitions Section -->
-    <?php if (!empty($v['definition_tfng']) || !empty($v['translation_fr'])): ?>
+    <?php if (!empty($v['definition_tfng'])): ?>
     <section class="cultural-section">
         <div class="cultural-section-header">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" style="color: var(--cultural-primary);"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" style="color: #6366f1;"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zM10 9h8v2h-8zm0 3h4v2h-4zm0-6h8v2h-8z"/></svg>
             <h2 class="cultural-section-title"><?= __('Définitions') ?></h2>
         </div>
         
-        <?php if (!empty($v['definition_tfng'])): ?>
-        <div>
-            <p class="cultural-definition-label"><?= __('Définition Académique') ?></p>
-            <p class="cultural-definition-tfng tifinagh"><?= e($v['definition_tfng']) ?></p>
-            <?php if (!empty($v['definition_lat'])): ?>
-            <p class="cultural-definition-latin">"<?= e($v['definition_lat']) ?>"</p>
-            <?php endif; ?>
+        <div class="mb-3">
+            <!-- <p class="cultural-definition-label">Définition Académique</p> -->
+            <div class="script-tfng">
+                <p class="cultural-definition-tfng tifinagh"><?= e($v['definition_tfng']) ?></p>
+            </div>
+            <div class="script-lat">
+                <p class="cultural-definition-tfng"><?= e($v['definition_lat'] ?? $v['definition_tfng']) ?></p>
+            </div>
         </div>
-        <?php elseif (!empty($v['translation_fr'])): ?>
-        <p class="cultural-definition-tfng"><?= e($v['translation_fr']) ?></p>
-        <?php endif; ?>
     </section>
     <?php endif; ?>
 
@@ -73,7 +83,12 @@ if (!function_exists('getWordLink')) {
         
         <?php if (!empty($v['example_tfng'])): ?>
         <div class="cultural-example-card">
-            <p class="cultural-example-tfng tifinagh"><?= e($v['example_tfng']) ?></p>
+            <div class="script-tfng">
+                <p class="cultural-example-tfng tifinagh"><?= e($v['example_tfng']) ?></p>
+            </div>
+            <div class="script-lat">
+                <p class="cultural-example-tfng"><?= e($v['example_lat'] ?? $v['example_tfng']) ?></p>
+            </div>
             <?php if (!empty($v['example_fr'])): ?>
             <p class="cultural-example-fr"><?= e($v['example_fr']) ?></p>
             <?php endif; ?>
@@ -83,7 +98,12 @@ if (!function_exists('getWordLink')) {
         <?php if (!empty($v['examples'])): ?>
             <?php foreach ($v['examples'] as $ex): ?>
             <div class="cultural-example-card">
-                <p class="cultural-example-tfng tifinagh"><?= e($ex['example_tfng'] ?? $ex['example_lat']) ?></p>
+                <div class="script-tfng">
+                    <p class="cultural-example-tfng tifinagh"><?= e($ex['example_tfng'] ?? $ex['example_lat']) ?></p>
+                </div>
+                <div class="script-lat">
+                    <p class="cultural-example-tfng"><?= e($ex['example_lat'] ?? $ex['example_tfng']) ?></p>
+                </div>
                 <?php if (!empty($ex['example_fr'])): ?>
                 <p class="cultural-example-fr"><?= e($ex['example_fr']) ?></p>
                 <?php endif; ?>
@@ -107,7 +127,11 @@ if (!function_exists('getWordLink')) {
             <?php if (!empty($v['root_tfng'])): ?>
             <div class="cultural-morph-pill">
                 <span class="cultural-morph-label"><?= __('Racine') ?></span>
-                <a href="<?= getWordLink($v['root_lat'] ?? '') ?>" class="cultural-morph-value tifinagh" style="text-decoration: none;">
+                <a href="<?= getWordLink($v['root_lat'] ?? '') ?>" 
+                   class="cultural-morph-value safe-text-replace" 
+                   data-tfng="<?= e($v['root_tfng']) ?>" 
+                   data-lat="<?= e($v['root_lat'] ?? $v['root_tfng']) ?>"
+                   style="text-decoration: none;">
                     <?= e($v['root_tfng']) ?>
                 </a>
             </div>
@@ -116,7 +140,11 @@ if (!function_exists('getWordLink')) {
             <?php if (!empty($v['plural_tfng'])): ?>
             <div class="cultural-morph-pill">
                 <span class="cultural-morph-label"><?= __('Pluriel') ?></span>
-                <a href="<?= getWordLink($v['plural_lat'] ?? '') ?>" class="cultural-morph-value tifinagh" style="text-decoration: none;">
+                <a href="<?= getWordLink($v['plural_lat'] ?? '') ?>" 
+                   class="cultural-morph-value safe-text-replace" 
+                   data-tfng="<?= e($v['plural_tfng']) ?>" 
+                   data-lat="<?= e($v['plural_lat'] ?? $v['plural_tfng']) ?>"
+                   style="text-decoration: none;">
                     <?= e($v['plural_tfng']) ?>
                 </a>
             </div>
@@ -125,7 +153,11 @@ if (!function_exists('getWordLink')) {
             <?php if (!empty($v['feminine_tfng'])): ?>
             <div class="cultural-morph-pill">
                 <span class="cultural-morph-label"><?= __('Féminin') ?></span>
-                <a href="<?= getWordLink($v['feminine_lat'] ?? '') ?>" class="cultural-morph-value tifinagh" style="text-decoration: none;">
+                <a href="<?= getWordLink($v['feminine_lat'] ?? '') ?>" 
+                   class="cultural-morph-value safe-text-replace" 
+                   data-tfng="<?= e($v['feminine_tfng']) ?>" 
+                   data-lat="<?= e($v['feminine_lat'] ?? $v['feminine_tfng']) ?>"
+                   style="text-decoration: none;">
                     <?= e($v['feminine_tfng']) ?>
                 </a>
             </div>
@@ -134,7 +166,11 @@ if (!function_exists('getWordLink')) {
             <?php if (!empty($v['type_tfng'])): ?>
             <div class="cultural-morph-pill">
                 <span class="cultural-morph-label"><?= __('Type') ?></span>
-                <span class="cultural-morph-value tifinagh"><?= e($v['type_tfng']) ?></span>
+                <span class="cultural-morph-value safe-text-replace" 
+                      data-tfng="<?= e($v['type_tfng']) ?>" 
+                      data-lat="<?= e($v['type_lat'] ?? $v['type_tfng']) ?>">
+                    <?= e($v['type_tfng']) ?>
+                </span>
             </div>
             <?php endif; ?>
         </div>
@@ -155,9 +191,11 @@ if (!function_exists('getWordLink')) {
                 <span class="cultural-rel-label"><?= __('Synonymes') ?></span>
                 <div class="cultural-rel-tags">
                     <?php foreach ($v['synonyms'] as $syn): ?>
-                    <a href="<?= getWordLink($syn['synonym_lat'] ?? '') ?>" class="cultural-rel-tag">
-                        <span style="color: var(--cultural-slate-400); font-size: 0.75rem;">=</span>
-                        <span class="tifinagh"><?= e($syn['synonym_tfng'] ?? $syn['synonym_lat']) ?></span>
+                    <a href="<?= getWordLink($syn['synonym_lat'] ?? '') ?>" 
+                       class="cultural-rel-tag safe-text-replace" 
+                       data-tfng="<?= e($syn['synonym_tfng'] ?? $syn['synonym_lat']) ?>"
+                       data-lat="<?= e($syn['synonym_lat'] ?? $syn['synonym_tfng']) ?>">
+                        <?= e($syn['synonym_tfng'] ?? $syn['synonym_lat']) ?>
                     </a>
                     <?php endforeach; ?>
                 </div>
@@ -169,9 +207,11 @@ if (!function_exists('getWordLink')) {
                 <span class="cultural-rel-label"><?= __('Antonymes') ?></span>
                 <div class="cultural-rel-tags">
                     <?php foreach ($v['antonyms'] as $ant): ?>
-                    <a href="<?= getWordLink($ant['antonym_lat'] ?? '') ?>" class="cultural-rel-tag antonym">
-                        <span style="font-size: 0.75rem;">≠</span>
-                        <span class="tifinagh"><?= e($ant['antonym_tfng'] ?? $ant['antonym_lat']) ?></span>
+                    <a href="<?= getWordLink($ant['antonym_lat'] ?? '') ?>" 
+                       class="cultural-rel-tag antonym safe-text-replace"
+                       data-tfng="<?= e($ant['antonym_tfng'] ?? $ant['antonym_lat']) ?>"
+                       data-lat="<?= e($ant['antonym_lat'] ?? $ant['antonym_tfng']) ?>">
+                        <?= e($ant['antonym_tfng'] ?? $ant['antonym_lat']) ?>
                     </a>
                     <?php endforeach; ?>
                 </div>

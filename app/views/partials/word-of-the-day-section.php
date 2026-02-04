@@ -13,10 +13,11 @@
                     <h3 class="text-2xl font-bold text-blue-900"><?php echo __('Word of the Day'); ?></h3>
                 </div>
                 <h4 class="tifinagh-display text-4xl mb-3 text-white"><?= $wordOfTheDay['word_tfng']; ?></h4>
-                <p class="text-2xl font-semibold mb-4"><?= $wordOfTheDay['word_lat']; ?></p>
-                <p class="text-base leading-relaxed mb-6"><?= $wordOfTheDay['definition_short']; ?></p>
-                <div class="flex items-center gap-2 text-amber-300"><span class="text-sm font-medium">Voir la définition
-                        complète</span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                <h4 class="text-5xl font-semibold mb-4"><?= $wordOfTheDay['word_lat']; ?></h4>
+                <p class="text-base leading-relaxed mb-6"><?= $wordOfTheDay['translation_fr']; ?></p>
+                <div class="flex items-center gap-2 text-amber-300"><span class="text-sm font-medium">
+<a style="color: inherit; text-decoration: none;" href="<?= BASE_URL ?>/word/<?= urlencode($wordOfTheDay['word_lat']) ?>-<?= $wordOfTheDay['id'] ?>">
+    <?= __('Voir la définition complète') ?></a></span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round" class="lucide lucide-chevron-right w-4 h-4">
                         <path d="m9 18 6-6-6-6"></path>

@@ -30,13 +30,15 @@ if (isset($_SESSION['user_id']) && !isset($user)) {
                         <span class="icon-3 b" id="c"></span>
                     </div>
                 </div>
-                <div class="nav-menu">
+
+                <div class="nav-menu desktop-only">
                     <a href="<?= BASE_URL ?>/"><?= __('Home') ?></a>
                     <a href="<?= BASE_URL ?>/proverbs"><?= __('Proverb') ?></a>
                     <a href="<?= BASE_URL ?>/quizzes"><?= __('Quiz') ?></a>
                     <a href="<?= BASE_URL ?>/about"><?= __('About') ?></a>
-                    <span class="menu_close"></span>
                 </div>
+                
+                <?php include 'mobile-menu.php'; ?>
             </nav>
             
             <div class="secondary-brand">
@@ -94,7 +96,10 @@ if (isset($_SESSION['user_id']) && !isset($user)) {
                     <div class="account-dropdown" id="accountDropdown">
                         <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin'): ?>
                             <div class="dropdown-header">
-                                <strong><?= e($user['full_name'] ?? 'Admin') ?></strong>
+                                <a href="<?= BASE_URL ?>/user/profile" class="text-dark name-link"> 
+                                <span class="d-block small text-muted"><?= __('Administrateur') ?></span>
+                                <strong><?= e($user['full_name'] ?: ($user['username'] ?: 'Admin')) ?></strong>
+                                </a>
                             </div>
                             <hr>
                             <a href="<?= BASE_URL ?>/admin/dashboard"><?= __('Tableau de bord') ?></a>
@@ -104,7 +109,10 @@ if (isset($_SESSION['user_id']) && !isset($user)) {
                             <a href="<?= BASE_URL ?>/logout" class="text-danger"><?= __('Déconnexion') ?></a>
                         <?php elseif (isset($_SESSION['user_id'])): ?>
                             <div class="dropdown-header">
-                                <strong><?= e($user['full_name'] ?? 'User') ?></strong>
+                                <a href="<?= BASE_URL ?>/user/profile" class="text-dark name-link">
+                                <span class="d-block small text-muted"><?= __('Utilisateur') ?></span>
+                                <strong><?= e($user['full_name'] ?: ($user['username'] ?: 'Membre')) ?></strong>
+                                </a>
                             </div>
                             <hr>
                             <a href="<?= BASE_URL ?>/user/dashboard"><?= __('Tableau de bord') ?></a>

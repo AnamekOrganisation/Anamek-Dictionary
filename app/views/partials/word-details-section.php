@@ -53,7 +53,7 @@
 
     </div>
 
-    <a href="/about" class="amawal-btn">
+    <a href="<?= BASE_URL ?>/about" class="amawal-btn">
       <?= __('À propos d’anamek') ?>
     </a>
 
