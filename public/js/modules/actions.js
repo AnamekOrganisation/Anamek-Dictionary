@@ -97,16 +97,5 @@ window.copyWord = function(entryId) {
     copyToClipboard(text, "Mot copié !");
 };
 
-window.shareWord = function(entryId, title) {
-    const entry = document.getElementById('entry-' + entryId);
-    if (!entry) return;
-    
-    const tfng = entry.querySelector('.word-title')?.textContent.trim();
-    const permalink = entry.querySelector('.permalink-badge')?.href;
-    
-    shareContent(
-        'Amawal - ' + (title || tfng),
-        tfng,
-        (typeof ABSOLUTE_URL !== 'undefined' && tfng) ? ABSOLUTE_URL + '/word/' + encodeURIComponent(tfng) : (permalink || window.location.href)
-    );
-};
+// Removed duplicate shareWord - using the one from main.js instead
+// The correct implementation expects (text, url) parameters
