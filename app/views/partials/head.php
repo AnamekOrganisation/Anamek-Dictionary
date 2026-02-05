@@ -94,4 +94,12 @@ setupLocale($currentLang);
       });
     </script>
   <?php endif; ?>
+
+  <!-- Schema.org Structured Data -->
+  <?php include_once BASE_PATH . '/app/views/partials/schema/organization.php'; ?>
+  <?php include_once BASE_PATH . '/app/views/partials/schema/website.php'; ?>
+  
+  <?php if (isset($is_home) && $is_home): ?>
+    <?php include_once BASE_PATH . '/app/views/partials/schema/database.php'; ?>
+  <?php endif; ?>
 </head>

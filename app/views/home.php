@@ -1,19 +1,8 @@
 <!-- Header -->
-<?php include_once __DIR__ . '/partials/header.php'; ?>
-
-<?php if (isset($preLoadedWord)): ?>
-<script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "DefinedTerm",
-        "name": "<?= htmlspecialchars($preLoadedWord['word_lat'] . ' / ' . $preLoadedWord['word_tfng']) ?>",
-        "inDefinedTermSet": "https://amawal.net",
-        "termCode": "<?= htmlspecialchars($preLoadedWord['word_lat']) ?>",
-        "description": "<?= htmlspecialchars($preLoadedWord['definition_fr'] ?? $preLoadedWord['translation_fr']) ?>",
-        "url": "<?= BASE_URL ?>/word/<?= urlencode($preLoadedWord['word_lat']) ?>-<?= $preLoadedWord['id'] ?>"
-    }
-</script>
-<?php endif; ?>
+<?php
+$is_home = true;
+include_once __DIR__ . '/partials/header.php';
+?>
 
 <!-- Main Content -->
 <main class="main-content">

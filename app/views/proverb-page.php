@@ -1,4 +1,15 @@
 <?php include ROOT_PATH . '/app/views/partials/header.php'; ?>
+<?php if (!empty($proverb)): ?>
+    <?php 
+    $breadcrumbs = [
+        ['name' => __('Home'), 'url' => BASE_URL . '/'],
+        ['name' => __('Proverbs'), 'url' => BASE_URL . '/proverbs'],
+        ['name' => '#' . $proverb['id'], 'url' => BASE_URL . '/proverb/' . $proverb['id']]
+    ];
+    include_once BASE_PATH . '/app/views/partials/schema/breadcrumb.php';
+    include_once BASE_PATH . '/app/views/partials/schema/proverb.php'; 
+    ?>
+<?php endif; ?>
 
 <main class="proverb-page-content py-5 bg-light" style="min-height: 80vh;">
     <div class="container" style="max-width: 900px;">
